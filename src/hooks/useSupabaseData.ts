@@ -10,21 +10,42 @@ type TimelineEvent = Tables<"timeline_events">;
 type Location = Tables<"locations">;
 type Creature = Tables<"creatures">;
 
-const fetchAll = <T,>(table: string) => async (): Promise<T[]> => {
-  const { data, error } = await supabase.from(table).select("*");
-  if (error) throw error;
-  return (data ?? []) as T[];
-};
+export const useUniverses = () => useQuery({ queryKey: ["universes"], queryFn: async () => {
+  const { data, error } = await supabase.from("universes").select("*");
+  if (error) throw error; return data;
+}});
 
-export const useUniverses = () => useQuery({ queryKey: ["universes"], queryFn: fetchAll<Universe>("universes") });
-export const useCharacters = () => useQuery({ queryKey: ["characters"], queryFn: fetchAll<Character>("characters") });
-export const useRaces = () => useQuery({ queryKey: ["races"], queryFn: fetchAll<Race>("races") });
-export const useFactions = () => useQuery({ queryKey: ["factions"], queryFn: fetchAll<Faction>("factions") });
-export const useTimelineEvents = () => useQuery({ queryKey: ["timeline_events"], queryFn: fetchAll<TimelineEvent>("timeline_events") });
-export const useLocations = () => useQuery({ queryKey: ["locations"], queryFn: fetchAll<Location>("locations") });
-export const useCreatures = () => useQuery({ queryKey: ["creatures"], queryFn: fetchAll<Creature>("creatures") });
+export const useCharacters = () => useQuery({ queryKey: ["characters"], queryFn: async () => {
+  const { data, error } = await supabase.from("characters").select("*");
+  if (error) throw error; return data;
+}});
 
-export const useUpsert = (table: string) => {
+export const useRaces = () => useQuery({ queryKey: ["races"], queryFn: async () => {
+  const { data, error } = await supabase.from("races").select("*");
+  if (error) throw error; return data;
+}});
+
+export const useFactions = () => useQuery({ queryKey: ["factions"], queryFn: async () => {
+  const { data, error } = await supabase.from("factions").select("*");
+  if (error) throw error; return data;
+}});
+
+export const useTimelineEvents = () => useQuery({ queryKey: ["timeline_events"], queryFn: async () => {
+  const { data, error } = await supabase.from("timeline_events").select("*");
+  if (error) throw error; return data;
+}});
+
+export const useLocations = () => useQuery({ queryKey: ["locations"], queryFn: async () => {
+  const { data, error } = await supabase.from("locations").select("*");
+  if (error) throw error; return data;
+}});
+
+export const useCreatures = () => useQuery({ queryKey: ["creatures"], queryFn: async () => {
+  const { data, error } = await supabase.from("creatures").select("*");
+  if (error) throw error; return data;
+}});
+
+export const useUpsert = (table: "universes" | "characters" | "races" | "factions" | "timeline_events" | "locations" | "creatures") => {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: async (record: Record<string, unknown>) => {
@@ -35,7 +56,7 @@ export const useUpsert = (table: string) => {
   });
 };
 
-export const useDelete = (table: string) => {
+export const useDelete = (table: "universes" | "characters" | "races" | "factions" | "timeline_events" | "locations" | "creatures") => {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: async (id: string) => {
