@@ -3,6 +3,8 @@ import { Link, useLocation } from "react-router-dom";
 import { Menu, X, Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
 
+import { useAuth } from "@/hooks/useAuth";
+
 const navItems = [
   { path: "/", label: "Accueil" },
   { path: "/univers", label: "Univers" },
@@ -24,6 +26,7 @@ const Navbar = ({ searchQuery, onSearchChange }: NavbarProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const [showSearch, setShowSearch] = useState(false);
   const location = useLocation();
+  const { isAdmin } = useAuth();
 
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-md border-b border-primary/20">
