@@ -14,16 +14,338 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      characters: {
+        Row: {
+          backstory: string
+          created_at: string
+          faction_id: string | null
+          id: string
+          image: string | null
+          name: string
+          race_id: string | null
+          stats: Json
+          title: string
+          universe_id: string
+          updated_at: string
+        }
+        Insert: {
+          backstory?: string
+          created_at?: string
+          faction_id?: string | null
+          id?: string
+          image?: string | null
+          name: string
+          race_id?: string | null
+          stats?: Json
+          title?: string
+          universe_id: string
+          updated_at?: string
+        }
+        Update: {
+          backstory?: string
+          created_at?: string
+          faction_id?: string | null
+          id?: string
+          image?: string | null
+          name?: string
+          race_id?: string | null
+          stats?: Json
+          title?: string
+          universe_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "characters_faction_id_fkey"
+            columns: ["faction_id"]
+            isOneToOne: false
+            referencedRelation: "factions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "characters_race_id_fkey"
+            columns: ["race_id"]
+            isOneToOne: false
+            referencedRelation: "races"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "characters_universe_id_fkey"
+            columns: ["universe_id"]
+            isOneToOne: false
+            referencedRelation: "universes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      creatures: {
+        Row: {
+          abilities: string[]
+          created_at: string
+          danger_level: number
+          description: string
+          habitat: string
+          id: string
+          name: string
+          universe_id: string
+          updated_at: string
+        }
+        Insert: {
+          abilities?: string[]
+          created_at?: string
+          danger_level?: number
+          description?: string
+          habitat?: string
+          id?: string
+          name: string
+          universe_id: string
+          updated_at?: string
+        }
+        Update: {
+          abilities?: string[]
+          created_at?: string
+          danger_level?: number
+          description?: string
+          habitat?: string
+          id?: string
+          name?: string
+          universe_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "creatures_universe_id_fkey"
+            columns: ["universe_id"]
+            isOneToOne: false
+            referencedRelation: "universes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      factions: {
+        Row: {
+          created_at: string
+          description: string
+          id: string
+          member_count: number
+          motto: string
+          name: string
+          universe_id: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string
+          id?: string
+          member_count?: number
+          motto?: string
+          name: string
+          universe_id: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          description?: string
+          id?: string
+          member_count?: number
+          motto?: string
+          name?: string
+          universe_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "factions_universe_id_fkey"
+            columns: ["universe_id"]
+            isOneToOne: false
+            referencedRelation: "universes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      locations: {
+        Row: {
+          created_at: string
+          description: string
+          id: string
+          name: string
+          type: string
+          universe_id: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string
+          id?: string
+          name: string
+          type?: string
+          universe_id: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          description?: string
+          id?: string
+          name?: string
+          type?: string
+          universe_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "locations_universe_id_fkey"
+            columns: ["universe_id"]
+            isOneToOne: false
+            referencedRelation: "universes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      races: {
+        Row: {
+          created_at: string
+          description: string
+          id: string
+          name: string
+          traits: string[]
+          universe_id: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string
+          id?: string
+          name: string
+          traits?: string[]
+          universe_id: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          description?: string
+          id?: string
+          name?: string
+          traits?: string[]
+          universe_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "races_universe_id_fkey"
+            columns: ["universe_id"]
+            isOneToOne: false
+            referencedRelation: "universes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      timeline_events: {
+        Row: {
+          created_at: string
+          description: string
+          era: string
+          id: string
+          title: string
+          universe_id: string
+          updated_at: string
+          year: number
+        }
+        Insert: {
+          created_at?: string
+          description?: string
+          era?: string
+          id?: string
+          title: string
+          universe_id: string
+          updated_at?: string
+          year: number
+        }
+        Update: {
+          created_at?: string
+          description?: string
+          era?: string
+          id?: string
+          title?: string
+          universe_id?: string
+          updated_at?: string
+          year?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "timeline_events_universe_id_fkey"
+            columns: ["universe_id"]
+            isOneToOne: false
+            referencedRelation: "universes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      universes: {
+        Row: {
+          created_at: string
+          description: string
+          era: string
+          id: string
+          image: string | null
+          name: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string
+          era?: string
+          id?: string
+          image?: string | null
+          name: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          description?: string
+          era?: string
+          id?: string
+          image?: string | null
+          name?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      user_roles: {
+        Row: {
+          created_at: string
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
     }
     Enums: {
-      [_ in never]: never
+      app_role: "admin" | "user"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +472,8 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      app_role: ["admin", "user"],
+    },
   },
 } as const
