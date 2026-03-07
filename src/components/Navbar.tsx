@@ -3,6 +3,8 @@ import { Link, useLocation } from "react-router-dom";
 import { Menu, X, Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
 
+import { useAuth } from "@/hooks/useAuth";
+
 const navItems = [
   { path: "/", label: "Accueil" },
   { path: "/univers", label: "Univers" },
@@ -24,6 +26,7 @@ const Navbar = ({ searchQuery, onSearchChange }: NavbarProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const [showSearch, setShowSearch] = useState(false);
   const location = useLocation();
+  const { isAdmin } = useAuth();
 
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-md border-b border-primary/20">
@@ -50,6 +53,16 @@ const Navbar = ({ searchQuery, onSearchChange }: NavbarProps) => {
                 {item.label}
               </Link>
             ))}
+            {isAdmin && (
+              <Link to="/admin" className={`px-3 py-2 rounded text-sm font-cinzel transition-all duration-200 hover:text-primary hover:bg-primary/10 ${location.pathname === "/admin" ? "text-primary bg-primary/10" : "text-foreground/70"}`}>
+                ⚙️ Admin
+              </Link>
+            )}
+            {!isAdmin && (
+              <Link to="/admin/login" className="px-3 py-2 rounded text-sm font-cinzel transition-all duration-200 text-foreground/40 hover:text-primary hover:bg-primary/10">
+                🔑
+              </Link>
+            )}
           </div>
 
           {/* Search & Mobile Toggle */}
@@ -98,6 +111,12 @@ const Navbar = ({ searchQuery, onSearchChange }: NavbarProps) => {
                 {item.label}
               </Link>
             ))}
+            {isAdmin && (
+              <Link to="/admin" onClick={() => setIsOpen(false)} className="block px-3 py-2 rounded font-cinzel text-sm text-primary bg-primary/10">⚙️ Admin</Link>
+            )}
+            {!isAdmin && (
+              <Link to="/admin/login" onClick={() => setIsOpen(false)} className="block px-3 py-2 rounded font-cinzel text-sm text-foreground/40 hover:text-primary">🔑 Connexion Admin</Link>
+            )}
           </div>
         </div>
       )}

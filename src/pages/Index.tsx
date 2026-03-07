@@ -1,10 +1,16 @@
 import { Link } from "react-router-dom";
 import Layout from "@/components/Layout";
 import StatCounter from "@/components/StatCounter";
-import { universes, characters, races, factions, timelineEvents } from "@/data/mockData";
+import { useUniverses, useCharacters, useRaces, useFactions, useTimelineEvents } from "@/hooks/useSupabaseData";
 import { motion } from "framer-motion";
 
 const Index = () => {
+  const { data: universes = [] } = useUniverses();
+  const { data: characters = [] } = useCharacters();
+  const { data: races = [] } = useRaces();
+  const { data: factions = [] } = useFactions();
+  const { data: timelineEvents = [] } = useTimelineEvents();
+
   return (
     <Layout>
       {/* Hero */}

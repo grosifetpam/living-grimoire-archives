@@ -1,12 +1,17 @@
 import { useState } from "react";
 import Layout from "@/components/Layout";
-import { factions, getUniverseName } from "@/data/mockData";
+import { useFactions, useUniverses } from "@/hooks/useSupabaseData";
 import { motion } from "framer-motion";
 
 const FactionsPage = () => {
+  const { data: factions = [] } = useFactions();
+  const { data: universes = [] } = useUniverses();
   const [sort, setSort] = useState<"name" | "members">("name");
+
+  const getUniverseName = (id: string) => universes.find(u => u.id === id)?.name || "Inconnu";
+
   const sorted = [...factions].sort((a, b) =>
-    sort === "name" ? a.name.localeCompare(b.name) : b.memberCount - a.memberCount
+    sort === "name" ? a.name.localeCompare(b.name) : b.member_count - a.member_count
   );
 
   return (
@@ -16,12 +21,8 @@ const FactionsPage = () => {
         <p className="text-center text-muted-foreground mb-8 font-crimson text-lg">Les ordres et confréries du multivers</p>
 
         <div className="flex justify-center gap-3 mb-10">
-          <button onClick={() => setSort("name")} className={`px-4 py-2 rounded font-cinzel text-sm transition-all ${sort === "name" ? "bg-primary text-primary-foreground" : "bg-secondary text-foreground/70 hover:bg-secondary/80"}`}>
-            Alphabétique
-          </button>
-          <button onClick={() => setSort("members")} className={`px-4 py-2 rounded font-cinzel text-sm transition-all ${sort === "members" ? "bg-primary text-primary-foreground" : "bg-secondary text-foreground/70 hover:bg-secondary/80"}`}>
-            Par Membres
-          </button>
+          <button onClick={() => setSort("name")} className={`px-4 py-2 rounded font-cinzel text-sm transition-all ${sort === "name" ? "bg-primary text-primary-foreground" : "bg-secondary text-foreground/70 hover:bg-secondary/80"}`}>Alphabétique</button>
+          <button onClick={() => setSort("members")} className={`px-4 py-2 rounded font-cinzel text-sm transition-all ${sort === "members" ? "bg-primary text-primary-foreground" : "bg-secondary text-foreground/70 hover:bg-secondary/80"}`}>Par Membres</button>
         </div>
 
         <div className="grid sm:grid-cols-2 gap-6">
@@ -32,7 +33,7 @@ const FactionsPage = () => {
                 <div className="flex-1">
                   <h3 className="font-cinzel text-xl font-bold text-primary">{f.name}</h3>
                   <p className="text-xs text-primary/60 italic font-crimson">"{f.motto}"</p>
-                  <p className="text-xs text-muted-foreground mt-1">🌍 {getUniverseName(f.universeId)} · 👥 {f.memberCount} membres</p>
+                  <p className="text-xs text-muted-foreground mt-1">🌍 {getUniverseName(f.universe_id)} · 👥 {f.member_count} membres</p>
                   <p className="font-crimson text-foreground/80 text-sm mt-3">{f.description}</p>
                 </div>
               </div>
