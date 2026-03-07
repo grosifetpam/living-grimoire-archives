@@ -111,6 +111,12 @@ const Navbar = ({ searchQuery, onSearchChange }: NavbarProps) => {
                 {item.label}
               </Link>
             ))}
+            {isAdmin && (
+              <Link to="/admin" onClick={() => setIsOpen(false)} className="block px-3 py-2 rounded font-cinzel text-sm text-primary bg-primary/10">⚙️ Admin</Link>
+            )}
+            {!isAdmin && (
+              <Link to="/admin/login" onClick={() => setIsOpen(false)} className="block px-3 py-2 rounded font-cinzel text-sm text-foreground/40 hover:text-primary">🔑 Connexion Admin</Link>
+            )}
           </div>
         </div>
       )}
