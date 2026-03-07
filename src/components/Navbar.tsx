@@ -53,6 +53,16 @@ const Navbar = ({ searchQuery, onSearchChange }: NavbarProps) => {
                 {item.label}
               </Link>
             ))}
+            {isAdmin && (
+              <Link to="/admin" className={`px-3 py-2 rounded text-sm font-cinzel transition-all duration-200 hover:text-primary hover:bg-primary/10 ${location.pathname === "/admin" ? "text-primary bg-primary/10" : "text-foreground/70"}`}>
+                ⚙️ Admin
+              </Link>
+            )}
+            {!isAdmin && (
+              <Link to="/admin/login" className="px-3 py-2 rounded text-sm font-cinzel transition-all duration-200 text-foreground/40 hover:text-primary hover:bg-primary/10">
+                🔑
+              </Link>
+            )}
           </div>
 
           {/* Search & Mobile Toggle */}
