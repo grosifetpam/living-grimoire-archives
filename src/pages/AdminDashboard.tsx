@@ -179,33 +179,17 @@ const SECTION_LABELS: Record<string, { label: string; icon: string }> = {
 };
 
 function SectionImagesAdmin() {
-  const [images, setImages] = useState<Record<string, string | null>>({});
-  const [loading, setLoading] = useState(true);
+  const { data: settings = {}, isLoading: loading } = useSiteSettings();
+  const saveMutation = useSaveSiteSetting();
 
-  useEffect(() => {
-    const keys = Object.values(SECTION_IMAGE_KEYS);
-    supabase.from("site_settings").select("key, value").in("key", keys).then(({ data: rows }) => {
-      const map: Record<string, string | null> = {};
-      if (rows) {
-        for (const r of rows) {
-          const section = Object.entries(SECTION_IMAGE_KEYS).find(([, v]) => v === r.key)?.[0];
-          if (section) map[section] = r.value || null;
-        }
-      }
-      setImages(map);
-      setLoading(false);
-    });
-  }, []);
+  const getImage = (section: string) => {
+    const key = SECTION_IMAGE_KEYS[section];
+    return settings[key] || null;
+  };
 
   const handleChange = async (section: string, url: string | null) => {
     const key = SECTION_IMAGE_KEYS[section];
-    const { data: existing } = await supabase.from("site_settings").select("id").eq("key", key).single();
-    if (existing) {
-      await supabase.from("site_settings").update({ value: url || "" }).eq("key", key);
-    } else {
-      await supabase.from("site_settings").insert({ key, value: url || "" } as any);
-    }
-    setImages(prev => ({ ...prev, [section]: url }));
+    await saveMutation.mutateAsync({ key, value: url || "" });
     toast({ title: `Image de ${SECTION_LABELS[section]?.label} mise à jour ✓` });
   };
 
