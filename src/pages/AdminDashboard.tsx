@@ -166,6 +166,93 @@ function HomeSettingsAdmin() {
           </div>
         )}
       </div>
+
+      {/* Cartes géographiques par univers */}
+      <MediaMapsSection />
+
+      {/* Cartes oracles & musiques par personnage */}
+      <MediaCharactersSection />
+    </div>
+  );
+}
+
+function MediaMapsSection() {
+  const { data: universes = [], isLoading } = useUniverses();
+  const upsert = useUpsert("universes");
+
+  const handleMapChange = async (universe: any, url: string | null) => {
+    try {
+      await upsert.mutateAsync({ id: universe.id, name: universe.name, universe_id: universe.id, map_image: url } as any);
+      toast({ title: `Carte de "${universe.name}" mise à jour ✓` });
+    } catch (e: any) { toast({ title: "Erreur", description: e.message, variant: "destructive" }); }
+  };
+
+  if (isLoading) return null;
+
+  return (
+    <div className="grimoire-card p-6 space-y-4">
+      <h3 className="font-cinzel text-lg text-primary/80">🗺️ Cartes géographiques par univers</h3>
+      {universes.length === 0 && <p className="text-sm text-muted-foreground font-crimson">Aucun univers créé. Ajoutez-en dans l'onglet Univers.</p>}
+      {universes.map(u => (
+        <div key={u.id} className="border border-primary/15 rounded-lg p-4 space-y-2">
+          <p className="font-cinzel text-sm text-primary font-semibold">🌍 {u.name}</p>
+          <ImageUpload
+            currentImage={u.map_image}
+            onImageChange={url => handleMapChange(u, url)}
+            folder="maps"
+            label="Carte géographique"
+          />
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function MediaCharactersSection() {
+  const { data: characters = [], isLoading } = useCharacters();
+  const upsert = useUpsert("characters");
+
+  const handleCardChange = async (c: any, url: string | null) => {
+    try {
+      await upsert.mutateAsync({ id: c.id, name: c.name, universe_id: c.universe_id, card_image: url } as any);
+      toast({ title: `Carte oracle de "${c.name}" mise à jour ✓` });
+    } catch (e: any) { toast({ title: "Erreur", description: e.message, variant: "destructive" }); }
+  };
+
+  const handleMusicChange = async (c: any, url: string | null) => {
+    try {
+      await upsert.mutateAsync({ id: c.id, name: c.name, universe_id: c.universe_id, music_url: url } as any);
+      toast({ title: `Musique de "${c.name}" mise à jour ✓` });
+    } catch (e: any) { toast({ title: "Erreur", description: e.message, variant: "destructive" }); }
+  };
+
+  if (isLoading) return null;
+
+  return (
+    <div className="grimoire-card p-6 space-y-4">
+      <h3 className="font-cinzel text-lg text-primary/80">🃏 Cartes oracles & 🎵 Musiques par personnage</h3>
+      {characters.length === 0 && <p className="text-sm text-muted-foreground font-crimson">Aucun personnage créé. Ajoutez-en dans l'onglet Personnages.</p>}
+      {characters.map(c => (
+        <div key={c.id} className="border border-primary/15 rounded-lg p-4 space-y-3">
+          <div className="flex items-center gap-2">
+            {c.image && <img src={c.image} alt={c.name} className="w-8 h-8 rounded object-cover" />}
+            <p className="font-cinzel text-sm text-primary font-semibold">⚔️ {c.name}</p>
+            {c.title && <span className="text-xs text-muted-foreground font-crimson italic">— {c.title}</span>}
+          </div>
+          <ImageUpload
+            currentImage={c.card_image}
+            onImageChange={url => handleCardChange(c, url)}
+            folder="oracle-cards"
+            label="🃏 Carte oracle"
+          />
+          <AudioUpload
+            currentAudio={c.music_url}
+            onAudioChange={url => handleMusicChange(c, url)}
+            folder="music"
+            label="🎵 Thème musical (MP3)"
+          />
+        </div>
+      ))}
     </div>
   );
 }
