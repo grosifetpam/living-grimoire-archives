@@ -107,9 +107,8 @@ function UniversesAdmin() {
           <Input placeholder="Nom" value={editing.name ?? ""} onChange={e => setEditing({ ...editing, name: e.target.value })} className="bg-secondary/50 border-primary/30" />
           <Input placeholder="Ère" value={editing.era ?? ""} onChange={e => setEditing({ ...editing, era: e.target.value })} className="bg-secondary/50 border-primary/30" />
           <textarea placeholder="Description" value={editing.description ?? ""} onChange={e => setEditing({ ...editing, description: e.target.value })} className="w-full bg-secondary/50 border border-primary/30 rounded-md px-3 py-2 text-foreground min-h-[80px]" />
-          <ImageUpload currentImage={editing.image} onImageChange={url => setEditing({ ...editing, image: url })} folder="universes" />
-          <ImageUpload currentImage={(editing as any).map_image} onImageChange={url => setEditing({ ...editing, map_image: url } as any)} folder="maps" />
-          <p className="text-xs text-muted-foreground font-crimson">↑ Carte géographique de l'univers</p>
+          <ImageUpload currentImage={editing.image} onImageChange={url => setEditing({ ...editing, image: url })} folder="universes" label="🌍 Image de l'univers" />
+          <ImageUpload currentImage={(editing as any).map_image} onImageChange={url => setEditing({ ...editing, map_image: url } as any)} folder="maps" label="🗺️ Carte géographique" />
           <div className="flex gap-2">
             <Button onClick={save} className="font-cinzel shimmer-btn">Sauvegarder</Button>
             <Button variant="outline" onClick={() => setEditing(null)} className="font-cinzel">Annuler</Button>
@@ -256,10 +255,9 @@ function CharactersAdmin() {
           </div>
 
           <textarea placeholder="Histoire" value={editing.backstory ?? ""} onChange={e => setEditing({ ...editing, backstory: e.target.value })} className="w-full bg-secondary/50 border border-primary/30 rounded-md px-3 py-2 text-foreground min-h-[80px]" />
-          <ImageUpload currentImage={editing.image} onImageChange={url => setEditing({ ...editing, image: url })} folder="characters" />
-          <ImageUpload currentImage={(editing as any).card_image} onImageChange={url => setEditing({ ...editing, card_image: url } as any)} folder="oracle-cards" />
-          <p className="text-xs text-muted-foreground font-crimson">↑ Carte oracle du personnage</p>
-          <AudioUpload currentAudio={(editing as any).music_url} onAudioChange={url => setEditing({ ...editing, music_url: url } as any)} folder="music" />
+          <ImageUpload currentImage={editing.image} onImageChange={url => setEditing({ ...editing, image: url })} folder="characters" label="⚔️ Portrait du personnage" />
+          <ImageUpload currentImage={(editing as any).card_image} onImageChange={url => setEditing({ ...editing, card_image: url } as any)} folder="oracle-cards" label="🃏 Carte oracle" />
+          <AudioUpload currentAudio={(editing as any).music_url} onAudioChange={url => setEditing({ ...editing, music_url: url } as any)} folder="music" label="🎵 Thème musical (MP3)" />
           <div className="flex gap-2">
             <Button onClick={save} className="font-cinzel shimmer-btn">Sauvegarder</Button>
             <Button variant="outline" onClick={() => setEditing(null)} className="font-cinzel">Annuler</Button>
