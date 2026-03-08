@@ -1,6 +1,7 @@
 import { useState, ReactNode } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { BookOpen, ChevronLeft, ChevronRight } from "lucide-react";
+import { playPageTurn, playBookOpen } from "@/lib/sounds";
 
 interface GrimoireChapter {
   title: string;
@@ -30,7 +31,7 @@ const GrimoireBook = ({ title, subtitle, chapters, headerContent }: GrimoireBook
             animate={{ opacity: 1, rotateY: 0 }}
             exit={{ opacity: 0, rotateY: 90, transition: { duration: 0.5 } }}
             className="grimoire-book-cover mx-auto max-w-lg cursor-pointer"
-            onClick={() => setIsBookOpen(true)}
+            onClick={() => { playBookOpen(); setIsBookOpen(true); }}
             style={{ perspective: "1200px" }}
           >
             <div className="relative bg-gradient-to-br from-[hsl(var(--parchment))] to-[hsl(var(--parchment-light))] border-2 border-primary/40 rounded-sm p-12 md:p-16 text-center shadow-[inset_0_0_60px_rgba(0,0,0,0.3),0_0_30px_hsl(var(--gold)/0.2)]">
@@ -86,7 +87,7 @@ const GrimoireBook = ({ title, subtitle, chapters, headerContent }: GrimoireBook
               className="text-center mb-8"
             >
               <button
-                onClick={() => setIsBookOpen(false)}
+                onClick={() => { playBookOpen(); setIsBookOpen(false); }}
                 className="inline-flex items-center gap-1 text-primary/40 hover:text-primary text-xs font-cinzel mb-4 transition-colors"
               >
                 <ChevronLeft size={12} /> Fermer le grimoire
@@ -106,7 +107,7 @@ const GrimoireBook = ({ title, subtitle, chapters, headerContent }: GrimoireBook
               {chapters.map((ch, i) => (
                 <button
                   key={i}
-                  onClick={() => setOpenChapter(i)}
+                  onClick={() => { if (i !== openChapter) playPageTurn(); setOpenChapter(i); }}
                   className={`grimoire-tab px-4 py-2.5 font-cinzel text-xs md:text-sm flex items-center gap-2 transition-all rounded-t-lg border border-b-0 ${
                     openChapter === i
                       ? "bg-[hsl(var(--parchment-light))] border-primary/40 text-primary -mb-px z-10 relative"
@@ -156,7 +157,7 @@ const GrimoireBook = ({ title, subtitle, chapters, headerContent }: GrimoireBook
                 {/* Page footer with navigation */}
                 <div className="mt-8 pt-4 border-t border-primary/15 flex items-center justify-between">
                   <button
-                    onClick={() => setOpenChapter(Math.max(0, openChapter - 1))}
+                    onClick={() => { playPageTurn(); setOpenChapter(Math.max(0, openChapter - 1)); }}
                     disabled={openChapter === 0}
                     className="flex items-center gap-1 font-cinzel text-xs text-primary/50 hover:text-primary transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
                   >
@@ -166,7 +167,7 @@ const GrimoireBook = ({ title, subtitle, chapters, headerContent }: GrimoireBook
                     — {openChapter + 1} / {chapters.length} —
                   </span>
                   <button
-                    onClick={() => setOpenChapter(Math.min(chapters.length - 1, openChapter + 1))}
+                    onClick={() => { playPageTurn(); setOpenChapter(Math.min(chapters.length - 1, openChapter + 1)); }}
                     disabled={openChapter === chapters.length - 1}
                     className="flex items-center gap-1 font-cinzel text-xs text-primary/50 hover:text-primary transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
                   >

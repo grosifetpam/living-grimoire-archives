@@ -5,6 +5,7 @@ import StatCounter from "@/components/StatCounter";
 import { useUniverses, useCharacters, useRaces, useFactions, useTimelineEvents } from "@/hooks/useSupabaseData";
 import { motion, AnimatePresence } from "framer-motion";
 import { BookOpen } from "lucide-react";
+import { playBookOpen } from "@/lib/sounds";
 
 const Index = () => {
   const { data: universes = [] } = useUniverses();
@@ -31,7 +32,7 @@ const Index = () => {
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 1 }}
               className="grimoire-book-cover cursor-pointer max-w-lg w-full"
-              onClick={() => setIsOpen(true)}
+              onClick={() => { playBookOpen(); setIsOpen(true); }}
               style={{ perspective: "1200px" }}
             >
               <div className="relative bg-gradient-to-br from-[hsl(var(--parchment))] to-[hsl(var(--parchment-light))] border-2 border-primary/40 rounded-sm p-12 md:p-20 text-center shadow-[inset_0_0_80px_rgba(0,0,0,0.3),0_0_40px_hsl(var(--gold)/0.2)]">
@@ -90,7 +91,7 @@ const Index = () => {
             <section className="py-16 px-4 max-w-5xl mx-auto">
               {/* Header with close */}
               <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} className="text-center mb-6">
-                <button onClick={() => setIsOpen(false)} className="text-xs font-cinzel text-primary/40 hover:text-primary transition-colors mb-4 block mx-auto">
+                <button onClick={() => { playBookOpen(); setIsOpen(false); }} className="text-xs font-cinzel text-primary/40 hover:text-primary transition-colors mb-4 block mx-auto">
                   ← Refermer le grimoire
                 </button>
               </motion.div>
