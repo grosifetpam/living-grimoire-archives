@@ -99,6 +99,22 @@ const PersonnageDetailPage = () => {
     ),
   });
 
+  // Carte Oracle
+  if ((character as any).card_image) {
+    chapters.push({
+      title: "Carte Oracle",
+      icon: <span>🃏</span>,
+      content: (
+        <div className="text-center">
+          <div className="inline-block rounded-xl border-2 border-primary/30 overflow-hidden shadow-[0_0_30px_hsl(var(--gold)/0.2)] hover:shadow-[0_0_50px_hsl(var(--gold)/0.4)] transition-shadow">
+            <img src={(character as any).card_image} alt={`Carte oracle de ${character.name}`} className="max-w-xs w-full" />
+          </div>
+          <p className="text-sm text-muted-foreground font-crimson italic mt-3">Carte oracle de {character.name}</p>
+        </div>
+      ),
+    });
+  }
+
   // Races
   if (characterRaces.length > 0) {
     chapters.push({
