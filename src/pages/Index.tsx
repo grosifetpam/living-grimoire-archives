@@ -9,6 +9,7 @@ import { playBookOpen, startAmbientMusic, stopAmbientMusic, isAmbientPlaying } f
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
+import { useSiteSettings, useSaveSiteSetting } from "@/hooks/useSiteSettings";
 
 const Index = () => {
   const { data: universes = [] } = useUniverses();

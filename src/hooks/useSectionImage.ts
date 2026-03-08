@@ -1,5 +1,4 @@
-import { useState, useEffect } from "react";
-import { supabase } from "@/integrations/supabase/client";
+import { useSiteSettings } from "./useSiteSettings";
 
 const SECTION_KEYS: Record<string, string> = {
   univers: "section_image_univers",
@@ -15,20 +14,8 @@ const SECTION_KEYS: Record<string, string> = {
 export const SECTION_IMAGE_KEYS = SECTION_KEYS;
 
 export function useSectionImage(section: string) {
-  const [image, setImage] = useState<string | null>(null);
-
-  useEffect(() => {
-    const key = SECTION_KEYS[section];
-    if (!key) return;
-    supabase
-      .from("site_settings")
-      .select("value")
-      .eq("key", key)
-      .single()
-      .then(({ data }) => {
-        if (data?.value) setImage(data.value);
-      });
-  }, [section]);
-
-  return image;
+  const { data: settings } = useSiteSettings();
+  const key = SECTION_KEYS[section];
+  if (!key || !settings) return null;
+  return settings[key] || null;
 }
