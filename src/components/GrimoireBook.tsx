@@ -229,6 +229,7 @@ const GrimoireBook = ({ title, subtitle, chapters, headerContent, coverImage }: 
                 <BookOpen size={16} />
                 <span>Cliquez pour ouvrir le grimoire</span>
               </motion.div>
+              </div>
             </div>
           </motion.div>
         ) : (
