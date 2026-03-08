@@ -19,7 +19,7 @@ import type { Universe, Character, Race, Faction, TimelineEvent, Location, Creat
 import { supabase } from "@/integrations/supabase/client";
 import { Pencil, Trash2, Plus, LogOut } from "lucide-react";
 import { useSiteSettings, useSaveSiteSetting } from "@/hooks/useSiteSettings";
-import { Pencil, Trash2, Plus, LogOut } from "lucide-react";
+
 
 type Tab = "settings" | "universes" | "characters" | "races" | "factions" | "events" | "locations" | "creatures";
 
