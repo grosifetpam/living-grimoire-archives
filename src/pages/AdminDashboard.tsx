@@ -536,7 +536,7 @@ function EventsAdmin() {
       {editing && (
         <div className="grimoire-card p-6 mb-6 space-y-3">
           <Input placeholder="Titre" value={editing.title ?? ""} onChange={e => setEditing({ ...editing, title: e.target.value })} className="bg-secondary/50 border-primary/30" />
-          <Input type="number" placeholder="Année" value={editing.year ?? 0} onChange={e => setEditing({ ...editing, year: parseInt(e.target.value) || 0 })} className="bg-secondary/50 border-primary/30" />
+          <Input placeholder="Année (ex: 1200 ou -500)" value={editing.year ?? ""} onChange={e => setEditing({ ...editing, year: e.target.value === "" || e.target.value === "-" ? (e.target.value as any) : (parseInt(e.target.value) !== undefined ? parseInt(e.target.value) : editing.year) })} className="bg-secondary/50 border-primary/30" />
           <Input placeholder="Ère" value={editing.era ?? ""} onChange={e => setEditing({ ...editing, era: e.target.value })} className="bg-secondary/50 border-primary/30" />
           <select value={editing.universe_id ?? ""} onChange={e => setEditing({ ...editing, universe_id: e.target.value })} className="w-full bg-secondary/50 border border-primary/30 rounded-md px-3 py-2 text-foreground">
             {universes.map(u => <option key={u.id} value={u.id}>{u.name}</option>)}
