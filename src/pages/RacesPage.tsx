@@ -10,8 +10,8 @@ const RacesPage = () => {
   const { data: charRaces = [] } = useCharacterRaces();
 
   const getRaceMembers = (raceId: string) => {
-    const charIds = charRaces.filter(cr => cr.race_id === raceId).map(cr => cr.character_id);
-    return characters.filter(c => charIds.includes(c.id));
+    const junctionIds = charRaces.filter(cr => cr.race_id === raceId).map(cr => cr.character_id);
+    return characters.filter(c => junctionIds.includes(c.id) || c.race_id === raceId);
   };
 
   const chapters = races.map(r => {
