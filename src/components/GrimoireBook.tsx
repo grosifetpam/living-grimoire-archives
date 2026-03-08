@@ -333,7 +333,7 @@ const GrimoireBook = ({ title, subtitle, chapters, headerContent, coverImage }: 
               <motion.div
                 className="dark-parchment rounded-lg min-h-[450px] overflow-hidden"
                 style={{
-                  boxShadow: isDragging ? dragShadow : "inset 0 0 40px rgba(0,0,0,0.15)",
+                  boxShadow: isDragging ? dragShadow : "inset 0 0 60px rgba(0,0,0,0.3)",
                   transformStyle: "preserve-3d",
                   perspective: "800px",
                 }}
