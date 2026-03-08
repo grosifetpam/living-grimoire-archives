@@ -183,7 +183,14 @@ function MediaMapsSection() {
   const handleMapChange = async (universe: any, url: string | null) => {
     try {
       await upsert.mutateAsync({ id: universe.id, name: universe.name, universe_id: universe.id, map_image: url } as any);
-      toast({ title: `Carte de "${universe.name}" mise à jour ✓` });
+      toast({ title: `Carte géo de "${universe.name}" mise à jour ✓` });
+    } catch (e: any) { toast({ title: "Erreur", description: e.message, variant: "destructive" }); }
+  };
+
+  const handleCardChange = async (universe: any, url: string | null) => {
+    try {
+      await upsert.mutateAsync({ id: universe.id, name: universe.name, universe_id: universe.id, card_image: url } as any);
+      toast({ title: `Carte oracle de "${universe.name}" mise à jour ✓` });
     } catch (e: any) { toast({ title: "Erreur", description: e.message, variant: "destructive" }); }
   };
 
