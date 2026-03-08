@@ -11,7 +11,7 @@ interface ImageUploadProps {
   label?: string;
 }
 
-const ImageUpload = ({ currentImage, onImageChange, folder }: ImageUploadProps) => {
+const ImageUpload = ({ currentImage, onImageChange, folder, label = "Image" }: ImageUploadProps) => {
   const [uploading, setUploading] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
 
