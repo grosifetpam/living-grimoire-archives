@@ -87,22 +87,28 @@ const GrimoireBook = ({ title, subtitle, chapters, headerContent }: GrimoireBook
   // Page flip 3D variants
   const pageVariants = {
     enter: (dir: number) => ({
-      rotateY: dir > 0 ? 12 : -12,
-      x: dir > 0 ? 80 : -80,
+      rotateY: dir > 0 ? 25 : -25,
+      skewY: dir > 0 ? -3 : 3,
+      x: dir > 0 ? 120 : -120,
       opacity: 0,
-      scale: 0.96,
+      scale: 0.92,
+      filter: "brightness(0.85)",
     }),
     center: {
       rotateY: 0,
+      skewY: 0,
       x: 0,
       opacity: 1,
       scale: 1,
+      filter: "brightness(1)",
     },
     exit: (dir: number) => ({
-      rotateY: dir > 0 ? -12 : 12,
-      x: dir > 0 ? -80 : 80,
+      rotateY: dir > 0 ? -25 : 25,
+      skewY: dir > 0 ? 3 : -3,
+      x: dir > 0 ? -120 : 120,
       opacity: 0,
-      scale: 0.96,
+      scale: 0.92,
+      filter: "brightness(0.85)",
     }),
   };
 
