@@ -2,6 +2,7 @@ import { Link } from "react-router-dom";
 import Layout from "@/components/Layout";
 import GrimoireBook from "@/components/GrimoireBook";
 import { useLocations, useUniverses, useCharacters } from "@/hooks/useSupabaseData";
+import { useSectionImage } from "@/hooks/useSectionImage";
 
 const LieuxPage = () => {
   const { data: locations = [] } = useLocations();
