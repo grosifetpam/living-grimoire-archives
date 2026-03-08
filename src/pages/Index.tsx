@@ -53,7 +53,13 @@ const Index = () => {
     }
     const { data: urlData } = supabase.storage.from("images").getPublicUrl(path);
     const url = urlData.publicUrl;
-    await supabase.from("site_settings" as any).update({ value: url }).eq("key", "cover_image");
+    // Upsert: try update first, insert if not found
+    const { data: existing } = await supabase.from("site_settings").select("id").eq("key", "cover_image").single();
+    if (existing) {
+      await supabase.from("site_settings").update({ value: url }).eq("key", "cover_image");
+    } else {
+      await supabase.from("site_settings").insert({ key: "cover_image", value: url } as any);
+    }
     setCoverImage(url);
     setUploadingCover(false);
     toast({ title: "Image de couverture mise à jour ✓" });
