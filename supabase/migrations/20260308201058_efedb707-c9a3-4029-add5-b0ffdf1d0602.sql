@@ -1,0 +1,1 @@
+ALTER TABLE public.universes ADD COLUMN IF NOT EXISTS card_image text;

@@ -183,7 +183,14 @@ function MediaMapsSection() {
   const handleMapChange = async (universe: any, url: string | null) => {
     try {
       await upsert.mutateAsync({ id: universe.id, name: universe.name, universe_id: universe.id, map_image: url } as any);
-      toast({ title: `Carte de "${universe.name}" mise à jour ✓` });
+      toast({ title: `Carte géo de "${universe.name}" mise à jour ✓` });
+    } catch (e: any) { toast({ title: "Erreur", description: e.message, variant: "destructive" }); }
+  };
+
+  const handleCardChange = async (universe: any, url: string | null) => {
+    try {
+      await upsert.mutateAsync({ id: universe.id, name: universe.name, universe_id: universe.id, card_image: url } as any);
+      toast({ title: `Carte oracle de "${universe.name}" mise à jour ✓` });
     } catch (e: any) { toast({ title: "Erreur", description: e.message, variant: "destructive" }); }
   };
 
@@ -191,16 +198,22 @@ function MediaMapsSection() {
 
   return (
     <div className="grimoire-card p-6 space-y-4">
-      <h3 className="font-cinzel text-lg text-primary/80">🗺️ Cartes géographiques par univers</h3>
+      <h3 className="font-cinzel text-lg text-primary/80">🗺️ Cartes géographiques & 🃏 Cartes oracle par univers</h3>
       {universes.length === 0 && <p className="text-sm text-muted-foreground font-crimson">Aucun univers créé. Ajoutez-en dans l'onglet Univers.</p>}
       {universes.map(u => (
-        <div key={u.id} className="border border-primary/15 rounded-lg p-4 space-y-2">
+        <div key={u.id} className="border border-primary/15 rounded-lg p-4 space-y-3">
           <p className="font-cinzel text-sm text-primary font-semibold">🌍 {u.name}</p>
           <ImageUpload
             currentImage={u.map_image}
             onImageChange={url => handleMapChange(u, url)}
             folder="maps"
-            label="Carte géographique"
+            label="🗺️ Carte géographique"
+          />
+          <ImageUpload
+            currentImage={(u as any).card_image}
+            onImageChange={url => handleCardChange(u, url)}
+            folder="oracle-cards-universes"
+            label="🃏 Carte oracle de l'univers"
           />
         </div>
       ))}

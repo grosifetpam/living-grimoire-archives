@@ -387,6 +387,7 @@ export type Database = {
       }
       universes: {
         Row: {
+          card_image: string | null
           created_at: string
           description: string
           era: string
@@ -397,6 +398,7 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          card_image?: string | null
           created_at?: string
           description?: string
           era?: string
@@ -407,6 +409,7 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          card_image?: string | null
           created_at?: string
           description?: string
           era?: string
