@@ -1,6 +1,6 @@
-import { useState, useEffect, ReactNode } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { BookOpen, ChevronLeft, ChevronRight, Volume2, VolumeX } from "lucide-react";
+import { useState, useEffect, ReactNode, useRef } from "react";
+import { motion, AnimatePresence, useMotionValue, useTransform, PanInfo } from "framer-motion";
+import { BookOpen, Volume2, VolumeX, ChevronLeft } from "lucide-react";
 import { playPageTurn, playBookOpen, startAmbientMusic, stopAmbientMusic, isAmbientPlaying } from "@/lib/sounds";
 
 interface GrimoireChapter {
@@ -16,10 +16,15 @@ interface GrimoireBookProps {
   headerContent?: ReactNode;
 }
 
+const SWIPE_THRESHOLD = 60;
+
 const GrimoireBook = ({ title, subtitle, chapters, headerContent }: GrimoireBookProps) => {
   const [openChapter, setOpenChapter] = useState<number>(0);
   const [isBookOpen, setIsBookOpen] = useState(false);
   const [musicOn, setMusicOn] = useState(false);
+  const [direction, setDirection] = useState<1 | -1>(1);
+  const [isDragging, setIsDragging] = useState(false);
+  const containerRef = useRef<HTMLDivElement>(null);
 
   const handleOpen = () => {
     playBookOpen();
@@ -36,21 +41,56 @@ const GrimoireBook = ({ title, subtitle, chapters, headerContent }: GrimoireBook
   };
 
   const toggleMusic = () => {
-    if (isAmbientPlaying()) {
-      stopAmbientMusic();
-      setMusicOn(false);
-    } else {
-      startAmbientMusic();
-      setMusicOn(true);
+    if (isAmbientPlaying()) { stopAmbientMusic(); setMusicOn(false); }
+    else { startAmbientMusic(); setMusicOn(true); }
+  };
+
+  const goToPage = (index: number) => {
+    if (index === openChapter || index < 0 || index >= chapters.length) return;
+    setDirection(index > openChapter ? 1 : -1);
+    playPageTurn();
+    setOpenChapter(index);
+  };
+
+  const nextPage = () => goToPage(openChapter + 1);
+  const prevPage = () => goToPage(openChapter - 1);
+
+  const handleDragEnd = (_: any, info: PanInfo) => {
+    setIsDragging(false);
+    const { offset, velocity } = info;
+    const swipe = Math.abs(offset.x) * velocity.x;
+    if (offset.x < -SWIPE_THRESHOLD || swipe < -1000) {
+      nextPage();
+    } else if (offset.x > SWIPE_THRESHOLD || swipe > 1000) {
+      prevPage();
     }
   };
 
-  // Cleanup on unmount
   useEffect(() => {
-    return () => {
-      stopAmbientMusic();
-    };
+    return () => { stopAmbientMusic(); };
   }, []);
+
+  // Page flip 3D variants
+  const pageVariants = {
+    enter: (dir: number) => ({
+      rotateY: dir > 0 ? 12 : -12,
+      x: dir > 0 ? 80 : -80,
+      opacity: 0,
+      scale: 0.96,
+    }),
+    center: {
+      rotateY: 0,
+      x: 0,
+      opacity: 1,
+      scale: 1,
+    },
+    exit: (dir: number) => ({
+      rotateY: dir > 0 ? -12 : 12,
+      x: dir > 0 ? -80 : 80,
+      opacity: 0,
+      scale: 0.96,
+    }),
+  };
 
   return (
     <div className="min-h-screen py-16 px-4 max-w-5xl mx-auto">
@@ -68,7 +108,6 @@ const GrimoireBook = ({ title, subtitle, chapters, headerContent }: GrimoireBook
             <div className="relative bg-gradient-to-br from-[hsl(var(--parchment))] to-[hsl(var(--parchment-light))] border-2 border-primary/40 rounded-sm p-12 md:p-16 text-center shadow-[inset_0_0_60px_rgba(0,0,0,0.3),0_0_30px_hsl(var(--gold)/0.2)]">
               <div className="absolute left-0 top-0 bottom-0 w-3 bg-gradient-to-r from-primary/30 to-transparent" />
               <div className="absolute left-3 top-0 bottom-0 w-px bg-primary/20" />
-
               <div className="absolute top-3 left-5 text-primary/30 text-2xl font-cinzel">✦</div>
               <div className="absolute top-3 right-3 text-primary/30 text-2xl font-cinzel">✦</div>
               <div className="absolute bottom-3 left-5 text-primary/30 text-2xl font-cinzel">✦</div>
@@ -78,17 +117,11 @@ const GrimoireBook = ({ title, subtitle, chapters, headerContent }: GrimoireBook
                 animate={{ scale: [1, 1.05, 1], opacity: [0.7, 1, 0.7] }}
                 transition={{ duration: 3, repeat: Infinity }}
                 className="text-6xl mb-6"
-              >
-                📖
-              </motion.div>
+              >📖</motion.div>
 
               <div className="border-t border-b border-primary/30 py-6 my-4">
-                <h1 className="font-cinzel text-3xl md:text-4xl font-bold text-primary text-glow-gold leading-tight">
-                  {title}
-                </h1>
-                {subtitle && (
-                  <p className="font-crimson text-primary/60 italic mt-3 text-lg">{subtitle}</p>
-                )}
+                <h1 className="font-cinzel text-3xl md:text-4xl font-bold text-primary text-glow-gold leading-tight">{title}</h1>
+                {subtitle && <p className="font-crimson text-primary/60 italic mt-3 text-lg">{subtitle}</p>}
               </div>
 
               <motion.div
@@ -108,103 +141,138 @@ const GrimoireBook = ({ title, subtitle, chapters, headerContent }: GrimoireBook
             animate={{ opacity: 1, rotateY: 0 }}
             transition={{ duration: 0.6 }}
           >
-            <motion.div
-              initial={{ opacity: 0, y: -20 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="text-center mb-8"
-            >
+            {/* Header controls */}
+            <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} className="text-center mb-8">
               <div className="flex items-center justify-center gap-4 mb-4">
-                <button
-                  onClick={handleClose}
-                  className="inline-flex items-center gap-1 text-primary/40 hover:text-primary text-xs font-cinzel transition-colors"
-                >
+                <button onClick={handleClose} className="inline-flex items-center gap-1 text-primary/40 hover:text-primary text-xs font-cinzel transition-colors">
                   <ChevronLeft size={12} /> Fermer le grimoire
                 </button>
-                <button
-                  onClick={toggleMusic}
-                  className="inline-flex items-center gap-1 text-primary/40 hover:text-primary text-xs font-cinzel transition-colors"
-                  title={musicOn ? "Couper la musique" : "Lancer la musique"}
-                >
+                <button onClick={toggleMusic} className="inline-flex items-center gap-1 text-primary/40 hover:text-primary text-xs font-cinzel transition-colors" title={musicOn ? "Couper la musique" : "Lancer la musique"}>
                   {musicOn ? <Volume2 size={14} /> : <VolumeX size={14} />}
                   <span className="hidden sm:inline">{musicOn ? "Musique ON" : "Musique OFF"}</span>
                 </button>
               </div>
-              <h1 className="font-cinzel text-3xl md:text-5xl font-bold text-primary text-glow-gold">
-                {title}
-              </h1>
-              {subtitle && (
-                <p className="font-crimson text-muted-foreground italic mt-2 text-lg">{subtitle}</p>
-              )}
+              <h1 className="font-cinzel text-3xl md:text-5xl font-bold text-primary text-glow-gold">{title}</h1>
+              {subtitle && <p className="font-crimson text-muted-foreground italic mt-2 text-lg">{subtitle}</p>}
             </motion.div>
 
             {headerContent}
 
-            <div className="grimoire-page-tabs flex flex-wrap gap-1 mb-1 justify-center">
+            {/* Chapter dots / mini index */}
+            <div className="flex items-center justify-center gap-2 mb-4 flex-wrap">
               {chapters.map((ch, i) => (
                 <button
                   key={i}
-                  onClick={() => { if (i !== openChapter) playPageTurn(); setOpenChapter(i); }}
-                  className={`grimoire-tab px-4 py-2.5 font-cinzel text-xs md:text-sm flex items-center gap-2 transition-all rounded-t-lg border border-b-0 ${
+                  onClick={() => goToPage(i)}
+                  className={`group relative flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-cinzel transition-all border ${
                     openChapter === i
-                      ? "bg-[hsl(var(--parchment-light))] border-primary/40 text-primary -mb-px z-10 relative"
-                      : "bg-[hsl(var(--parchment))]/50 border-primary/15 text-primary/50 hover:text-primary/80 hover:bg-[hsl(var(--parchment))]/80"
+                      ? "bg-primary/15 border-primary/40 text-primary scale-105"
+                      : "bg-transparent border-primary/10 text-primary/35 hover:text-primary/70 hover:border-primary/25"
                   }`}
                 >
-                  <span className="text-base">{ch.icon}</span>
-                  <span className="hidden sm:inline">{ch.title}</span>
+                  <span className="text-sm">{ch.icon}</span>
+                  <span className="hidden md:inline">{ch.title}</span>
                 </button>
               ))}
             </div>
 
-            <div className="grimoire-page relative">
-              <div className="absolute inset-0 rounded-lg border-2 border-primary/30 pointer-events-none" />
-              <div className="absolute left-0 top-0 bottom-0 w-8 bg-gradient-to-r from-black/10 to-transparent pointer-events-none rounded-l-lg" />
-              <div className="absolute right-0 top-2 bottom-2 w-1 bg-gradient-to-l from-primary/10 to-transparent pointer-events-none" />
+            {/* The book page with swipe */}
+            <div
+              ref={containerRef}
+              className="grimoire-page relative select-none"
+              style={{ perspective: "1200px" }}
+            >
+              <div className="absolute inset-0 rounded-lg border-2 border-primary/30 pointer-events-none z-10" />
+              <div className="absolute left-0 top-0 bottom-0 w-8 bg-gradient-to-r from-black/10 to-transparent pointer-events-none rounded-l-lg z-10" />
+              <div className="absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-black/5 to-transparent pointer-events-none rounded-r-lg z-10" />
 
-              <div className="bg-gradient-to-br from-[hsl(var(--parchment))] to-[hsl(var(--parchment-light))] rounded-lg p-6 md:p-10 min-h-[400px] shadow-[inset_0_0_40px_rgba(0,0,0,0.15)]">
-                <div className="text-center mb-6 pb-4 border-b border-primary/20">
-                  <div className="text-primary/30 text-sm font-cinzel tracking-[0.3em]">
-                    ✦ CHAPITRE {romanize(openChapter + 1)} ✦
+              {/* Clickable page turn zones */}
+              {openChapter > 0 && (
+                <div
+                  className="absolute left-0 top-0 bottom-0 w-16 z-20 cursor-w-resize group"
+                  onClick={prevPage}
+                >
+                  <div className="absolute inset-0 flex items-center justify-start pl-3 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center backdrop-blur-sm">
+                      <ChevronLeft size={16} className="text-primary/60" />
+                    </div>
                   </div>
-                  <h2 className="font-cinzel text-2xl font-bold text-primary mt-2 flex items-center justify-center gap-3">
-                    <span>{chapters[openChapter]?.icon}</span>
-                    {chapters[openChapter]?.title}
-                  </h2>
                 </div>
+              )}
+              {openChapter < chapters.length - 1 && (
+                <div
+                  className="absolute right-0 top-0 bottom-0 w-16 z-20 cursor-e-resize group"
+                  onClick={nextPage}
+                >
+                  <div className="absolute inset-0 flex items-center justify-end pr-3 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center backdrop-blur-sm rotate-180">
+                      <ChevronLeft size={16} className="text-primary/60" />
+                    </div>
+                  </div>
+                </div>
+              )}
 
-                <AnimatePresence mode="wait">
+              <div className="bg-gradient-to-br from-[hsl(var(--parchment))] to-[hsl(var(--parchment-light))] rounded-lg min-h-[450px] shadow-[inset_0_0_40px_rgba(0,0,0,0.15)] overflow-hidden">
+                <AnimatePresence mode="wait" custom={direction}>
                   <motion.div
                     key={openChapter}
-                    initial={{ opacity: 0, x: 30 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    exit={{ opacity: 0, x: -30 }}
-                    transition={{ duration: 0.3 }}
+                    custom={direction}
+                    variants={pageVariants}
+                    initial="enter"
+                    animate="center"
+                    exit="exit"
+                    transition={{
+                      type: "tween",
+                      duration: 0.45,
+                      ease: [0.25, 0.46, 0.45, 0.94],
+                    }}
+                    drag="x"
+                    dragConstraints={{ left: 0, right: 0 }}
+                    dragElastic={0.15}
+                    onDragStart={() => setIsDragging(true)}
+                    onDragEnd={handleDragEnd}
+                    className="p-6 md:p-10 cursor-grab active:cursor-grabbing"
+                    style={{ transformStyle: "preserve-3d" }}
                   >
+                    {/* Page header */}
+                    <div className="text-center mb-6 pb-4 border-b border-primary/20">
+                      <div className="text-primary/30 text-sm font-cinzel tracking-[0.3em]">
+                        ✦ CHAPITRE {romanize(openChapter + 1)} ✦
+                      </div>
+                      <h2 className="font-cinzel text-2xl font-bold text-primary mt-2 flex items-center justify-center gap-3">
+                        <span>{chapters[openChapter]?.icon}</span>
+                        {chapters[openChapter]?.title}
+                      </h2>
+                    </div>
+
+                    {/* Page content */}
                     {chapters[openChapter]?.content}
+
+                    {/* Page footer */}
+                    <div className="mt-8 pt-4 border-t border-primary/15 flex items-center justify-center">
+                      <span className="text-xs text-primary/30 font-cinzel">
+                        — {openChapter + 1} / {chapters.length} —
+                      </span>
+                    </div>
                   </motion.div>
                 </AnimatePresence>
+              </div>
 
-                <div className="mt-8 pt-4 border-t border-primary/15 flex items-center justify-between">
-                  <button
-                    onClick={() => { playPageTurn(); setOpenChapter(Math.max(0, openChapter - 1)); }}
-                    disabled={openChapter === 0}
-                    className="flex items-center gap-1 font-cinzel text-xs text-primary/50 hover:text-primary transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
-                  >
-                    <ChevronLeft size={14} /> Page précédente
-                  </button>
-                  <span className="text-xs text-primary/30 font-cinzel">
-                    — {openChapter + 1} / {chapters.length} —
-                  </span>
-                  <button
-                    onClick={() => { playPageTurn(); setOpenChapter(Math.min(chapters.length - 1, openChapter + 1)); }}
-                    disabled={openChapter === chapters.length - 1}
-                    className="flex items-center gap-1 font-cinzel text-xs text-primary/50 hover:text-primary transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
-                  >
-                    Page suivante <ChevronRight size={14} />
-                  </button>
-                </div>
+              {/* Page curl decoration */}
+              <div className="absolute bottom-0 right-0 w-12 h-12 pointer-events-none z-10">
+                <div className="absolute bottom-1 right-1 w-8 h-8 bg-gradient-to-tl from-primary/8 to-transparent rounded-tl-lg" />
               </div>
             </div>
+
+            {/* Swipe hint */}
+            <motion.p
+              initial={{ opacity: 1 }}
+              animate={{ opacity: 0 }}
+              transition={{ delay: 3, duration: 1 }}
+              className="text-center text-xs text-primary/30 font-crimson italic mt-3"
+            >
+              ← Glissez ou cliquez sur les bords pour tourner les pages →
+            </motion.p>
           </motion.div>
         )}
       </AnimatePresence>
@@ -213,15 +281,10 @@ const GrimoireBook = ({ title, subtitle, chapters, headerContent }: GrimoireBook
 };
 
 function romanize(num: number): string {
-  const lookup: [number, string][] = [
-    [10, "X"], [9, "IX"], [5, "V"], [4, "IV"], [1, "I"],
-  ];
+  const lookup: [number, string][] = [[10, "X"], [9, "IX"], [5, "V"], [4, "IV"], [1, "I"]];
   let result = "";
   for (const [value, symbol] of lookup) {
-    while (num >= value) {
-      result += symbol;
-      num -= value;
-    }
+    while (num >= value) { result += symbol; num -= value; }
   }
   return result;
 }
