@@ -1,6 +1,6 @@
 import { useParams, Link } from "react-router-dom";
 import Layout from "@/components/Layout";
-import { useCharacters, useUniverses, useRaces, useFactions } from "@/hooks/useSupabaseData";
+import { useCharacters, useUniverses, useRaces, useFactions, useCharacterFactions } from "@/hooks/useSupabaseData";
 import { motion } from "framer-motion";
 import { ChevronRight } from "lucide-react";
 
@@ -10,16 +10,20 @@ const PersonnageDetailPage = () => {
   const { data: universes = [] } = useUniverses();
   const { data: races = [] } = useRaces();
   const { data: factions = [] } = useFactions();
+  const { data: charFactions = [] } = useCharacterFactions();
 
   const character = characters.find(c => c.id === id);
   if (!character) return <Layout><div className="min-h-screen flex items-center justify-center font-cinzel text-foreground">Personnage introuvable</div></Layout>;
 
   const universe = universes.find(u => u.id === character.universe_id);
   const race = races.find(r => r.id === character.race_id);
-  const faction = character.faction_id ? factions.find(f => f.id === character.faction_id) : null;
+  const characterFactionIds = charFactions.filter(cf => cf.character_id === character.id).map(cf => cf.faction_id);
+  const characterFactions = factions.filter(f => characterFactionIds.includes(f.id));
   const sameUniverseChars = characters.filter(c => c.universe_id === character.universe_id && c.id !== character.id);
   const sameRaceChars = characters.filter(c => c.race_id === character.race_id && c.id !== character.id);
-  const sameFactionChars = character.faction_id ? characters.filter(c => c.faction_id === character.faction_id && c.id !== character.id) : [];
+  const sameFactionChars = characterFactionIds.length > 0
+    ? characters.filter(c => c.id !== character.id && charFactions.some(cf => cf.character_id === c.id && characterFactionIds.includes(cf.faction_id)))
+    : [];
 
   const stats = character.stats as Record<string, number>;
   const statLabels = [
