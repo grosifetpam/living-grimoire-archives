@@ -63,10 +63,34 @@ const GrimoireBook = ({ title, subtitle, chapters, headerContent }: GrimoireBook
     else { startAmbientMusic(); setMusicOn(true); }
   };
 
+  const burstParticles = useCallback((dir: 1 | -1) => {
+    if (!pageRef.current) return;
+    const rect = pageRef.current.getBoundingClientRect();
+    const cx = rect.width / 2;
+    const cy = rect.height / 2;
+    const burst = Array.from({ length: 20 }, () => {
+      const angle = Math.random() * Math.PI * 2;
+      const speed = Math.random() * 4 + 2;
+      return {
+        id: particleIdRef.current++,
+        x: cx + dir * 40 + (Math.random() - 0.5) * 60,
+        y: cy + (Math.random() - 0.5) * rect.height * 0.6,
+        vx: Math.cos(angle) * speed + dir * 2,
+        vy: Math.sin(angle) * speed - 1,
+        size: Math.random() * 6 + 2,
+        opacity: Math.random() * 0.5 + 0.5,
+        rotation: Math.random() * 360,
+      };
+    });
+    setParticles(prev => [...prev.slice(-30), ...burst]);
+  }, []);
+
   const goToPage = (index: number) => {
     if (index === openChapter || index < 0 || index >= chapters.length) return;
-    setDirection(index > openChapter ? 1 : -1);
+    const dir = index > openChapter ? 1 : -1;
+    setDirection(dir as 1 | -1);
     playPageTurn();
+    burstParticles(dir as 1 | -1);
     setOpenChapter(index);
   };
 
