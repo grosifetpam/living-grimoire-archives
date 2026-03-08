@@ -258,8 +258,9 @@ const GrimoireBook = ({ title, subtitle, chapters, headerContent }: GrimoireBook
                     drag="x"
                     dragConstraints={{ left: 0, right: 0 }}
                     dragElastic={0.12}
-                    onDragStart={() => setIsDragging(true)}
-                    onDragEnd={handleDragEnd}
+                    onDragStart={() => { setIsDragging(true); startPaperRustle(); }}
+                    onDrag={(_, info) => { updatePaperRustle(Math.abs(info.offset.x) / 200); }}
+                    onDragEnd={(e, info) => { stopPaperRustle(); handleDragEnd(e, info); }}
                     className="p-6 md:p-10 cursor-grab active:cursor-grabbing"
                     style={{
                       x: dragX,
