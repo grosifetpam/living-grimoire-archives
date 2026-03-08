@@ -2,12 +2,14 @@ import { Link } from "react-router-dom";
 import Layout from "@/components/Layout";
 import GrimoireBook from "@/components/GrimoireBook";
 import { useFactions, useUniverses, useCharacters, useCharacterFactions } from "@/hooks/useSupabaseData";
+import { useSectionImage } from "@/hooks/useSectionImage";
 
 const FactionsPage = () => {
   const { data: factions = [] } = useFactions();
   const { data: universes = [] } = useUniverses();
   const { data: characters = [] } = useCharacters();
   const { data: charFactions = [] } = useCharacterFactions();
+  const sectionImage = useSectionImage("factions");
 
   const getFactionMembers = (factionId: string) => {
     const charIds = charFactions.filter(cf => cf.faction_id === factionId).map(cf => cf.character_id);
@@ -54,6 +56,7 @@ const FactionsPage = () => {
         title="Factions"
         subtitle="Les ordres et confréries du multivers"
         chapters={chapters.length > 0 ? chapters : [{ title: "Vide", icon: <span>📖</span>, content: <p className="text-center text-muted-foreground font-crimson italic">Aucune faction inscrite...</p> }]}
+        coverImage={sectionImage}
       />
     </Layout>
   );

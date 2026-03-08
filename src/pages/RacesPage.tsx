@@ -2,12 +2,14 @@ import { Link } from "react-router-dom";
 import Layout from "@/components/Layout";
 import GrimoireBook from "@/components/GrimoireBook";
 import { useRaces, useUniverses, useCharacters, useCharacterRaces } from "@/hooks/useSupabaseData";
+import { useSectionImage } from "@/hooks/useSectionImage";
 
 const RacesPage = () => {
   const { data: races = [] } = useRaces();
   const { data: universes = [] } = useUniverses();
   const { data: characters = [] } = useCharacters();
   const { data: charRaces = [] } = useCharacterRaces();
+  const sectionImage = useSectionImage("races");
 
   const getRaceMembers = (raceId: string) => {
     const junctionIds = charRaces.filter(cr => cr.race_id === raceId).map(cr => cr.character_id);
@@ -60,6 +62,7 @@ const RacesPage = () => {
         title="Races"
         subtitle="Les peuples du multivers"
         chapters={chapters.length > 0 ? chapters : [{ title: "Vide", icon: <span>📖</span>, content: <p className="text-center text-muted-foreground font-crimson italic">Aucune race inscrite...</p> }]}
+        coverImage={sectionImage}
       />
     </Layout>
   );

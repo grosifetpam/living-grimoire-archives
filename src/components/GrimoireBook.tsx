@@ -14,11 +14,12 @@ interface GrimoireBookProps {
   subtitle?: string;
   chapters: GrimoireChapter[];
   headerContent?: ReactNode;
+  coverImage?: string | null;
 }
 
 const SWIPE_THRESHOLD = 60;
 
-const GrimoireBook = ({ title, subtitle, chapters, headerContent }: GrimoireBookProps) => {
+const GrimoireBook = ({ title, subtitle, chapters, headerContent, coverImage }: GrimoireBookProps) => {
   const [openChapter, setOpenChapter] = useState<number>(0);
   const [isBookOpen, setIsBookOpen] = useState(false);
   const [musicOn, setMusicOn] = useState(false);
@@ -194,7 +195,14 @@ const GrimoireBook = ({ title, subtitle, chapters, headerContent }: GrimoireBook
             onClick={handleOpen}
             style={{ perspective: "1200px" }}
           >
-            <div className="relative bg-gradient-to-br from-[hsl(var(--parchment))] to-[hsl(var(--parchment-light))] border-2 border-primary/40 rounded-sm p-12 md:p-16 text-center shadow-[inset_0_0_60px_rgba(0,0,0,0.3),0_0_30px_hsl(var(--gold)/0.2)]">
+            <div className="relative bg-gradient-to-br from-[hsl(var(--parchment))] to-[hsl(var(--parchment-light))] border-2 border-primary/40 rounded-sm p-12 md:p-16 text-center shadow-[inset_0_0_60px_rgba(0,0,0,0.3),0_0_30px_hsl(var(--gold)/0.2)] overflow-hidden">
+              {coverImage && (
+                <div className="absolute inset-0 z-0">
+                  <img src={coverImage} alt="Couverture" className="w-full h-full object-cover opacity-25" />
+                  <div className="absolute inset-0 bg-gradient-to-br from-[hsl(var(--parchment))/0.6] to-[hsl(var(--parchment-light))/0.6]" />
+                </div>
+              )}
+              <div className="relative z-10">
               <div className="absolute left-0 top-0 bottom-0 w-3 bg-gradient-to-r from-primary/30 to-transparent" />
               <div className="absolute left-3 top-0 bottom-0 w-px bg-primary/20" />
               <div className="absolute top-3 left-5 text-primary/30 text-2xl font-cinzel">✦</div>
@@ -221,6 +229,7 @@ const GrimoireBook = ({ title, subtitle, chapters, headerContent }: GrimoireBook
                 <BookOpen size={16} />
                 <span>Cliquez pour ouvrir le grimoire</span>
               </motion.div>
+              </div>
             </div>
           </motion.div>
         ) : (

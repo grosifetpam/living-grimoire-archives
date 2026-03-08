@@ -2,6 +2,7 @@ import { Link } from "react-router-dom";
 import Layout from "@/components/Layout";
 import GrimoireBook from "@/components/GrimoireBook";
 import { useUniverses, useCharacters, useRaces, useFactions } from "@/hooks/useSupabaseData";
+import { useSectionImage } from "@/hooks/useSectionImage";
 import { motion } from "framer-motion";
 
 const UniversPage = () => {
@@ -9,6 +10,7 @@ const UniversPage = () => {
   const { data: characters = [] } = useCharacters();
   const { data: races = [] } = useRaces();
   const { data: factions = [] } = useFactions();
+  const sectionImage = useSectionImage("univers");
 
   const chapters = universes.map(u => ({
     title: u.name,
@@ -47,6 +49,7 @@ const UniversPage = () => {
         title="Les Univers"
         subtitle="Chaque tome renferme un monde entier à découvrir"
         chapters={chapters.length > 0 ? chapters : [{ title: "Vide", icon: <span>📖</span>, content: <p className="text-center text-muted-foreground font-crimson italic">Aucun univers n'a encore été inscrit dans ce grimoire...</p> }]}
+        coverImage={sectionImage}
       />
     </Layout>
   );

@@ -4,6 +4,7 @@ import GrimoireBook from "@/components/GrimoireBook";
 import { useCreatures, useUniverses, useCharacters } from "@/hooks/useSupabaseData";
 import { motion } from "framer-motion";
 import { Skull } from "lucide-react";
+import { useSectionImage } from "@/hooks/useSectionImage";
 
 const DangerStars = ({ level }: { level: number }) => (
   <div className="flex gap-0.5">
@@ -17,6 +18,7 @@ const BestiairePage = () => {
   const { data: creatures = [] } = useCreatures();
   const { data: universes = [] } = useUniverses();
   const { data: characters = [] } = useCharacters();
+  const sectionImage = useSectionImage("bestiaire");
 
   // Group by universe
   const grouped = universes
@@ -84,6 +86,7 @@ const BestiairePage = () => {
         title="Bestiaire"
         subtitle="Les créatures qui hantent le multivers"
         chapters={chapters.length > 0 ? chapters : [{ title: "Vide", icon: <span>📖</span>, content: <p className="text-center text-muted-foreground font-crimson italic">Aucune créature inscrite...</p> }]}
+        coverImage={sectionImage}
       />
     </Layout>
   );

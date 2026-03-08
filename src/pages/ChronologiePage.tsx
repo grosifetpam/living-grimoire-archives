@@ -3,11 +3,13 @@ import Layout from "@/components/Layout";
 import GrimoireBook from "@/components/GrimoireBook";
 import { useTimelineEvents, useUniverses, useCharacters } from "@/hooks/useSupabaseData";
 import { motion } from "framer-motion";
+import { useSectionImage } from "@/hooks/useSectionImage";
 
 const ChronologiePage = () => {
   const { data: timelineEvents = [] } = useTimelineEvents();
   const { data: universes = [] } = useUniverses();
   const { data: characters = [] } = useCharacters();
+  const sectionImage = useSectionImage("chronologie");
 
   const getUniverseName = (id: string) => universes.find(u => u.id === id)?.name || "Inconnu";
   const getUniverseChars = (universeId: string) => characters.filter(c => c.universe_id === universeId);
@@ -84,6 +86,7 @@ const ChronologiePage = () => {
         title="Chronologie"
         subtitle="Le fil du temps à travers le multivers"
         chapters={chapters.length > 0 ? chapters : [{ title: "Vide", icon: <span>📖</span>, content: <p className="text-center text-muted-foreground font-crimson italic">Aucun événement inscrit...</p> }]}
+        coverImage={sectionImage}
       />
     </Layout>
   );

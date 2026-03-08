@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import Layout from "@/components/Layout";
 import GrimoireBook from "@/components/GrimoireBook";
 import { useCharacters, useUniverses, useRaces, useCharacterRaces } from "@/hooks/useSupabaseData";
+import { useSectionImage } from "@/hooks/useSectionImage";
 
 const PersonnagesPage = () => {
   const { data: characters = [] } = useCharacters();
@@ -10,6 +11,7 @@ const PersonnagesPage = () => {
   const { data: races = [] } = useRaces();
   const { data: charRaces = [] } = useCharacterRaces();
   const [filter, setFilter] = useState("");
+  const sectionImage = useSectionImage("personnages");
 
   const getUniverseName = (id: string) => universes.find(u => u.id === id)?.name || "Inconnu";
   const getCharRaceNames = (charId: string) => {
@@ -77,6 +79,7 @@ const PersonnagesPage = () => {
         subtitle="Les héros et légendes du multivers"
         headerContent={headerContent}
         chapters={chapters.length > 0 ? chapters : [{ title: "Registre vide", icon: <span>📖</span>, content: <p className="text-center text-muted-foreground font-crimson italic">Aucun personnage trouvé...</p> }]}
+        coverImage={sectionImage}
       />
     </Layout>
   );

@@ -2,11 +2,13 @@ import { Link } from "react-router-dom";
 import Layout from "@/components/Layout";
 import GrimoireBook from "@/components/GrimoireBook";
 import { useLocations, useUniverses, useCharacters } from "@/hooks/useSupabaseData";
+import { useSectionImage } from "@/hooks/useSectionImage";
 
 const LieuxPage = () => {
   const { data: locations = [] } = useLocations();
   const { data: universes = [] } = useUniverses();
   const { data: characters = [] } = useCharacters();
+  const sectionImage = useSectionImage("lieux");
 
   // Group by universe
   const grouped = universes
@@ -64,6 +66,7 @@ const LieuxPage = () => {
         title="Lieux"
         subtitle="Les terres et sanctuaires du multivers"
         chapters={chapters.length > 0 ? chapters : [{ title: "Vide", icon: <span>📖</span>, content: <p className="text-center text-muted-foreground font-crimson italic">Aucun lieu inscrit...</p> }]}
+        coverImage={sectionImage}
       />
     </Layout>
   );

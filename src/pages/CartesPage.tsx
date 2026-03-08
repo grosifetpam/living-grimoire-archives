@@ -2,6 +2,7 @@ import Layout from "@/components/Layout";
 import GrimoireBook from "@/components/GrimoireBook";
 import { useCharacters, useUniverses, useRaces, useFactions, useCharacterRaces, useCharacterFactions } from "@/hooks/useSupabaseData";
 import { motion } from "framer-motion";
+import { useSectionImage } from "@/hooks/useSectionImage";
 
 const CartesPage = () => {
   const { data: characters = [] } = useCharacters();
@@ -10,6 +11,7 @@ const CartesPage = () => {
   const { data: factions = [] } = useFactions();
   const { data: charRaces = [] } = useCharacterRaces();
   const { data: charFactions = [] } = useCharacterFactions();
+  const sectionImage = useSectionImage("cartes");
 
   const getUniverseName = (id: string) => universes.find(u => u.id === id)?.name || "Inconnu";
   const getCharRaceNames = (charId: string) => {
@@ -123,6 +125,7 @@ const CartesPage = () => {
         title="Galerie des Cartes Oracle"
         subtitle="Cartes oracle des univers et personnages du multivers"
         chapters={chapters.length > 0 ? chapters : [{ title: "Vide", icon: <span>📖</span>, content: <p className="text-center text-muted-foreground font-crimson italic">Aucune carte disponible...</p> }]}
+        coverImage={sectionImage}
       />
     </Layout>
   );
