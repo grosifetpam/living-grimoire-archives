@@ -129,16 +129,18 @@ const Index = () => {
                     <input ref={coverFileRef} type="file" accept="image/*" className="hidden" onChange={handleCoverUpload} />
                   </>
                 )}
-                <div className="absolute left-0 top-0 bottom-0 w-4 bg-gradient-to-r from-primary/30 to-transparent" />
-                <div className="absolute left-4 top-0 bottom-0 w-px bg-primary/20" />
-                <div className="absolute left-5 top-0 bottom-0 w-px bg-primary/10" />
+                <div className="absolute left-0 top-0 bottom-0 w-4 bg-gradient-to-r from-primary/30 to-transparent z-10" />
+                <div className="absolute left-4 top-0 bottom-0 w-px bg-primary/20 z-10" />
+                <div className="absolute left-5 top-0 bottom-0 w-px bg-primary/10 z-10" />
 
-                <div className="absolute top-4 left-7 text-primary/25 text-3xl font-cinzel">✦</div>
-                <div className="absolute top-4 right-4 text-primary/25 text-3xl font-cinzel">✦</div>
-                <div className="absolute bottom-4 left-7 text-primary/25 text-3xl font-cinzel">✦</div>
-                <div className="absolute bottom-4 right-4 text-primary/25 text-3xl font-cinzel">✦</div>
+                <div className="absolute top-4 left-7 text-primary/25 text-3xl font-cinzel z-10">✦</div>
+                <div className="absolute top-4 right-4 text-primary/25 text-3xl font-cinzel z-10">✦</div>
+                <div className="absolute bottom-4 left-7 text-primary/25 text-3xl font-cinzel z-10">✦</div>
+                <div className="absolute bottom-4 right-4 text-primary/25 text-3xl font-cinzel z-10">✦</div>
 
-                <div className="absolute inset-6 left-9 border border-primary/15 rounded-sm pointer-events-none" />
+                <div className="absolute inset-6 left-9 border border-primary/15 rounded-sm pointer-events-none z-10" />
+
+                <div className="relative z-20">
 
                 <motion.div
                   animate={{ scale: [1, 1.08, 1], opacity: [0.6, 1, 0.6] }}
