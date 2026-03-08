@@ -1,11 +1,14 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
 import Layout from "@/components/Layout";
 import StatCounter from "@/components/StatCounter";
 import { useUniverses, useCharacters, useRaces, useFactions, useTimelineEvents } from "@/hooks/useSupabaseData";
 import { motion, AnimatePresence } from "framer-motion";
-import { BookOpen, Volume2, VolumeX } from "lucide-react";
+import { BookOpen, Volume2, VolumeX, ImagePlus } from "lucide-react";
 import { playBookOpen, startAmbientMusic, stopAmbientMusic, isAmbientPlaying } from "@/lib/sounds";
+import { useAuth } from "@/hooks/useAuth";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "@/hooks/use-toast";
 
 const Index = () => {
   const { data: universes = [] } = useUniverses();
