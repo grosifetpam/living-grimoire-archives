@@ -11,6 +11,7 @@ const PersonnagesPage = () => {
   const { data: races = [] } = useRaces();
   const { data: charRaces = [] } = useCharacterRaces();
   const [filter, setFilter] = useState("");
+  const sectionImage = useSectionImage("personnages");
 
   const getUniverseName = (id: string) => universes.find(u => u.id === id)?.name || "Inconnu";
   const getCharRaceNames = (charId: string) => {
