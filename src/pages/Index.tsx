@@ -276,23 +276,30 @@ const Index = () => {
                   <div className="text-accent/25 text-sm font-cinzel tracking-[0.4em] text-center mb-6">☽ TABLE DES MATIÈRES ☾</div>
                   <div className="max-w-md mx-auto space-y-3">
                     {[
-                      { to: "/univers", label: "Les Univers", icon: "🌑", desc: "Les tomes du multivers" },
-                      { to: "/personnages", label: "Personnages", icon: "⚔️", desc: "Héros et légendes" },
-                      { to: "/races", label: "Races", icon: "🧬", desc: "Les peuples" },
-                      { to: "/factions", label: "Factions", icon: "🏛️", desc: "Ordres et confréries" },
-                      { to: "/chronologie", label: "Chronologie", icon: "☽", desc: "Le fil du temps" },
-                      { to: "/lieux", label: "Lieux", icon: "🗝️", desc: "Terres et sanctuaires" },
-                      { to: "/bestiaire", label: "Bestiaire", icon: "🐉", desc: "Créatures du multivers" },
-                      { to: "/cartes", label: "Cartes", icon: "🃏", desc: "Cartes de personnages" },
+                      { to: "/univers", label: "Les Univers", icon: "🌑", desc: "Les tomes du multivers", image: universImage },
+                      { to: "/personnages", label: "Personnages", icon: "⚔️", desc: "Héros et légendes", image: personnagesImage },
+                      { to: "/races", label: "Races", icon: "🧬", desc: "Les peuples", image: racesImage },
+                      { to: "/factions", label: "Factions", icon: "🏛️", desc: "Ordres et confréries", image: factionsImage },
+                      { to: "/chronologie", label: "Chronologie", icon: "☽", desc: "Le fil du temps", image: chronologieImage },
+                      { to: "/lieux", label: "Lieux", icon: "🗝️", desc: "Terres et sanctuaires", image: lieuxImage },
+                      { to: "/bestiaire", label: "Bestiaire", icon: "🐉", desc: "Créatures du multivers", image: bestiaireImage },
+                      { to: "/cartes", label: "Cartes", icon: "🃏", desc: "Cartes de personnages", image: cartesImage },
                     ].map((item, i) => (
                       <motion.div key={item.to} initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.1 + i * 0.05 }}>
-                        <Link to={item.to} className="flex items-center gap-4 p-3 rounded-lg hover:bg-primary/5 transition-all group border border-transparent hover:border-primary/20 hover:glow-gold">
-                          <span className="text-2xl">{item.icon}</span>
-                          <div className="flex-1">
+                        <Link to={item.to} className="relative flex items-center gap-4 p-3 rounded-lg hover:bg-primary/5 transition-all group border border-transparent hover:border-primary/20 hover:glow-gold overflow-hidden">
+                          {/* Image de couverture en arrière-plan */}
+                          {item.image && (
+                            <div className="absolute inset-0 z-0">
+                              <img src={item.image} alt={item.label} className="w-full h-full object-cover opacity-10 group-hover:opacity-15 transition-opacity" />
+                              <div className="absolute inset-0 bg-gradient-to-r from-background/95 via-background/90 to-background/80" />
+                            </div>
+                          )}
+                          <span className="text-2xl relative z-10">{item.icon}</span>
+                          <div className="flex-1 relative z-10">
                             <h3 className="font-cinzel text-lg text-primary group-hover:text-glow-gold transition-all">{item.label}</h3>
                             <p className="text-xs text-muted-foreground font-crimson">{item.desc}</p>
                           </div>
-                          <span className="text-primary/20 font-cinzel text-sm">{MYSTIC_SYMBOLS[i % MYSTIC_SYMBOLS.length]} {romanize(i + 1)}</span>
+                          <span className="text-primary/20 font-cinzel text-sm relative z-10">{MYSTIC_SYMBOLS[i % MYSTIC_SYMBOLS.length]} {romanize(i + 1)}</span>
                         </Link>
                       </motion.div>
                     ))}
