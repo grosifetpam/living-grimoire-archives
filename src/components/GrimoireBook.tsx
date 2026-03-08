@@ -294,9 +294,9 @@ const GrimoireBook = ({ title, subtitle, chapters, headerContent, coverImage }: 
                     height: p.size,
                     opacity: p.opacity,
                     transform: `rotate(${p.rotation}deg)`,
-                    background: `radial-gradient(circle, hsl(var(--gold)) 0%, hsl(var(--gold) / 0.3) 100%)`,
+                    background: `radial-gradient(circle, hsl(var(--gold)) 0%, hsl(var(--crimson) / 0.3) 100%)`,
                     borderRadius: Math.random() > 0.5 ? "50%" : "2px",
-                    boxShadow: `0 0 ${p.size * 2}px hsl(var(--gold) / ${p.opacity * 0.5})`,
+                    boxShadow: `0 0 ${p.size * 2}px hsl(var(--gold) / ${p.opacity * 0.4})`,
                   }}
                 />
               ))}
