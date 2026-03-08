@@ -32,7 +32,7 @@ const Index = () => {
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 1 }}
               className="grimoire-book-cover cursor-pointer max-w-lg w-full"
-              onClick={() => setIsOpen(true)}
+              onClick={() => { playBookOpen(); setIsOpen(true); }}
               style={{ perspective: "1200px" }}
             >
               <div className="relative bg-gradient-to-br from-[hsl(var(--parchment))] to-[hsl(var(--parchment-light))] border-2 border-primary/40 rounded-sm p-12 md:p-20 text-center shadow-[inset_0_0_80px_rgba(0,0,0,0.3),0_0_40px_hsl(var(--gold)/0.2)]">
