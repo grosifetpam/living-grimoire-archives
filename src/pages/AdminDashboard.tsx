@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { toast } from "@/hooks/use-toast";
 import ImageUpload from "@/components/ImageUpload";
+import AudioUpload from "@/components/AudioUpload";
 import {
   useUniverses, useCharacters, useRaces, useFactions,
   useTimelineEvents, useLocations, useCreatures,
