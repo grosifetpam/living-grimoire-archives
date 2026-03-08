@@ -9,6 +9,7 @@ const FactionsPage = () => {
   const { data: universes = [] } = useUniverses();
   const { data: characters = [] } = useCharacters();
   const { data: charFactions = [] } = useCharacterFactions();
+  const sectionImage = useSectionImage("factions");
 
   const getFactionMembers = (factionId: string) => {
     const charIds = charFactions.filter(cf => cf.faction_id === factionId).map(cf => cf.character_id);
