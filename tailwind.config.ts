@@ -14,7 +14,7 @@ export default {
     },
     extend: {
       fontFamily: {
-        cinzel: ["Cinzel", "serif"],
+        cinzel: ["Cinzel Decorative", "Cinzel", "serif"],
         crimson: ["Crimson Text", "serif"],
         medieval: ["MedievalSharp", "cursive"],
       },
