@@ -1,11 +1,11 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import Layout from "@/components/Layout";
 import StatCounter from "@/components/StatCounter";
 import { useUniverses, useCharacters, useRaces, useFactions, useTimelineEvents } from "@/hooks/useSupabaseData";
 import { motion, AnimatePresence } from "framer-motion";
-import { BookOpen } from "lucide-react";
-import { playBookOpen } from "@/lib/sounds";
+import { BookOpen, Volume2, VolumeX } from "lucide-react";
+import { playBookOpen, startAmbientMusic, stopAmbientMusic, isAmbientPlaying } from "@/lib/sounds";
 
 const Index = () => {
   const { data: universes = [] } = useUniverses();
@@ -14,6 +14,35 @@ const Index = () => {
   const { data: factions = [] } = useFactions();
   const { data: timelineEvents = [] } = useTimelineEvents();
   const [isOpen, setIsOpen] = useState(false);
+  const [musicOn, setMusicOn] = useState(false);
+
+  const handleOpen = () => {
+    playBookOpen();
+    setIsOpen(true);
+    startAmbientMusic();
+    setMusicOn(true);
+  };
+
+  const handleClose = () => {
+    playBookOpen();
+    setIsOpen(false);
+    stopAmbientMusic();
+    setMusicOn(false);
+  };
+
+  const toggleMusic = () => {
+    if (isAmbientPlaying()) {
+      stopAmbientMusic();
+      setMusicOn(false);
+    } else {
+      startAmbientMusic();
+      setMusicOn(true);
+    }
+  };
+
+  useEffect(() => {
+    return () => { stopAmbientMusic(); };
+  }, []);
 
   return (
     <Layout>
@@ -26,28 +55,24 @@ const Index = () => {
             exit={{ opacity: 0, rotateY: 90, transition: { duration: 0.5 } }}
             className="min-h-screen flex flex-col items-center justify-center px-4 relative"
           >
-            {/* Closed grimoire cover */}
             <motion.div
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 1 }}
               className="grimoire-book-cover cursor-pointer max-w-lg w-full"
-              onClick={() => { playBookOpen(); setIsOpen(true); }}
+              onClick={handleOpen}
               style={{ perspective: "1200px" }}
             >
               <div className="relative bg-gradient-to-br from-[hsl(var(--parchment))] to-[hsl(var(--parchment-light))] border-2 border-primary/40 rounded-sm p-12 md:p-20 text-center shadow-[inset_0_0_80px_rgba(0,0,0,0.3),0_0_40px_hsl(var(--gold)/0.2)]">
-                {/* Book spine */}
                 <div className="absolute left-0 top-0 bottom-0 w-4 bg-gradient-to-r from-primary/30 to-transparent" />
                 <div className="absolute left-4 top-0 bottom-0 w-px bg-primary/20" />
                 <div className="absolute left-5 top-0 bottom-0 w-px bg-primary/10" />
 
-                {/* Corner ornaments */}
                 <div className="absolute top-4 left-7 text-primary/25 text-3xl font-cinzel">✦</div>
                 <div className="absolute top-4 right-4 text-primary/25 text-3xl font-cinzel">✦</div>
                 <div className="absolute bottom-4 left-7 text-primary/25 text-3xl font-cinzel">✦</div>
                 <div className="absolute bottom-4 right-4 text-primary/25 text-3xl font-cinzel">✦</div>
 
-                {/* Border ornament */}
                 <div className="absolute inset-6 left-9 border border-primary/15 rounded-sm pointer-events-none" />
 
                 <motion.div
@@ -87,13 +112,21 @@ const Index = () => {
             animate={{ opacity: 1, rotateY: 0 }}
             transition={{ duration: 0.6 }}
           >
-            {/* Open book — full content */}
             <section className="py-16 px-4 max-w-5xl mx-auto">
-              {/* Header with close */}
               <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} className="text-center mb-6">
-                <button onClick={() => { playBookOpen(); setIsOpen(false); }} className="text-xs font-cinzel text-primary/40 hover:text-primary transition-colors mb-4 block mx-auto">
-                  ← Refermer le grimoire
-                </button>
+                <div className="flex items-center justify-center gap-4 mb-4">
+                  <button onClick={handleClose} className="text-xs font-cinzel text-primary/40 hover:text-primary transition-colors">
+                    ← Refermer le grimoire
+                  </button>
+                  <button
+                    onClick={toggleMusic}
+                    className="inline-flex items-center gap-1 text-primary/40 hover:text-primary text-xs font-cinzel transition-colors"
+                    title={musicOn ? "Couper la musique" : "Lancer la musique"}
+                  >
+                    {musicOn ? <Volume2 size={14} /> : <VolumeX size={14} />}
+                    <span className="hidden sm:inline">{musicOn ? "Musique ON" : "Musique OFF"}</span>
+                  </button>
+                </div>
               </motion.div>
 
               {/* Page: Title Page */}
@@ -110,7 +143,6 @@ const Index = () => {
                       Explorez les secrets d'un multivers infini
                     </p>
 
-                    {/* Stats */}
                     <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-6 mt-8">
                       <StatCounter icon="🌍" label="Univers" end={universes.length} />
                       <StatCounter icon="⚔️" label="Personnages" end={characters.length} />
@@ -122,7 +154,7 @@ const Index = () => {
                 </div>
               </div>
 
-              {/* Page: Table of contents — navigation links as chapters */}
+              {/* Page: Table of contents */}
               <div className="grimoire-page relative mb-8">
                 <div className="absolute inset-0 rounded-lg border-2 border-primary/30 pointer-events-none" />
                 <div className="absolute left-0 top-0 bottom-0 w-8 bg-gradient-to-r from-black/10 to-transparent pointer-events-none rounded-l-lg" />

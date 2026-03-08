@@ -1,7 +1,7 @@
-import { useState, ReactNode } from "react";
+import { useState, useEffect, ReactNode } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { BookOpen, ChevronLeft, ChevronRight } from "lucide-react";
-import { playPageTurn, playBookOpen } from "@/lib/sounds";
+import { BookOpen, ChevronLeft, ChevronRight, Volume2, VolumeX } from "lucide-react";
+import { playPageTurn, playBookOpen, startAmbientMusic, stopAmbientMusic, isAmbientPlaying } from "@/lib/sounds";
 
 interface GrimoireChapter {
   title: string;
@@ -19,10 +19,41 @@ interface GrimoireBookProps {
 const GrimoireBook = ({ title, subtitle, chapters, headerContent }: GrimoireBookProps) => {
   const [openChapter, setOpenChapter] = useState<number>(0);
   const [isBookOpen, setIsBookOpen] = useState(false);
+  const [musicOn, setMusicOn] = useState(false);
+
+  const handleOpen = () => {
+    playBookOpen();
+    setIsBookOpen(true);
+    startAmbientMusic();
+    setMusicOn(true);
+  };
+
+  const handleClose = () => {
+    playBookOpen();
+    setIsBookOpen(false);
+    stopAmbientMusic();
+    setMusicOn(false);
+  };
+
+  const toggleMusic = () => {
+    if (isAmbientPlaying()) {
+      stopAmbientMusic();
+      setMusicOn(false);
+    } else {
+      startAmbientMusic();
+      setMusicOn(true);
+    }
+  };
+
+  // Cleanup on unmount
+  useEffect(() => {
+    return () => {
+      stopAmbientMusic();
+    };
+  }, []);
 
   return (
     <div className="min-h-screen py-16 px-4 max-w-5xl mx-auto">
-      {/* Book Cover / Opening */}
       <AnimatePresence mode="wait">
         {!isBookOpen ? (
           <motion.div
@@ -31,21 +62,18 @@ const GrimoireBook = ({ title, subtitle, chapters, headerContent }: GrimoireBook
             animate={{ opacity: 1, rotateY: 0 }}
             exit={{ opacity: 0, rotateY: 90, transition: { duration: 0.5 } }}
             className="grimoire-book-cover mx-auto max-w-lg cursor-pointer"
-            onClick={() => { playBookOpen(); setIsBookOpen(true); }}
+            onClick={handleOpen}
             style={{ perspective: "1200px" }}
           >
             <div className="relative bg-gradient-to-br from-[hsl(var(--parchment))] to-[hsl(var(--parchment-light))] border-2 border-primary/40 rounded-sm p-12 md:p-16 text-center shadow-[inset_0_0_60px_rgba(0,0,0,0.3),0_0_30px_hsl(var(--gold)/0.2)]">
-              {/* Book spine decoration */}
               <div className="absolute left-0 top-0 bottom-0 w-3 bg-gradient-to-r from-primary/30 to-transparent" />
               <div className="absolute left-3 top-0 bottom-0 w-px bg-primary/20" />
 
-              {/* Corner ornaments */}
               <div className="absolute top-3 left-5 text-primary/30 text-2xl font-cinzel">✦</div>
               <div className="absolute top-3 right-3 text-primary/30 text-2xl font-cinzel">✦</div>
               <div className="absolute bottom-3 left-5 text-primary/30 text-2xl font-cinzel">✦</div>
               <div className="absolute bottom-3 right-3 text-primary/30 text-2xl font-cinzel">✦</div>
 
-              {/* Central emblem */}
               <motion.div
                 animate={{ scale: [1, 1.05, 1], opacity: [0.7, 1, 0.7] }}
                 transition={{ duration: 3, repeat: Infinity }}
@@ -80,18 +108,27 @@ const GrimoireBook = ({ title, subtitle, chapters, headerContent }: GrimoireBook
             animate={{ opacity: 1, rotateY: 0 }}
             transition={{ duration: 0.6 }}
           >
-            {/* Open book header */}
             <motion.div
               initial={{ opacity: 0, y: -20 }}
               animate={{ opacity: 1, y: 0 }}
               className="text-center mb-8"
             >
-              <button
-                onClick={() => { playBookOpen(); setIsBookOpen(false); }}
-                className="inline-flex items-center gap-1 text-primary/40 hover:text-primary text-xs font-cinzel mb-4 transition-colors"
-              >
-                <ChevronLeft size={12} /> Fermer le grimoire
-              </button>
+              <div className="flex items-center justify-center gap-4 mb-4">
+                <button
+                  onClick={handleClose}
+                  className="inline-flex items-center gap-1 text-primary/40 hover:text-primary text-xs font-cinzel transition-colors"
+                >
+                  <ChevronLeft size={12} /> Fermer le grimoire
+                </button>
+                <button
+                  onClick={toggleMusic}
+                  className="inline-flex items-center gap-1 text-primary/40 hover:text-primary text-xs font-cinzel transition-colors"
+                  title={musicOn ? "Couper la musique" : "Lancer la musique"}
+                >
+                  {musicOn ? <Volume2 size={14} /> : <VolumeX size={14} />}
+                  <span className="hidden sm:inline">{musicOn ? "Musique ON" : "Musique OFF"}</span>
+                </button>
+              </div>
               <h1 className="font-cinzel text-3xl md:text-5xl font-bold text-primary text-glow-gold">
                 {title}
               </h1>
@@ -102,7 +139,6 @@ const GrimoireBook = ({ title, subtitle, chapters, headerContent }: GrimoireBook
 
             {headerContent}
 
-            {/* Chapter tabs - like book page tabs */}
             <div className="grimoire-page-tabs flex flex-wrap gap-1 mb-1 justify-center">
               {chapters.map((ch, i) => (
                 <button
@@ -120,17 +156,12 @@ const GrimoireBook = ({ title, subtitle, chapters, headerContent }: GrimoireBook
               ))}
             </div>
 
-            {/* Book page content */}
             <div className="grimoire-page relative">
-              {/* Page border */}
               <div className="absolute inset-0 rounded-lg border-2 border-primary/30 pointer-events-none" />
-              {/* Spine shadow */}
               <div className="absolute left-0 top-0 bottom-0 w-8 bg-gradient-to-r from-black/10 to-transparent pointer-events-none rounded-l-lg" />
-              {/* Page edge */}
               <div className="absolute right-0 top-2 bottom-2 w-1 bg-gradient-to-l from-primary/10 to-transparent pointer-events-none" />
 
               <div className="bg-gradient-to-br from-[hsl(var(--parchment))] to-[hsl(var(--parchment-light))] rounded-lg p-6 md:p-10 min-h-[400px] shadow-[inset_0_0_40px_rgba(0,0,0,0.15)]">
-                {/* Page header ornament */}
                 <div className="text-center mb-6 pb-4 border-b border-primary/20">
                   <div className="text-primary/30 text-sm font-cinzel tracking-[0.3em]">
                     ✦ CHAPITRE {romanize(openChapter + 1)} ✦
@@ -141,7 +172,6 @@ const GrimoireBook = ({ title, subtitle, chapters, headerContent }: GrimoireBook
                   </h2>
                 </div>
 
-                {/* Chapter content with animation */}
                 <AnimatePresence mode="wait">
                   <motion.div
                     key={openChapter}
@@ -154,7 +184,6 @@ const GrimoireBook = ({ title, subtitle, chapters, headerContent }: GrimoireBook
                   </motion.div>
                 </AnimatePresence>
 
-                {/* Page footer with navigation */}
                 <div className="mt-8 pt-4 border-t border-primary/15 flex items-center justify-between">
                   <button
                     onClick={() => { playPageTurn(); setOpenChapter(Math.max(0, openChapter - 1)); }}
