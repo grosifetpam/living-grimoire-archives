@@ -9,6 +9,7 @@ const RacesPage = () => {
   const { data: universes = [] } = useUniverses();
   const { data: characters = [] } = useCharacters();
   const { data: charRaces = [] } = useCharacterRaces();
+  const sectionImage = useSectionImage("races");
 
   const getRaceMembers = (raceId: string) => {
     const junctionIds = charRaces.filter(cr => cr.race_id === raceId).map(cr => cr.character_id);
