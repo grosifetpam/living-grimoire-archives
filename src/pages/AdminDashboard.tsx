@@ -483,7 +483,7 @@ function FactionsAdmin() {
         <div className="grimoire-card p-6 mb-6 space-y-3">
           <Input placeholder="Nom" value={editing.name ?? ""} onChange={e => setEditing({ ...editing, name: e.target.value })} className="bg-secondary/50 border-primary/30" />
           <Input placeholder="Devise" value={editing.motto ?? ""} onChange={e => setEditing({ ...editing, motto: e.target.value })} className="bg-secondary/50 border-primary/30" />
-          <Input type="number" placeholder="Membres" value={editing.member_count ?? 0} onChange={e => setEditing({ ...editing, member_count: parseInt(e.target.value) || 0 })} className="bg-secondary/50 border-primary/30" />
+          <Input placeholder="Nombre de membres" value={editing.member_count ?? ""} onChange={e => setEditing({ ...editing, member_count: e.target.value === "" ? 0 : parseInt(e.target.value) || editing.member_count })} className="bg-secondary/50 border-primary/30" />
           <select value={editing.universe_id ?? ""} onChange={e => setEditing({ ...editing, universe_id: e.target.value })} className="w-full bg-secondary/50 border border-primary/30 rounded-md px-3 py-2 text-foreground">
             {universes.map(u => <option key={u.id} value={u.id}>{u.name}</option>)}
           </select>
