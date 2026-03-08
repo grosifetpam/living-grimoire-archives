@@ -289,8 +289,12 @@ const Index = () => {
                         <Link to={item.to} className="relative flex items-center gap-4 p-3 rounded-lg hover:bg-primary/5 transition-all group border border-transparent hover:border-primary/20 hover:glow-gold overflow-hidden">
                           {/* Image de couverture en arrière-plan */}
                           {item.image && (
-                            <div className="absolute inset-0 z-0">
-                              <img src={item.image} alt={item.label} className="w-full h-full object-cover opacity-10 group-hover:opacity-15 transition-opacity" />
+                            <div className="absolute inset-0 z-0 overflow-hidden">
+                              <img 
+                                src={item.image} 
+                                alt={item.label} 
+                                className="w-full h-full object-cover opacity-10 group-hover:opacity-20 transform group-hover:scale-110 group-hover:translate-x-2 transition-all duration-700 ease-out" 
+                              />
                               <div className="absolute inset-0 bg-gradient-to-r from-background/95 via-background/90 to-background/80" />
                             </div>
                           )}
