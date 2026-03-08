@@ -1,4 +1,4 @@
-import { useState, useEffect, ReactNode, useRef } from "react";
+import { useState, useEffect, useCallback, ReactNode, useRef } from "react";
 import { motion, AnimatePresence, useMotionValue, useTransform, PanInfo } from "framer-motion";
 import { BookOpen, Volume2, VolumeX, ChevronLeft } from "lucide-react";
 import { playPageTurn, playBookOpen, startAmbientMusic, stopAmbientMusic, isAmbientPlaying, startPaperRustle, updatePaperRustle, stopPaperRustle } from "@/lib/sounds";
@@ -24,7 +24,10 @@ const GrimoireBook = ({ title, subtitle, chapters, headerContent }: GrimoireBook
   const [musicOn, setMusicOn] = useState(false);
   const [direction, setDirection] = useState<1 | -1>(1);
   const [isDragging, setIsDragging] = useState(false);
+  const [particles, setParticles] = useState<Array<{ id: number; x: number; y: number; vx: number; vy: number; size: number; opacity: number; rotation: number }>>([]);
+  const particleIdRef = useRef(0);
   const containerRef = useRef<HTMLDivElement>(null);
+  const pageRef = useRef<HTMLDivElement>(null);
   const dragX = useMotionValue(0);
   const dragRotateY = useTransform(dragX, [-200, 0, 200], [18, 0, -18]);
   const dragSkewY = useTransform(dragX, [-200, 0, 200], [-2, 0, 2]);
@@ -80,6 +83,47 @@ const GrimoireBook = ({ title, subtitle, chapters, headerContent }: GrimoireBook
       prevPage();
     }
   };
+
+  // Spawn particles during drag
+  const spawnParticles = useCallback((offsetX: number) => {
+    if (!pageRef.current) return;
+    const rect = pageRef.current.getBoundingClientRect();
+    const count = Math.floor(Math.min(Math.abs(offsetX) / 30, 4)) + 1;
+    const newParticles = Array.from({ length: count }, () => {
+      const edge = offsetX < 0 ? rect.width : 0;
+      return {
+        id: particleIdRef.current++,
+        x: edge + (Math.random() - 0.5) * 40,
+        y: Math.random() * rect.height,
+        vx: (Math.random() - 0.5) * 3 + (offsetX < 0 ? -1 : 1) * 2,
+        vy: (Math.random() - 0.5) * 2 - 1,
+        size: Math.random() * 4 + 2,
+        opacity: Math.random() * 0.6 + 0.4,
+        rotation: Math.random() * 360,
+      };
+    });
+    setParticles(prev => [...prev.slice(-40), ...newParticles]);
+  }, []);
+
+  // Animate & decay particles
+  useEffect(() => {
+    if (particles.length === 0) return;
+    const raf = requestAnimationFrame(() => {
+      setParticles(prev =>
+        prev
+          .map(p => ({
+            ...p,
+            x: p.x + p.vx,
+            y: p.y + p.vy,
+            vy: p.vy + 0.08,
+            opacity: p.opacity - 0.015,
+            rotation: p.rotation + p.vx * 3,
+          }))
+          .filter(p => p.opacity > 0)
+      );
+    });
+    return () => cancelAnimationFrame(raf);
+  }, [particles]);
 
   useEffect(() => {
     return () => { stopAmbientMusic(); };
@@ -199,10 +243,28 @@ const GrimoireBook = ({ title, subtitle, chapters, headerContent }: GrimoireBook
 
             {/* The book page with swipe */}
             <div
-              ref={containerRef}
-              className="grimoire-page relative select-none"
+              ref={(el) => { containerRef.current = el; pageRef.current = el; }}
+              className="grimoire-page relative select-none overflow-hidden"
               style={{ perspective: "1200px" }}
             >
+              {/* Golden particles */}
+              {particles.map(p => (
+                <div
+                  key={p.id}
+                  className="absolute pointer-events-none z-30"
+                  style={{
+                    left: p.x,
+                    top: p.y,
+                    width: p.size,
+                    height: p.size,
+                    opacity: p.opacity,
+                    transform: `rotate(${p.rotation}deg)`,
+                    background: `radial-gradient(circle, hsl(var(--gold)) 0%, hsl(var(--gold) / 0.3) 100%)`,
+                    borderRadius: Math.random() > 0.5 ? "50%" : "2px",
+                    boxShadow: `0 0 ${p.size * 2}px hsl(var(--gold) / ${p.opacity * 0.5})`,
+                  }}
+                />
+              ))}
               <div className="absolute inset-0 rounded-lg border-2 border-primary/30 pointer-events-none z-10" />
               <div className="absolute left-0 top-0 bottom-0 w-8 bg-gradient-to-r from-black/10 to-transparent pointer-events-none rounded-l-lg z-10" />
               <div className="absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-black/5 to-transparent pointer-events-none rounded-r-lg z-10" />
@@ -259,7 +321,7 @@ const GrimoireBook = ({ title, subtitle, chapters, headerContent }: GrimoireBook
                     dragConstraints={{ left: 0, right: 0 }}
                     dragElastic={0.12}
                     onDragStart={() => { setIsDragging(true); startPaperRustle(); }}
-                    onDrag={(_, info) => { updatePaperRustle(Math.abs(info.offset.x) / 200); }}
+                    onDrag={(_, info) => { updatePaperRustle(Math.abs(info.offset.x) / 200); spawnParticles(info.offset.x); }}
                     onDragEnd={(e, info) => { stopPaperRustle(); handleDragEnd(e, info); }}
                     className="p-6 md:p-10 cursor-grab active:cursor-grabbing"
                     style={{
