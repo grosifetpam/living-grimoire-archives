@@ -1,6 +1,6 @@
 import { useParams, Link } from "react-router-dom";
 import Layout from "@/components/Layout";
-import { useCharacters, useUniverses, useRaces, useFactions } from "@/hooks/useSupabaseData";
+import { useCharacters, useUniverses, useRaces, useFactions, useCharacterFactions } from "@/hooks/useSupabaseData";
 import { motion } from "framer-motion";
 import { ChevronRight } from "lucide-react";
 
@@ -10,16 +10,20 @@ const PersonnageDetailPage = () => {
   const { data: universes = [] } = useUniverses();
   const { data: races = [] } = useRaces();
   const { data: factions = [] } = useFactions();
+  const { data: charFactions = [] } = useCharacterFactions();
 
   const character = characters.find(c => c.id === id);
   if (!character) return <Layout><div className="min-h-screen flex items-center justify-center font-cinzel text-foreground">Personnage introuvable</div></Layout>;
 
   const universe = universes.find(u => u.id === character.universe_id);
   const race = races.find(r => r.id === character.race_id);
-  const faction = character.faction_id ? factions.find(f => f.id === character.faction_id) : null;
+  const characterFactionIds = charFactions.filter(cf => cf.character_id === character.id).map(cf => cf.faction_id);
+  const characterFactions = factions.filter(f => characterFactionIds.includes(f.id));
   const sameUniverseChars = characters.filter(c => c.universe_id === character.universe_id && c.id !== character.id);
   const sameRaceChars = characters.filter(c => c.race_id === character.race_id && c.id !== character.id);
-  const sameFactionChars = character.faction_id ? characters.filter(c => c.faction_id === character.faction_id && c.id !== character.id) : [];
+  const sameFactionChars = characterFactionIds.length > 0
+    ? characters.filter(c => c.id !== character.id && charFactions.some(cf => cf.character_id === c.id && characterFactionIds.includes(cf.faction_id)))
+    : [];
 
   const stats = character.stats as Record<string, number>;
   const statLabels = [
@@ -63,11 +67,11 @@ const PersonnageDetailPage = () => {
                   🧬 {race.name}
                 </span>
               )}
-              {faction && (
-                <span className="px-3 py-1 rounded-full bg-secondary/60 border border-primary/20 text-sm text-primary/70 font-cinzel">
-                  🏛️ {faction.name}
+              {characterFactions.map(f => (
+                <span key={f.id} className="px-3 py-1 rounded-full bg-secondary/60 border border-primary/20 text-sm text-primary/70 font-cinzel">
+                  🏛️ {f.name}
                 </span>
-              )}
+              ))}
             </div>
           </div>
 
@@ -125,25 +129,28 @@ const PersonnageDetailPage = () => {
           )}
 
           {/* Faction details */}
-          {faction && (
-            <div className="mt-6 grimoire-card p-6">
+          {characterFactions.map(faction => (
+            <div key={faction.id} className="mt-6 grimoire-card p-6">
               <h2 className="font-cinzel text-xl font-bold text-primary mb-1">Faction : {faction.name}</h2>
               <p className="text-xs text-primary/50 font-crimson italic mb-2">"{faction.motto}"</p>
               <p className="text-sm text-foreground/80 font-crimson">{faction.description}</p>
-              {sameFactionChars.length > 0 && (
-                <div className="mt-3 pt-2 border-t border-primary/10">
-                  <p className="text-xs text-muted-foreground font-cinzel mb-1">Autres membres :</p>
-                  <div className="flex flex-wrap gap-2">
-                    {sameFactionChars.map(c => (
-                      <Link key={c.id} to={`/personnages/${c.id}`} className="text-xs px-2 py-1 rounded bg-secondary/50 text-primary hover:text-glow-gold transition-all font-cinzel">
-                        ⚔️ {c.name}
-                      </Link>
-                    ))}
+              {(() => {
+                const otherMembers = characters.filter(c => c.id !== character.id && charFactions.some(cf => cf.character_id === c.id && cf.faction_id === faction.id));
+                return otherMembers.length > 0 ? (
+                  <div className="mt-3 pt-2 border-t border-primary/10">
+                    <p className="text-xs text-muted-foreground font-cinzel mb-1">Autres membres :</p>
+                    <div className="flex flex-wrap gap-2">
+                      {otherMembers.map(c => (
+                        <Link key={c.id} to={`/personnages/${c.id}`} className="text-xs px-2 py-1 rounded bg-secondary/50 text-primary hover:text-glow-gold transition-all font-cinzel">
+                          ⚔️ {c.name}
+                        </Link>
+                      ))}
+                    </div>
                   </div>
-                </div>
-              )}
+                ) : null;
+              })()}
             </div>
-          )}
+          ))}
 
           {/* Same universe characters */}
           {sameUniverseChars.length > 0 && (

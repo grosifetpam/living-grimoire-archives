@@ -1,18 +1,22 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import Layout from "@/components/Layout";
-import { useFactions, useUniverses, useCharacters } from "@/hooks/useSupabaseData";
+import { useFactions, useUniverses, useCharacters, useCharacterFactions } from "@/hooks/useSupabaseData";
 import { motion, AnimatePresence } from "framer-motion";
 
 const FactionsPage = () => {
   const { data: factions = [] } = useFactions();
   const { data: universes = [] } = useUniverses();
   const { data: characters = [] } = useCharacters();
+  const { data: charFactions = [] } = useCharacterFactions();
   const [sort, setSort] = useState<"name" | "members">("name");
   const [expandedId, setExpandedId] = useState<string | null>(null);
 
   const getUniverseName = (id: string) => universes.find(u => u.id === id)?.name || "Inconnu";
-  const getFactionMembers = (factionId: string) => characters.filter(c => c.faction_id === factionId);
+  const getFactionMembers = (factionId: string) => {
+    const charIds = charFactions.filter(cf => cf.faction_id === factionId).map(cf => cf.character_id);
+    return characters.filter(c => charIds.includes(c.id));
+  };
 
   const sorted = [...factions].sort((a, b) =>
     sort === "name" ? a.name.localeCompare(b.name) : b.member_count - a.member_count

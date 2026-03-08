@@ -14,6 +14,42 @@ export type Database = {
   }
   public: {
     Tables: {
+      character_factions: {
+        Row: {
+          character_id: string
+          created_at: string
+          faction_id: string
+          id: string
+        }
+        Insert: {
+          character_id: string
+          created_at?: string
+          faction_id: string
+          id?: string
+        }
+        Update: {
+          character_id?: string
+          created_at?: string
+          faction_id?: string
+          id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "character_factions_character_id_fkey"
+            columns: ["character_id"]
+            isOneToOne: false
+            referencedRelation: "characters"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "character_factions_faction_id_fkey"
+            columns: ["faction_id"]
+            isOneToOne: false
+            referencedRelation: "factions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       characters: {
         Row: {
           backstory: string
