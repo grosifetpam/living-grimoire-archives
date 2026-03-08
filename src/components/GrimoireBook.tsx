@@ -30,7 +30,7 @@ const GrimoireBook = ({ title, subtitle, chapters, headerContent }: GrimoireBook
             animate={{ opacity: 1, rotateY: 0 }}
             exit={{ opacity: 0, rotateY: 90, transition: { duration: 0.5 } }}
             className="grimoire-book-cover mx-auto max-w-lg cursor-pointer"
-            onClick={() => setIsBookOpen(true)}
+            onClick={() => { playBookOpen(); setIsBookOpen(true); }}
             style={{ perspective: "1200px" }}
           >
             <div className="relative bg-gradient-to-br from-[hsl(var(--parchment))] to-[hsl(var(--parchment-light))] border-2 border-primary/40 rounded-sm p-12 md:p-16 text-center shadow-[inset_0_0_60px_rgba(0,0,0,0.3),0_0_30px_hsl(var(--gold)/0.2)]">
