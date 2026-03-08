@@ -66,11 +66,11 @@ const PersonnageDetailPage = () => {
                   🌍 {universe.name}
                 </Link>
               )}
-              {race && (
-                <span className="px-3 py-1 rounded-full bg-secondary/60 border border-primary/20 text-sm text-primary/70 font-cinzel">
-                  🧬 {race.name}
+              {characterRaces.map(r => (
+                <span key={r.id} className="px-3 py-1 rounded-full bg-secondary/60 border border-primary/20 text-sm text-primary/70 font-cinzel">
+                  🧬 {r.name}
                 </span>
-              )}
+              ))}
               {characterFactions.map(f => (
                 <span key={f.id} className="px-3 py-1 rounded-full bg-secondary/60 border border-primary/20 text-sm text-primary/70 font-cinzel">
                   🏛️ {f.name}
