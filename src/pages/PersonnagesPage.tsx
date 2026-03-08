@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import Layout from "@/components/Layout";
 import GrimoireBook from "@/components/GrimoireBook";
 import { useCharacters, useUniverses, useRaces, useCharacterRaces } from "@/hooks/useSupabaseData";
+import { useSectionImage } from "@/hooks/useSectionImage";
 
 const PersonnagesPage = () => {
   const { data: characters = [] } = useCharacters();
