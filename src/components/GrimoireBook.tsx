@@ -156,7 +156,7 @@ const GrimoireBook = ({ title, subtitle, chapters, headerContent }: GrimoireBook
                 {/* Page footer with navigation */}
                 <div className="mt-8 pt-4 border-t border-primary/15 flex items-center justify-between">
                   <button
-                    onClick={() => setOpenChapter(Math.max(0, openChapter - 1))}
+                    onClick={() => { playPageTurn(); setOpenChapter(Math.max(0, openChapter - 1)); }}
                     disabled={openChapter === 0}
                     className="flex items-center gap-1 font-cinzel text-xs text-primary/50 hover:text-primary transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
                   >
