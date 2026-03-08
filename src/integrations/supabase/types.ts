@@ -86,6 +86,7 @@ export type Database = {
           description: string
           habitat: string
           id: string
+          image: string | null
           name: string
           universe_id: string
           updated_at: string
@@ -97,6 +98,7 @@ export type Database = {
           description?: string
           habitat?: string
           id?: string
+          image?: string | null
           name: string
           universe_id: string
           updated_at?: string
@@ -108,6 +110,7 @@ export type Database = {
           description?: string
           habitat?: string
           id?: string
+          image?: string | null
           name?: string
           universe_id?: string
           updated_at?: string
