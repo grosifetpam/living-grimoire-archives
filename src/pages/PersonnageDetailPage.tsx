@@ -106,8 +106,8 @@ const PersonnageDetailPage = () => {
           </div>
 
           {/* Race details */}
-          {race && (
-            <div className="mt-6 grimoire-card p-6">
+          {characterRaces.map(race => (
+            <div key={race.id} className="mt-6 grimoire-card p-6">
               <h2 className="font-cinzel text-xl font-bold text-primary mb-2">Race : {race.name}</h2>
               <p className="text-sm text-foreground/80 font-crimson">{race.description}</p>
               {race.traits && race.traits.length > 0 && (
@@ -117,20 +117,23 @@ const PersonnageDetailPage = () => {
                   ))}
                 </div>
               )}
-              {sameRaceChars.length > 0 && (
-                <div className="mt-3 pt-2 border-t border-primary/10">
-                  <p className="text-xs text-muted-foreground font-cinzel mb-1">Autres {race.name} :</p>
-                  <div className="flex flex-wrap gap-2">
-                    {sameRaceChars.map(c => (
-                      <Link key={c.id} to={`/personnages/${c.id}`} className="text-xs px-2 py-1 rounded bg-secondary/50 text-primary hover:text-glow-gold transition-all font-cinzel">
-                        ⚔️ {c.name}
-                      </Link>
-                    ))}
+              {(() => {
+                const otherMembers = characters.filter(c => c.id !== character.id && charRaces.some(cr => cr.character_id === c.id && cr.race_id === race.id));
+                return otherMembers.length > 0 ? (
+                  <div className="mt-3 pt-2 border-t border-primary/10">
+                    <p className="text-xs text-muted-foreground font-cinzel mb-1">Autres {race.name} :</p>
+                    <div className="flex flex-wrap gap-2">
+                      {otherMembers.map(c => (
+                        <Link key={c.id} to={`/personnages/${c.id}`} className="text-xs px-2 py-1 rounded bg-secondary/50 text-primary hover:text-glow-gold transition-all font-cinzel">
+                          ⚔️ {c.name}
+                        </Link>
+                      ))}
+                    </div>
                   </div>
-                </div>
-              )}
+                ) : null;
+              })()}
             </div>
-          )}
+          ))}
 
           {/* Faction details */}
           {characterFactions.map(faction => (
