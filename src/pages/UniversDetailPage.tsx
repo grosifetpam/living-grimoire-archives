@@ -70,11 +70,27 @@ const UniversDetailPage = () => {
 
   const headerContent = (
     <div className="mb-6">
-      {universe.image && (
-        <div className="w-full max-w-2xl mx-auto h-48 rounded-lg overflow-hidden mb-4 border border-primary/20 glow-gold">
-          <img src={universe.image} alt={universe.name} className="w-full h-full object-cover" />
-        </div>
-      )}
+      <div className="relative">
+        {universe.image && (
+          <div className="w-full max-w-2xl mx-auto h-48 rounded-lg overflow-hidden mb-4 border border-primary/20 glow-gold">
+            <img src={universe.image} alt={universe.name} className="w-full h-full object-cover" />
+          </div>
+        )}
+        {isAdmin && (
+          <>
+            <button
+              onClick={() => fileRef.current?.click()}
+              disabled={uploading}
+              className={`${universe.image ? 'absolute top-2 right-2' : 'mx-auto mb-4 flex'} z-10 items-center gap-2 px-3 py-2 rounded-lg bg-background/70 hover:bg-primary/20 text-primary/60 hover:text-primary transition-colors font-cinzel text-xs border border-primary/20`}
+              title="Ajouter / changer l'image"
+            >
+              <ImagePlus size={16} />
+              {!universe.image && <span>{uploading ? "Upload..." : "Ajouter une image"}</span>}
+            </button>
+            <input ref={fileRef} type="file" accept="image/*" className="hidden" onChange={handleImageUpload} />
+          </>
+        )}
+      </div>
       <p className="font-cinzel text-primary/50 text-center text-sm tracking-widest uppercase mb-4">{universe.era}</p>
       <div className="flex flex-wrap justify-center gap-3 mb-4">
         {[
