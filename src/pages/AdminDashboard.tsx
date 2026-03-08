@@ -34,7 +34,7 @@ const tabs: { key: Tab; label: string; icon: string }[] = [
 const AdminDashboard = () => {
   const { user, isAdmin, loading: authLoading, signOut } = useAuth();
   const navigate = useNavigate();
-  const [activeTab, setActiveTab] = useState<Tab>("universes");
+  const [activeTab, setActiveTab] = useState<Tab>("settings");
 
   if (authLoading) return <Layout><div className="min-h-screen flex items-center justify-center text-foreground">Chargement...</div></Layout>;
   if (!user) { navigate("/admin/login"); return null; }
