@@ -91,7 +91,7 @@ const Index = () => {
             <section className="py-16 px-4 max-w-5xl mx-auto">
               {/* Header with close */}
               <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} className="text-center mb-6">
-                <button onClick={() => setIsOpen(false)} className="text-xs font-cinzel text-primary/40 hover:text-primary transition-colors mb-4 block mx-auto">
+                <button onClick={() => { playBookOpen(); setIsOpen(false); }} className="text-xs font-cinzel text-primary/40 hover:text-primary transition-colors mb-4 block mx-auto">
                   ← Refermer le grimoire
                 </button>
               </motion.div>

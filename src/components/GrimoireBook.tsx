@@ -166,7 +166,7 @@ const GrimoireBook = ({ title, subtitle, chapters, headerContent }: GrimoireBook
                     — {openChapter + 1} / {chapters.length} —
                   </span>
                   <button
-                    onClick={() => setOpenChapter(Math.min(chapters.length - 1, openChapter + 1))}
+                    onClick={() => { playPageTurn(); setOpenChapter(Math.min(chapters.length - 1, openChapter + 1)); }}
                     disabled={openChapter === chapters.length - 1}
                     className="flex items-center gap-1 font-cinzel text-xs text-primary/50 hover:text-primary transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
                   >
