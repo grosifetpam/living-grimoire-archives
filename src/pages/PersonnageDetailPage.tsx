@@ -51,6 +51,13 @@ const PersonnageDetailPage = () => {
           <span key={f.id} className="px-3 py-1 rounded-full bg-secondary/60 border border-primary/20 text-xs text-primary/70 font-cinzel">🏛️ {f.name}</span>
         ))}
       </div>
+      {/* Music player */}
+      {(character as any).music_url && (
+        <div className="mt-4 max-w-sm mx-auto">
+          <p className="text-xs text-primary/50 font-cinzel mb-1">🎵 Thème musical</p>
+          <audio controls src={(character as any).music_url} className="w-full h-8" />
+        </div>
+      )}
       <Link to="/personnages" className="block text-xs font-cinzel text-primary/40 hover:text-primary transition-colors mt-3">← Retour aux Personnages</Link>
     </div>
   );
