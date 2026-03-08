@@ -243,10 +243,28 @@ const GrimoireBook = ({ title, subtitle, chapters, headerContent }: GrimoireBook
 
             {/* The book page with swipe */}
             <div
-              ref={containerRef}
-              className="grimoire-page relative select-none"
+              ref={(el) => { containerRef.current = el; pageRef.current = el; }}
+              className="grimoire-page relative select-none overflow-hidden"
               style={{ perspective: "1200px" }}
             >
+              {/* Golden particles */}
+              {particles.map(p => (
+                <div
+                  key={p.id}
+                  className="absolute pointer-events-none z-30"
+                  style={{
+                    left: p.x,
+                    top: p.y,
+                    width: p.size,
+                    height: p.size,
+                    opacity: p.opacity,
+                    transform: `rotate(${p.rotation}deg)`,
+                    background: `radial-gradient(circle, hsl(var(--gold)) 0%, hsl(var(--gold) / 0.3) 100%)`,
+                    borderRadius: Math.random() > 0.5 ? "50%" : "2px",
+                    boxShadow: `0 0 ${p.size * 2}px hsl(var(--gold) / ${p.opacity * 0.5})`,
+                  }}
+                />
+              ))}
               <div className="absolute inset-0 rounded-lg border-2 border-primary/30 pointer-events-none z-10" />
               <div className="absolute left-0 top-0 bottom-0 w-8 bg-gradient-to-r from-black/10 to-transparent pointer-events-none rounded-l-lg z-10" />
               <div className="absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-black/5 to-transparent pointer-events-none rounded-r-lg z-10" />
