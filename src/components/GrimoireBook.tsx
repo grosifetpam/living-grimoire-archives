@@ -86,7 +86,7 @@ const GrimoireBook = ({ title, subtitle, chapters, headerContent }: GrimoireBook
               className="text-center mb-8"
             >
               <button
-                onClick={() => setIsBookOpen(false)}
+                onClick={() => { playBookOpen(); setIsBookOpen(false); }}
                 className="inline-flex items-center gap-1 text-primary/40 hover:text-primary text-xs font-cinzel mb-4 transition-colors"
               >
                 <ChevronLeft size={12} /> Fermer le grimoire
