@@ -3,6 +3,7 @@ import Layout from "@/components/Layout";
 import GrimoireBook from "@/components/GrimoireBook";
 import { useTimelineEvents, useUniverses, useCharacters } from "@/hooks/useSupabaseData";
 import { motion } from "framer-motion";
+import { useSectionImage } from "@/hooks/useSectionImage";
 
 const ChronologiePage = () => {
   const { data: timelineEvents = [] } = useTimelineEvents();
