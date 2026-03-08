@@ -266,7 +266,7 @@ const GrimoireBook = ({ title, subtitle, chapters, headerContent }: GrimoireBook
                       rotateY: isDragging ? dragRotateY : 0,
                       skewY: isDragging ? dragSkewY : 0,
                       scale: isDragging ? dragScale : 1,
-                      filter: isDragging ? useTransform(dragBrightness, (v) => `brightness(${v})`) as any : "brightness(1)",
+                      filter: isDragging ? dragFilter : "brightness(1)",
                       transformStyle: "preserve-3d",
                       transformOrigin: "center center",
                     }}
