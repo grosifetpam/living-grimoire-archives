@@ -137,14 +137,40 @@ function CharactersAdmin() {
   const { data: universes = [] } = useUniverses();
   const { data: racesList = [] } = useRaces();
   const { data: factionsList = [] } = useFactions();
+  const { data: charFactions = [] } = useCharacterFactions();
   const upsert = useUpsert("characters");
   const del = useDelete("characters");
+  const setCharFactions = useSetCharacterFactions();
   const [editing, setEditing] = useState<Partial<Character> | null>(null);
+  const [selectedFactionIds, setSelectedFactionIds] = useState<string[]>([]);
+
+  const getCharFactionIds = (charId: string) => charFactions.filter(cf => cf.character_id === charId).map(cf => cf.faction_id);
+
+  const startEdit = (c?: Character) => {
+    if (c) {
+      setEditing(c);
+      setSelectedFactionIds(getCharFactionIds(c.id));
+    } else {
+      setEditing({ name: "", title: "", backstory: "", universe_id: universes[0]?.id, image: null, stats: { force: 5, agilite: 5, intelligence: 5, magie: 5, charisme: 5 } });
+      setSelectedFactionIds([]);
+    }
+  };
+
+  const toggleFaction = (fid: string) => {
+    setSelectedFactionIds(prev => prev.includes(fid) ? prev.filter(id => id !== fid) : [...prev, fid]);
+  };
 
   const save = async () => {
     if (!editing?.name || !editing?.universe_id) return;
     try {
-      await upsert.mutateAsync(editing as Record<string, unknown>);
+      const record = { ...editing };
+      delete (record as any).faction_id; // ignore legacy field
+      await upsert.mutateAsync(record as Record<string, unknown>);
+      // Save factions via junction table
+      const charId = editing.id || (await supabase.from("characters").select("id").eq("name", editing.name).single()).data?.id;
+      if (charId) {
+        await setCharFactions.mutateAsync({ characterId: charId, factionIds: selectedFactionIds });
+      }
       toast({ title: "Sauvegardé ✓" });
       setEditing(null);
     } catch (e: any) { toast({ title: "Erreur", description: e.message, variant: "destructive" }); }
@@ -160,7 +186,7 @@ function CharactersAdmin() {
 
   return (
     <div>
-      <Button onClick={() => setEditing({ name: "", title: "", backstory: "", universe_id: universes[0]?.id, image: null, stats: { force: 5, agilite: 5, intelligence: 5, magie: 5, charisme: 5 } })} className="mb-4 font-cinzel gap-2 shimmer-btn"><Plus size={16} /> Ajouter un Personnage</Button>
+      <Button onClick={() => startEdit()} className="mb-4 font-cinzel gap-2 shimmer-btn"><Plus size={16} /> Ajouter un Personnage</Button>
 
       {editing && (
         <div className="grimoire-card p-6 mb-6 space-y-3">
@@ -174,10 +200,28 @@ function CharactersAdmin() {
             <option value="">-- Race (optionnel) --</option>
             {racesList.map(r => <option key={r.id} value={r.id}>{r.name}</option>)}
           </select>
-          <select value={editing.faction_id ?? ""} onChange={e => setEditing({ ...editing, faction_id: e.target.value || null })} className="w-full bg-secondary/50 border border-primary/30 rounded-md px-3 py-2 text-foreground">
-            <option value="">-- Faction (optionnel) --</option>
-            {factionsList.map(f => <option key={f.id} value={f.id}>{f.name}</option>)}
-          </select>
+
+          {/* Multi-select factions */}
+          <div>
+            <p className="text-sm font-cinzel text-foreground/70 mb-2">Factions (sélection multiple) :</p>
+            <div className="flex flex-wrap gap-2">
+              {factionsList.map(f => (
+                <button
+                  key={f.id}
+                  type="button"
+                  onClick={() => toggleFaction(f.id)}
+                  className={`px-3 py-1.5 rounded-full text-xs font-cinzel transition-all border ${
+                    selectedFactionIds.includes(f.id)
+                      ? "bg-primary text-primary-foreground border-primary"
+                      : "bg-secondary/50 text-foreground/60 border-primary/20 hover:border-primary/50"
+                  }`}
+                >
+                  🏛️ {f.name}
+                </button>
+              ))}
+            </div>
+          </div>
+
           <textarea placeholder="Histoire" value={editing.backstory ?? ""} onChange={e => setEditing({ ...editing, backstory: e.target.value })} className="w-full bg-secondary/50 border border-primary/30 rounded-md px-3 py-2 text-foreground min-h-[80px]" />
           <ImageUpload currentImage={editing.image} onImageChange={url => setEditing({ ...editing, image: url })} folder="characters" />
           <div className="flex gap-2">
@@ -188,27 +232,29 @@ function CharactersAdmin() {
       )}
 
       <div className="space-y-3">
-        {data.map(c => (
-          <div key={c.id} className="grimoire-card p-4 flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              {c.image && <img src={c.image} alt={c.name} className="w-10 h-10 rounded object-cover" />}
-              <div>
-                <h3 className="font-cinzel font-bold text-primary">{c.name}</h3>
-                <p className="text-xs text-muted-foreground">{c.title}</p>
+        {data.map(c => {
+          const cFactions = getCharFactionIds(c.id);
+          const fNames = cFactions.map(fid => factionsList.find(f => f.id === fid)?.name).filter(Boolean);
+          return (
+            <div key={c.id} className="grimoire-card p-4 flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                {c.image && <img src={c.image} alt={c.name} className="w-10 h-10 rounded object-cover" />}
+                <div>
+                  <h3 className="font-cinzel font-bold text-primary">{c.name}</h3>
+                  <p className="text-xs text-muted-foreground">{c.title}{fNames.length > 0 && ` · 🏛️ ${fNames.join(", ")}`}</p>
+                </div>
+              </div>
+              <div className="flex gap-2">
+                <Button size="icon" variant="ghost" onClick={() => startEdit(c)}><Pencil size={16} /></Button>
+                <Button size="icon" variant="ghost" onClick={() => remove(c.id)} className="text-destructive"><Trash2 size={16} /></Button>
               </div>
             </div>
-            <div className="flex gap-2">
-              <Button size="icon" variant="ghost" onClick={() => setEditing(c)}><Pencil size={16} /></Button>
-              <Button size="icon" variant="ghost" onClick={() => remove(c.id)} className="text-destructive"><Trash2 size={16} /></Button>
-            </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
     </div>
   );
 }
-
-function RacesAdmin() {
   const { data = [], isLoading } = useRaces();
   const { data: universes = [] } = useUniverses();
   const upsert = useUpsert("races");
