@@ -5,6 +5,7 @@ import Layout from "@/components/Layout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { toast } from "@/hooks/use-toast";
+import ImageUpload from "@/components/ImageUpload";
 import {
   useUniverses, useCharacters, useRaces, useFactions,
   useTimelineEvents, useLocations, useCreatures,
@@ -44,7 +45,6 @@ const AdminDashboard = () => {
           </Button>
         </div>
 
-        {/* Tabs */}
         <div className="flex flex-wrap gap-2 mb-8">
           {tabs.map(t => (
             <button
@@ -96,13 +96,14 @@ function UniversesAdmin() {
 
   return (
     <div>
-      <Button onClick={() => setEditing({ name: "", description: "", era: "" })} className="mb-4 font-cinzel gap-2 shimmer-btn"><Plus size={16} /> Ajouter un Univers</Button>
+      <Button onClick={() => setEditing({ name: "", description: "", era: "", image: null })} className="mb-4 font-cinzel gap-2 shimmer-btn"><Plus size={16} /> Ajouter un Univers</Button>
 
       {editing && (
         <div className="grimoire-card p-6 mb-6 space-y-3">
           <Input placeholder="Nom" value={editing.name ?? ""} onChange={e => setEditing({ ...editing, name: e.target.value })} className="bg-secondary/50 border-primary/30" />
           <Input placeholder="Ère" value={editing.era ?? ""} onChange={e => setEditing({ ...editing, era: e.target.value })} className="bg-secondary/50 border-primary/30" />
           <textarea placeholder="Description" value={editing.description ?? ""} onChange={e => setEditing({ ...editing, description: e.target.value })} className="w-full bg-secondary/50 border border-primary/30 rounded-md px-3 py-2 text-foreground min-h-[80px]" />
+          <ImageUpload currentImage={editing.image} onImageChange={url => setEditing({ ...editing, image: url })} folder="universes" />
           <div className="flex gap-2">
             <Button onClick={save} className="font-cinzel shimmer-btn">Sauvegarder</Button>
             <Button variant="outline" onClick={() => setEditing(null)} className="font-cinzel">Annuler</Button>
@@ -113,9 +114,12 @@ function UniversesAdmin() {
       <div className="space-y-3">
         {data.map(u => (
           <div key={u.id} className="grimoire-card p-4 flex items-center justify-between">
-            <div>
-              <h3 className="font-cinzel font-bold text-primary">{u.name}</h3>
-              <p className="text-xs text-muted-foreground">{u.era}</p>
+            <div className="flex items-center gap-3">
+              {u.image && <img src={u.image} alt={u.name} className="w-10 h-10 rounded object-cover" />}
+              <div>
+                <h3 className="font-cinzel font-bold text-primary">{u.name}</h3>
+                <p className="text-xs text-muted-foreground">{u.era}</p>
+              </div>
             </div>
             <div className="flex gap-2">
               <Button size="icon" variant="ghost" onClick={() => setEditing(u)}><Pencil size={16} /></Button>
@@ -156,7 +160,7 @@ function CharactersAdmin() {
 
   return (
     <div>
-      <Button onClick={() => setEditing({ name: "", title: "", backstory: "", universe_id: universes[0]?.id, stats: { force: 5, agilite: 5, intelligence: 5, magie: 5, charisme: 5 } })} className="mb-4 font-cinzel gap-2 shimmer-btn"><Plus size={16} /> Ajouter un Personnage</Button>
+      <Button onClick={() => setEditing({ name: "", title: "", backstory: "", universe_id: universes[0]?.id, image: null, stats: { force: 5, agilite: 5, intelligence: 5, magie: 5, charisme: 5 } })} className="mb-4 font-cinzel gap-2 shimmer-btn"><Plus size={16} /> Ajouter un Personnage</Button>
 
       {editing && (
         <div className="grimoire-card p-6 mb-6 space-y-3">
@@ -175,6 +179,7 @@ function CharactersAdmin() {
             {factionsList.map(f => <option key={f.id} value={f.id}>{f.name}</option>)}
           </select>
           <textarea placeholder="Histoire" value={editing.backstory ?? ""} onChange={e => setEditing({ ...editing, backstory: e.target.value })} className="w-full bg-secondary/50 border border-primary/30 rounded-md px-3 py-2 text-foreground min-h-[80px]" />
+          <ImageUpload currentImage={editing.image} onImageChange={url => setEditing({ ...editing, image: url })} folder="characters" />
           <div className="flex gap-2">
             <Button onClick={save} className="font-cinzel shimmer-btn">Sauvegarder</Button>
             <Button variant="outline" onClick={() => setEditing(null)} className="font-cinzel">Annuler</Button>
@@ -185,9 +190,12 @@ function CharactersAdmin() {
       <div className="space-y-3">
         {data.map(c => (
           <div key={c.id} className="grimoire-card p-4 flex items-center justify-between">
-            <div>
-              <h3 className="font-cinzel font-bold text-primary">{c.name}</h3>
-              <p className="text-xs text-muted-foreground">{c.title}</p>
+            <div className="flex items-center gap-3">
+              {c.image && <img src={c.image} alt={c.name} className="w-10 h-10 rounded object-cover" />}
+              <div>
+                <h3 className="font-cinzel font-bold text-primary">{c.name}</h3>
+                <p className="text-xs text-muted-foreground">{c.title}</p>
+              </div>
             </div>
             <div className="flex gap-2">
               <Button size="icon" variant="ghost" onClick={() => setEditing(c)}><Pencil size={16} /></Button>
@@ -428,12 +436,12 @@ function CreaturesAdmin() {
   const { data: universes = [] } = useUniverses();
   const upsert = useUpsert("creatures");
   const del = useDelete("creatures");
-  const [editing, setEditing] = useState<Partial<Creature> | null>(null);
+  const [editing, setEditing] = useState<Partial<Creature & { image?: string | null }> | null>(null);
   const [abilitiesInput, setAbilitiesInput] = useState("");
 
   const startEdit = (c?: Creature) => {
     if (c) { setEditing(c); setAbilitiesInput(c.abilities.join(", ")); }
-    else { setEditing({ name: "", description: "", habitat: "", danger_level: 1, universe_id: universes[0]?.id, abilities: [] }); setAbilitiesInput(""); }
+    else { setEditing({ name: "", description: "", habitat: "", danger_level: 1, universe_id: universes[0]?.id, abilities: [], image: null }); setAbilitiesInput(""); }
   };
 
   const save = async () => {
@@ -466,6 +474,7 @@ function CreaturesAdmin() {
           </select>
           <textarea placeholder="Description" value={editing.description ?? ""} onChange={e => setEditing({ ...editing, description: e.target.value })} className="w-full bg-secondary/50 border border-primary/30 rounded-md px-3 py-2 text-foreground min-h-[60px]" />
           <Input placeholder="Capacités (séparées par des virgules)" value={abilitiesInput} onChange={e => setAbilitiesInput(e.target.value)} className="bg-secondary/50 border-primary/30" />
+          <ImageUpload currentImage={(editing as any)?.image} onImageChange={url => setEditing({ ...editing, image: url })} folder="creatures" />
           <div className="flex gap-2">
             <Button onClick={save} className="font-cinzel shimmer-btn">Sauvegarder</Button>
             <Button variant="outline" onClick={() => setEditing(null)} className="font-cinzel">Annuler</Button>
@@ -475,7 +484,10 @@ function CreaturesAdmin() {
       <div className="space-y-3">
         {data.map(c => (
           <div key={c.id} className="grimoire-card p-4 flex items-center justify-between">
-            <div><h3 className="font-cinzel font-bold text-primary">{c.name}</h3><p className="text-xs text-muted-foreground">Danger: {c.danger_level}/5 · {c.habitat}</p></div>
+            <div className="flex items-center gap-3">
+              {(c as any).image && <img src={(c as any).image} alt={c.name} className="w-10 h-10 rounded object-cover" />}
+              <div><h3 className="font-cinzel font-bold text-primary">{c.name}</h3><p className="text-xs text-muted-foreground">Danger: {c.danger_level}/5 · {c.habitat}</p></div>
+            </div>
             <div className="flex gap-2">
               <Button size="icon" variant="ghost" onClick={() => startEdit(c)}><Pencil size={16} /></Button>
               <Button size="icon" variant="ghost" onClick={() => remove(c.id)} className="text-destructive"><Trash2 size={16} /></Button>
