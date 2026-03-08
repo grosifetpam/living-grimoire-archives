@@ -39,6 +39,7 @@ const GrimoireBook = ({ title, subtitle, chapters, headerContent }: GrimoireBook
     ]
   );
   const dragBrightness = useTransform(dragX, [-200, 0, 200], [0.92, 1, 0.92]);
+  const dragFilter = useTransform(dragBrightness, (v) => `brightness(${v})`);
 
   const handleOpen = () => {
     playBookOpen();
