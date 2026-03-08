@@ -292,7 +292,7 @@ const GrimoireBook = ({ title, subtitle, chapters, headerContent }: GrimoireBook
                     </div>
                   </motion.div>
                 </AnimatePresence>
-              </div>
+              </motion.div>
 
               {/* Page curl decoration */}
               <div className="absolute bottom-0 right-0 w-12 h-12 pointer-events-none z-10">
