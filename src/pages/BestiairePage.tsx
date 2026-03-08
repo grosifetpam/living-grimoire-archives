@@ -4,6 +4,7 @@ import GrimoireBook from "@/components/GrimoireBook";
 import { useCreatures, useUniverses, useCharacters } from "@/hooks/useSupabaseData";
 import { motion } from "framer-motion";
 import { Skull } from "lucide-react";
+import { useSectionImage } from "@/hooks/useSectionImage";
 
 const DangerStars = ({ level }: { level: number }) => (
   <div className="flex gap-0.5">
