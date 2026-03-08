@@ -21,12 +21,46 @@ const CartesPage = () => {
     return factions.filter(f => ids.includes(f.id)).map(f => f.name);
   };
 
-  // Group by universe
+  // Universe oracle cards chapter
+  const universeCardsChapter = {
+    title: "Cartes Univers",
+    icon: <span>🌍</span>,
+    content: (
+      <div className="grid sm:grid-cols-2 gap-6">
+        {universes.map((u, i) => (
+          <motion.div key={u.id} initial={{ opacity: 0, rotateY: 90 }} animate={{ opacity: 1, rotateY: 0 }} transition={{ delay: i * 0.1, duration: 0.5 }} className="rounded-lg border border-primary/30 overflow-hidden bg-secondary/20 hover:glow-gold transition-all group">
+            {(u as any).card_image ? (
+              <div className="relative">
+                <img src={(u as any).card_image} alt={`Carte oracle de ${u.name}`} className="w-full aspect-[2/3] object-cover" />
+                <div className="absolute bottom-0 inset-x-0 bg-gradient-to-t from-background/90 to-transparent p-3">
+                  <h3 className="font-cinzel text-sm font-bold text-primary">{u.name}</h3>
+                  <p className="text-xs text-primary/60 font-crimson italic">{u.era}</p>
+                </div>
+              </div>
+            ) : (
+              <div className="bg-gradient-to-b from-primary/15 to-transparent p-5 text-center border-b border-primary/20">
+                <div className="w-20 h-20 rounded-full bg-secondary mx-auto mb-2 flex items-center justify-center text-3xl border-2 border-primary/40 overflow-hidden">
+                  {u.image ? <img src={u.image} alt={u.name} className="w-full h-full object-cover" /> : "🌍"}
+                </div>
+                <h3 className="font-cinzel text-lg font-bold text-primary">{u.name}</h3>
+                <p className="text-xs text-primary/60 font-crimson italic">{u.era}</p>
+              </div>
+            )}
+            <div className="p-3">
+              <p className="text-xs text-muted-foreground font-crimson line-clamp-2">{u.description}</p>
+            </div>
+          </motion.div>
+        ))}
+      </div>
+    ),
+  };
+
+  // Group characters by universe
   const grouped = universes
     .map(u => ({ universe: u, chars: characters.filter(c => c.universe_id === u.id) }))
     .filter(g => g.chars.length > 0);
 
-  const chapters = grouped.map(g => ({
+  const characterChapters = grouped.map(g => ({
     title: `${g.universe.name} (${g.chars.length})`,
     icon: <span>🃏</span>,
     content: (
@@ -38,7 +72,6 @@ const CartesPage = () => {
           const totalPower = Object.values(stats).reduce((a, b) => a + b, 0);
           return (
             <motion.div key={c.id} initial={{ opacity: 0, rotateY: 90 }} animate={{ opacity: 1, rotateY: 0 }} transition={{ delay: i * 0.1, duration: 0.5 }} className="rounded-lg border border-primary/30 overflow-hidden bg-secondary/20 hover:glow-gold transition-all group">
-              {/* Oracle card image if available */}
               {(c as any).card_image ? (
                 <div className="relative">
                   <img src={(c as any).card_image} alt={`Carte oracle de ${c.name}`} className="w-full aspect-[2/3] object-cover" />
@@ -48,15 +81,13 @@ const CartesPage = () => {
                   </div>
                 </div>
               ) : (
-                <>
-                  <div className="bg-gradient-to-b from-primary/15 to-transparent p-5 text-center border-b border-primary/20">
-                    <div className="w-20 h-20 rounded-full bg-secondary mx-auto mb-2 flex items-center justify-center text-3xl border-2 border-primary/40 group-hover:glow-gold-strong transition-all overflow-hidden">
-                      {c.image ? <img src={c.image} alt={c.name} className="w-full h-full object-cover" /> : "⚔️"}
-                    </div>
-                    <h3 className="font-cinzel text-lg font-bold text-primary">{c.name}</h3>
-                    <p className="text-xs text-primary/60 font-crimson italic">{c.title}</p>
+                <div className="bg-gradient-to-b from-primary/15 to-transparent p-5 text-center border-b border-primary/20">
+                  <div className="w-20 h-20 rounded-full bg-secondary mx-auto mb-2 flex items-center justify-center text-3xl border-2 border-primary/40 group-hover:glow-gold-strong transition-all overflow-hidden">
+                    {c.image ? <img src={c.image} alt={c.name} className="w-full h-full object-cover" /> : "⚔️"}
                   </div>
-                </>
+                  <h3 className="font-cinzel text-lg font-bold text-primary">{c.name}</h3>
+                  <p className="text-xs text-primary/60 font-crimson italic">{c.title}</p>
+                </div>
               )}
               <div className="p-4 space-y-2">
                 <div className="flex flex-wrap gap-1 text-xs text-muted-foreground">
@@ -83,6 +114,8 @@ const CartesPage = () => {
       </div>
     ),
   }));
+
+  const chapters = [universeCardsChapter, ...characterChapters];
 
   return (
     <Layout>
