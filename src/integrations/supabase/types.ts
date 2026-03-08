@@ -89,10 +89,12 @@ export type Database = {
       characters: {
         Row: {
           backstory: string
+          card_image: string | null
           created_at: string
           faction_id: string | null
           id: string
           image: string | null
+          music_url: string | null
           name: string
           race_id: string | null
           stats: Json
@@ -102,10 +104,12 @@ export type Database = {
         }
         Insert: {
           backstory?: string
+          card_image?: string | null
           created_at?: string
           faction_id?: string | null
           id?: string
           image?: string | null
+          music_url?: string | null
           name: string
           race_id?: string | null
           stats?: Json
@@ -115,10 +119,12 @@ export type Database = {
         }
         Update: {
           backstory?: string
+          card_image?: string | null
           created_at?: string
           faction_id?: string | null
           id?: string
           image?: string | null
+          music_url?: string | null
           name?: string
           race_id?: string | null
           stats?: Json
@@ -386,6 +392,7 @@ export type Database = {
           era: string
           id: string
           image: string | null
+          map_image: string | null
           name: string
           updated_at: string
         }
@@ -395,6 +402,7 @@ export type Database = {
           era?: string
           id?: string
           image?: string | null
+          map_image?: string | null
           name: string
           updated_at?: string
         }
@@ -404,6 +412,7 @@ export type Database = {
           era?: string
           id?: string
           image?: string | null
+          map_image?: string | null
           name?: string
           updated_at?: string
         }
