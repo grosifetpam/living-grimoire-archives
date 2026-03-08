@@ -14,6 +14,7 @@ interface GrimoireBookProps {
   subtitle?: string;
   chapters: GrimoireChapter[];
   headerContent?: ReactNode;
+  coverImage?: string | null;
 }
 
 const SWIPE_THRESHOLD = 60;
