@@ -195,36 +195,38 @@ const GrimoireBook = ({ title, subtitle, chapters, headerContent, coverImage }: 
             onClick={handleOpen}
             style={{ perspective: "1200px" }}
           >
-            <div className="relative bg-gradient-to-br from-[hsl(var(--parchment))] to-[hsl(var(--parchment-light))] border-2 border-primary/40 rounded-sm p-12 md:p-16 text-center shadow-[inset_0_0_60px_rgba(0,0,0,0.3),0_0_30px_hsl(var(--gold)/0.2)] overflow-hidden">
+            <div className="relative dark-parchment border-2 border-primary/20 rounded-sm p-12 md:p-16 text-center shadow-[inset_0_0_80px_rgba(0,0,0,0.5),0_0_30px_hsl(var(--gold)/0.1)] overflow-hidden animate-aura-glow">
               {coverImage && (
                 <div className="absolute inset-0 z-0">
-                  <img src={coverImage} alt="Couverture" className="w-full h-full object-cover opacity-25" />
-                  <div className="absolute inset-0 bg-gradient-to-br from-[hsl(var(--parchment))/0.6] to-[hsl(var(--parchment-light))/0.6]" />
+                  <img src={coverImage} alt="Couverture" className="w-full h-full object-cover opacity-15" />
+                  <div className="absolute inset-0 bg-gradient-to-br from-background/80 to-background/60" />
                 </div>
               )}
               <div className="relative z-10">
-              <div className="absolute left-0 top-0 bottom-0 w-3 bg-gradient-to-r from-primary/30 to-transparent" />
-              <div className="absolute left-3 top-0 bottom-0 w-px bg-primary/20" />
-              <div className="absolute top-3 left-5 text-primary/30 text-2xl font-cinzel">✦</div>
-              <div className="absolute top-3 right-3 text-primary/30 text-2xl font-cinzel">✦</div>
-              <div className="absolute bottom-3 left-5 text-primary/30 text-2xl font-cinzel">✦</div>
-              <div className="absolute bottom-3 right-3 text-primary/30 text-2xl font-cinzel">✦</div>
+              <div className="absolute left-0 top-0 bottom-0 w-3 bg-gradient-to-r from-primary/20 to-transparent" />
+              <div className="absolute left-3 top-0 bottom-0 w-px bg-accent/10" />
+              <div className="absolute top-3 left-5 text-primary/15 text-2xl animate-rune-pulse">☽</div>
+              <div className="absolute top-3 right-3 text-accent/15 text-2xl animate-rune-pulse" style={{ animationDelay: '1s' }}>✧</div>
+              <div className="absolute bottom-3 left-5 text-accent/15 text-2xl animate-rune-pulse" style={{ animationDelay: '2s' }}>◈</div>
+              <div className="absolute bottom-3 right-3 text-primary/15 text-2xl animate-rune-pulse" style={{ animationDelay: '3s' }}>☾</div>
 
               <motion.div
-                animate={{ scale: [1, 1.05, 1], opacity: [0.7, 1, 0.7] }}
+                animate={{ scale: [1, 1.05, 1], opacity: [0.5, 0.9, 0.5] }}
                 transition={{ duration: 3, repeat: Infinity }}
-                className="text-6xl mb-6"
-              >📖</motion.div>
+                className="text-6xl mb-6 filter drop-shadow-[0_0_15px_hsl(var(--gold)/0.3)]"
+              >🐍</motion.div>
 
-              <div className="border-t border-b border-primary/30 py-6 my-4">
+              <div className="border-t border-b border-primary/15 py-6 my-4">
                 <h1 className="font-cinzel text-3xl md:text-4xl font-bold text-primary text-glow-gold leading-tight">{title}</h1>
-                {subtitle && <p className="font-crimson text-primary/60 italic mt-3 text-lg">{subtitle}</p>}
+                {subtitle && <p className="font-crimson text-primary/50 italic mt-3 text-lg">{subtitle}</p>}
               </div>
 
+              <div className="text-primary/10 text-xs tracking-[0.5em] my-3 animate-rune-pulse">ᚠ ᚢ ᚦ ᚨ ᚱ ᚲ</div>
+
               <motion.div
-                animate={{ opacity: [0.5, 1, 0.5] }}
+                animate={{ opacity: [0.3, 0.8, 0.3] }}
                 transition={{ duration: 2, repeat: Infinity }}
-                className="mt-6 flex items-center justify-center gap-2 text-primary/60 font-cinzel text-sm"
+                className="mt-6 flex items-center justify-center gap-2 text-accent/50 font-cinzel text-sm"
               >
                 <BookOpen size={16} />
                 <span>Cliquez pour ouvrir le grimoire</span>
