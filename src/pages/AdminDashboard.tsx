@@ -75,6 +75,57 @@ const AdminDashboard = () => {
   );
 };
 
+// ============ HOME SETTINGS ============
+
+function HomeSettingsAdmin() {
+  const [coverImage, setCoverImage] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    supabase.from("site_settings").select("value").eq("key", "cover_image").single()
+      .then(({ data }) => {
+        if (data?.value) setCoverImage(data.value);
+        setLoading(false);
+      });
+  }, []);
+
+  const handleCoverChange = async (url: string | null) => {
+    const value = url || "";
+    const { data: existing } = await supabase.from("site_settings").select("id").eq("key", "cover_image").single();
+    if (existing) {
+      await supabase.from("site_settings").update({ value }).eq("key", "cover_image");
+    } else {
+      await supabase.from("site_settings").insert({ key: "cover_image", value } as any);
+    }
+    setCoverImage(url);
+    toast({ title: "Image de couverture mise à jour ✓" });
+  };
+
+  if (loading) return <p className="text-muted-foreground">Chargement...</p>;
+
+  return (
+    <div>
+      <h2 className="font-cinzel text-xl font-bold text-primary mb-4">🏠 Paramètres de la page d'accueil</h2>
+      <div className="grimoire-card p-6 space-y-4">
+        <ImageUpload
+          currentImage={coverImage}
+          onImageChange={handleCoverChange}
+          folder="covers"
+          label="📖 Image de couverture du grimoire"
+        />
+        {coverImage && (
+          <div className="mt-2">
+            <p className="text-xs text-muted-foreground font-crimson">Aperçu de la couverture :</p>
+            <div className="mt-2 w-48 h-64 rounded-md overflow-hidden border border-primary/30 shadow-lg">
+              <img src={coverImage} alt="Couverture" className="w-full h-full object-cover" />
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
 // ============ CRUD SECTIONS ============
 
 function UniversesAdmin() {
