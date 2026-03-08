@@ -18,6 +18,7 @@ const BestiairePage = () => {
   const { data: creatures = [] } = useCreatures();
   const { data: universes = [] } = useUniverses();
   const { data: characters = [] } = useCharacters();
+  const sectionImage = useSectionImage("bestiaire");
 
   // Group by universe
   const grouped = universes
