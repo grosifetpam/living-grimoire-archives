@@ -129,25 +129,28 @@ const PersonnageDetailPage = () => {
           )}
 
           {/* Faction details */}
-          {faction && (
-            <div className="mt-6 grimoire-card p-6">
+          {characterFactions.map(faction => (
+            <div key={faction.id} className="mt-6 grimoire-card p-6">
               <h2 className="font-cinzel text-xl font-bold text-primary mb-1">Faction : {faction.name}</h2>
               <p className="text-xs text-primary/50 font-crimson italic mb-2">"{faction.motto}"</p>
               <p className="text-sm text-foreground/80 font-crimson">{faction.description}</p>
-              {sameFactionChars.length > 0 && (
-                <div className="mt-3 pt-2 border-t border-primary/10">
-                  <p className="text-xs text-muted-foreground font-cinzel mb-1">Autres membres :</p>
-                  <div className="flex flex-wrap gap-2">
-                    {sameFactionChars.map(c => (
-                      <Link key={c.id} to={`/personnages/${c.id}`} className="text-xs px-2 py-1 rounded bg-secondary/50 text-primary hover:text-glow-gold transition-all font-cinzel">
-                        ⚔️ {c.name}
-                      </Link>
-                    ))}
+              {(() => {
+                const otherMembers = characters.filter(c => c.id !== character.id && charFactions.some(cf => cf.character_id === c.id && cf.faction_id === faction.id));
+                return otherMembers.length > 0 ? (
+                  <div className="mt-3 pt-2 border-t border-primary/10">
+                    <p className="text-xs text-muted-foreground font-cinzel mb-1">Autres membres :</p>
+                    <div className="flex flex-wrap gap-2">
+                      {otherMembers.map(c => (
+                        <Link key={c.id} to={`/personnages/${c.id}`} className="text-xs px-2 py-1 rounded bg-secondary/50 text-primary hover:text-glow-gold transition-all font-cinzel">
+                          ⚔️ {c.name}
+                        </Link>
+                      ))}
+                    </div>
                   </div>
-                </div>
-              )}
+                ) : null;
+              })()}
             </div>
-          )}
+          ))}
 
           {/* Same universe characters */}
           {sameUniverseChars.length > 0 && (
