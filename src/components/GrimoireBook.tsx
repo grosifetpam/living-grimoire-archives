@@ -202,6 +202,7 @@ const GrimoireBook = ({ title, subtitle, chapters, headerContent, coverImage }: 
                   <div className="absolute inset-0 bg-gradient-to-br from-[hsl(var(--parchment))/0.6] to-[hsl(var(--parchment-light))/0.6]" />
                 </div>
               )}
+              <div className="relative z-10">
               <div className="absolute left-0 top-0 bottom-0 w-3 bg-gradient-to-r from-primary/30 to-transparent" />
               <div className="absolute left-3 top-0 bottom-0 w-px bg-primary/20" />
               <div className="absolute top-3 left-5 text-primary/30 text-2xl font-cinzel">✦</div>
