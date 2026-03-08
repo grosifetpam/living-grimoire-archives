@@ -10,6 +10,7 @@ import {
   useUniverses, useCharacters, useRaces, useFactions,
   useTimelineEvents, useLocations, useCreatures,
   useCharacterFactions, useSetCharacterFactions,
+  useCharacterRaces, useSetCharacterRaces,
   useUpsert, useDelete,
 } from "@/hooks/useSupabaseData";
 import type { Universe, Character, Race, Faction, TimelineEvent, Location, Creature } from "@/hooks/useSupabaseData";
