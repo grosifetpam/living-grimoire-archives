@@ -67,11 +67,11 @@ const PersonnageDetailPage = () => {
                   🧬 {race.name}
                 </span>
               )}
-              {faction && (
-                <span className="px-3 py-1 rounded-full bg-secondary/60 border border-primary/20 text-sm text-primary/70 font-cinzel">
-                  🏛️ {faction.name}
+              {characterFactions.map(f => (
+                <span key={f.id} className="px-3 py-1 rounded-full bg-secondary/60 border border-primary/20 text-sm text-primary/70 font-cinzel">
+                  🏛️ {f.name}
                 </span>
-              )}
+              ))}
             </div>
           </div>
 
