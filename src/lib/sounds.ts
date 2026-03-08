@@ -46,6 +46,84 @@ export const playPageTurn = () => {
   }
 };
 
+// ─── Paper Rustle (continuous, during drag) ──────────────────────────────────
+interface RustleState {
+  source: AudioBufferSourceNode | null;
+  filter: BiquadFilterNode | null;
+  gain: GainNode | null;
+  running: boolean;
+}
+
+const rustle: RustleState = { source: null, filter: null, gain: null, running: false };
+
+export const startPaperRustle = () => {
+  if (rustle.running) return;
+  try {
+    const ctx = getAudioCtx();
+    const sampleRate = ctx.sampleRate;
+    const len = Math.floor(sampleRate * 2);
+    const buf = ctx.createBuffer(1, len, sampleRate);
+    const data = buf.getChannelData(0);
+    for (let i = 0; i < len; i++) {
+      data[i] = (Math.random() * 2 - 1) * 0.3;
+    }
+
+    const source = ctx.createBufferSource();
+    source.buffer = buf;
+    source.loop = true;
+
+    const filter = ctx.createBiquadFilter();
+    filter.type = "bandpass";
+    filter.frequency.value = 2500;
+    filter.Q.value = 0.5;
+
+    const gain = ctx.createGain();
+    gain.gain.setValueAtTime(0, ctx.currentTime);
+    gain.gain.linearRampToValueAtTime(0.08, ctx.currentTime + 0.05);
+
+    source.connect(filter);
+    filter.connect(gain);
+    gain.connect(ctx.destination);
+    source.start();
+
+    rustle.source = source;
+    rustle.filter = filter;
+    rustle.gain = gain;
+    rustle.running = true;
+  } catch {
+    rustle.running = false;
+  }
+};
+
+export const updatePaperRustle = (intensity: number) => {
+  if (!rustle.running || !rustle.gain || !rustle.filter) return;
+  try {
+    const ctx = getAudioCtx();
+    const vol = Math.min(0.15, Math.abs(intensity) * 0.12);
+    const freq = 1800 + Math.abs(intensity) * 1500;
+    rustle.gain.gain.linearRampToValueAtTime(vol, ctx.currentTime + 0.03);
+    rustle.filter.frequency.linearRampToValueAtTime(Math.min(freq, 5000), ctx.currentTime + 0.03);
+  } catch { /* ok */ }
+};
+
+export const stopPaperRustle = () => {
+  if (!rustle.running) return;
+  try {
+    const ctx = getAudioCtx();
+    if (rustle.gain) {
+      rustle.gain.gain.linearRampToValueAtTime(0, ctx.currentTime + 0.1);
+    }
+    const src = rustle.source;
+    setTimeout(() => {
+      try { src?.stop(); src?.disconnect(); } catch { /* ok */ }
+    }, 150);
+  } catch { /* ok */ }
+  rustle.source = null;
+  rustle.filter = null;
+  rustle.gain = null;
+  rustle.running = false;
+};
+
 export const playBookOpen = () => {
   try {
     const ctx = getAudioCtx();
