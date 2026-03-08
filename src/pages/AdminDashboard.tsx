@@ -179,8 +179,72 @@ function HomeSettingsAdmin() {
     </div>
   );
 }
+const SECTION_LABELS: Record<string, { label: string; icon: string }> = {
+  univers: { label: "Univers", icon: "🌍" },
+  personnages: { label: "Personnages", icon: "⚔️" },
+  races: { label: "Races", icon: "🧬" },
+  factions: { label: "Factions", icon: "🏛️" },
+  chronologie: { label: "Chronologie", icon: "📅" },
+  lieux: { label: "Lieux", icon: "📍" },
+  bestiaire: { label: "Bestiaire", icon: "🐉" },
+  cartes: { label: "Cartes", icon: "🃏" },
+};
 
-function MediaMapsSection() {
+function SectionImagesAdmin() {
+  const [images, setImages] = useState<Record<string, string | null>>({});
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const keys = Object.values(SECTION_IMAGE_KEYS);
+    supabase.from("site_settings").select("key, value").in("key", keys).then(({ data: rows }) => {
+      const map: Record<string, string | null> = {};
+      if (rows) {
+        for (const r of rows) {
+          const section = Object.entries(SECTION_IMAGE_KEYS).find(([, v]) => v === r.key)?.[0];
+          if (section) map[section] = r.value || null;
+        }
+      }
+      setImages(map);
+      setLoading(false);
+    });
+  }, []);
+
+  const handleChange = async (section: string, url: string | null) => {
+    const key = SECTION_IMAGE_KEYS[section];
+    const { data: existing } = await supabase.from("site_settings").select("id").eq("key", key).single();
+    if (existing) {
+      await supabase.from("site_settings").update({ value: url || "" }).eq("key", key);
+    } else {
+      await supabase.from("site_settings").insert({ key, value: url || "" } as any);
+    }
+    setImages(prev => ({ ...prev, [section]: url }));
+    toast({ title: `Image de ${SECTION_LABELS[section]?.label} mise à jour ✓` });
+  };
+
+  if (loading) return null;
+
+  return (
+    <div className="grimoire-card p-6 space-y-4">
+      <h3 className="font-cinzel text-lg text-primary/80">📚 Images de couverture des sections</h3>
+      <p className="text-xs text-muted-foreground font-crimson">Ajoutez une image de fond pour la couverture de chaque grimoire de section.</p>
+      <div className="grid md:grid-cols-2 gap-6">
+        {Object.entries(SECTION_LABELS).map(([section, { label, icon }]) => (
+          <div key={section} className="space-y-2 p-4 rounded-lg bg-secondary/20 border border-primary/10">
+            <p className="font-cinzel text-sm text-primary">{icon} {label}</p>
+            <ImageUpload
+              currentImage={images[section] || null}
+              onImageChange={(url) => handleChange(section, url)}
+              folder="section-covers"
+              label={`Couverture ${label}`}
+            />
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+
   const { data: universes = [], isLoading } = useUniverses();
   const upsert = useUpsert("universes");
 
