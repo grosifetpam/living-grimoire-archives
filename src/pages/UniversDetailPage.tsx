@@ -1,9 +1,13 @@
 import { useParams, Link } from "react-router-dom";
+import { useRef, useState } from "react";
 import Layout from "@/components/Layout";
 import GrimoireBook from "@/components/GrimoireBook";
-import { useUniverses, useCharacters, useRaces, useFactions, useTimelineEvents, useLocations, useCreatures, useCharacterFactions, useCharacterRaces } from "@/hooks/useSupabaseData";
+import { useUniverses, useCharacters, useRaces, useFactions, useTimelineEvents, useLocations, useCreatures, useCharacterFactions, useCharacterRaces, useUpsert } from "@/hooks/useSupabaseData";
 import { motion } from "framer-motion";
-import { Skull, MapPin, Swords, Shield, ScrollText, Clock, Bug } from "lucide-react";
+import { Skull, MapPin, Swords, Shield, ScrollText, Clock, Bug, ImagePlus } from "lucide-react";
+import { useAuth } from "@/hooks/useAuth";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "@/hooks/use-toast";
 
 const DangerStars = ({ level }: { level: number }) => (
   <div className="flex gap-0.5">
@@ -15,6 +19,7 @@ const DangerStars = ({ level }: { level: number }) => (
 
 const UniversDetailPage = () => {
   const { id } = useParams();
+  const { isAdmin } = useAuth();
   const { data: universes = [] } = useUniverses();
   const { data: allChars = [] } = useCharacters();
   const { data: allRaces = [] } = useRaces();
@@ -24,9 +29,28 @@ const UniversDetailPage = () => {
   const { data: allCreatures = [] } = useCreatures();
   const { data: charFactions = [] } = useCharacterFactions();
   const { data: charRaces = [] } = useCharacterRaces();
+  const upsertUniverse = useUpsert("universes");
+  const fileRef = useRef<HTMLInputElement>(null);
+  const [uploading, setUploading] = useState(false);
 
   const universe = universes.find(u => u.id === id);
   if (!universe) return <Layout><div className="min-h-screen flex items-center justify-center text-foreground font-cinzel">Univers introuvable</div></Layout>;
+
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file || !id) return;
+    if (!file.type.startsWith("image/")) { toast({ title: "Erreur", description: "Fichier image requis", variant: "destructive" }); return; }
+    if (file.size > 5 * 1024 * 1024) { toast({ title: "Erreur", description: "Taille max: 5MB", variant: "destructive" }); return; }
+    setUploading(true);
+    const ext = file.name.split(".").pop();
+    const path = `universes/${Date.now()}.${ext}`;
+    const { error } = await supabase.storage.from("images").upload(path, file);
+    if (error) { toast({ title: "Erreur", description: error.message, variant: "destructive" }); setUploading(false); return; }
+    const { data: urlData } = supabase.storage.from("images").getPublicUrl(path);
+    await upsertUniverse.mutateAsync({ id, image: urlData.publicUrl });
+    setUploading(false);
+    toast({ title: "Image de l'univers mise à jour ✓" });
+  };
 
   const chars = allChars.filter(c => c.universe_id === id);
   const races = allRaces.filter(r => r.universe_id === id);
@@ -46,11 +70,27 @@ const UniversDetailPage = () => {
 
   const headerContent = (
     <div className="mb-6">
-      {universe.image && (
-        <div className="w-full max-w-2xl mx-auto h-48 rounded-lg overflow-hidden mb-4 border border-primary/20 glow-gold">
-          <img src={universe.image} alt={universe.name} className="w-full h-full object-cover" />
-        </div>
-      )}
+      <div className="relative">
+        {universe.image && (
+          <div className="w-full max-w-2xl mx-auto h-48 rounded-lg overflow-hidden mb-4 border border-primary/20 glow-gold">
+            <img src={universe.image} alt={universe.name} className="w-full h-full object-cover" />
+          </div>
+        )}
+        {isAdmin && (
+          <>
+            <button
+              onClick={() => fileRef.current?.click()}
+              disabled={uploading}
+              className={`${universe.image ? 'absolute top-2 right-2' : 'mx-auto mb-4 flex'} z-10 items-center gap-2 px-3 py-2 rounded-lg bg-background/70 hover:bg-primary/20 text-primary/60 hover:text-primary transition-colors font-cinzel text-xs border border-primary/20`}
+              title="Ajouter / changer l'image"
+            >
+              <ImagePlus size={16} />
+              {!universe.image && <span>{uploading ? "Upload..." : "Ajouter une image"}</span>}
+            </button>
+            <input ref={fileRef} type="file" accept="image/*" className="hidden" onChange={handleImageUpload} />
+          </>
+        )}
+      </div>
       <p className="font-cinzel text-primary/50 text-center text-sm tracking-widest uppercase mb-4">{universe.era}</p>
       <div className="flex flex-wrap justify-center gap-3 mb-4">
         {[
