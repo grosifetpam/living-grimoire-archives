@@ -19,6 +19,7 @@ const DangerStars = ({ level }: { level: number }) => (
 
 const UniversDetailPage = () => {
   const { id } = useParams();
+  const { isAdmin } = useAuth();
   const { data: universes = [] } = useUniverses();
   const { data: allChars = [] } = useCharacters();
   const { data: allRaces = [] } = useRaces();
@@ -28,9 +29,28 @@ const UniversDetailPage = () => {
   const { data: allCreatures = [] } = useCreatures();
   const { data: charFactions = [] } = useCharacterFactions();
   const { data: charRaces = [] } = useCharacterRaces();
+  const upsertUniverse = useUpsert("universes");
+  const fileRef = useRef<HTMLInputElement>(null);
+  const [uploading, setUploading] = useState(false);
 
   const universe = universes.find(u => u.id === id);
   if (!universe) return <Layout><div className="min-h-screen flex items-center justify-center text-foreground font-cinzel">Univers introuvable</div></Layout>;
+
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file || !id) return;
+    if (!file.type.startsWith("image/")) { toast({ title: "Erreur", description: "Fichier image requis", variant: "destructive" }); return; }
+    if (file.size > 5 * 1024 * 1024) { toast({ title: "Erreur", description: "Taille max: 5MB", variant: "destructive" }); return; }
+    setUploading(true);
+    const ext = file.name.split(".").pop();
+    const path = `universes/${Date.now()}.${ext}`;
+    const { error } = await supabase.storage.from("images").upload(path, file);
+    if (error) { toast({ title: "Erreur", description: error.message, variant: "destructive" }); setUploading(false); return; }
+    const { data: urlData } = supabase.storage.from("images").getPublicUrl(path);
+    await upsertUniverse.mutateAsync({ id, image: urlData.publicUrl });
+    setUploading(false);
+    toast({ title: "Image de l'univers mise à jour ✓" });
+  };
 
   const chars = allChars.filter(c => c.universe_id === id);
   const races = allRaces.filter(r => r.universe_id === id);
