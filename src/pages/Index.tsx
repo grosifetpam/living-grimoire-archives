@@ -5,6 +5,7 @@ import StatCounter from "@/components/StatCounter";
 import { useUniverses, useCharacters, useRaces, useFactions, useTimelineEvents } from "@/hooks/useSupabaseData";
 import { motion, AnimatePresence } from "framer-motion";
 import { BookOpen } from "lucide-react";
+import { playBookOpen } from "@/lib/sounds";
 
 const Index = () => {
   const { data: universes = [] } = useUniverses();
