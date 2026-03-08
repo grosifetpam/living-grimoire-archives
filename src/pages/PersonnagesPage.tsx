@@ -79,6 +79,7 @@ const PersonnagesPage = () => {
         subtitle="Les héros et légendes du multivers"
         headerContent={headerContent}
         chapters={chapters.length > 0 ? chapters : [{ title: "Registre vide", icon: <span>📖</span>, content: <p className="text-center text-muted-foreground font-crimson italic">Aucun personnage trouvé...</p> }]}
+        coverImage={sectionImage}
       />
     </Layout>
   );

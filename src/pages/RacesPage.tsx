@@ -62,6 +62,7 @@ const RacesPage = () => {
         title="Races"
         subtitle="Les peuples du multivers"
         chapters={chapters.length > 0 ? chapters : [{ title: "Vide", icon: <span>📖</span>, content: <p className="text-center text-muted-foreground font-crimson italic">Aucune race inscrite...</p> }]}
+        coverImage={sectionImage}
       />
     </Layout>
   );

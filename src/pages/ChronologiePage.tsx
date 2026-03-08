@@ -86,6 +86,7 @@ const ChronologiePage = () => {
         title="Chronologie"
         subtitle="Le fil du temps à travers le multivers"
         chapters={chapters.length > 0 ? chapters : [{ title: "Vide", icon: <span>📖</span>, content: <p className="text-center text-muted-foreground font-crimson italic">Aucun événement inscrit...</p> }]}
+        coverImage={sectionImage}
       />
     </Layout>
   );

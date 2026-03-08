@@ -125,6 +125,7 @@ const CartesPage = () => {
         title="Galerie des Cartes Oracle"
         subtitle="Cartes oracle des univers et personnages du multivers"
         chapters={chapters.length > 0 ? chapters : [{ title: "Vide", icon: <span>📖</span>, content: <p className="text-center text-muted-foreground font-crimson italic">Aucune carte disponible...</p> }]}
+        coverImage={sectionImage}
       />
     </Layout>
   );

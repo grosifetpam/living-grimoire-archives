@@ -56,6 +56,7 @@ const FactionsPage = () => {
         title="Factions"
         subtitle="Les ordres et confréries du multivers"
         chapters={chapters.length > 0 ? chapters : [{ title: "Vide", icon: <span>📖</span>, content: <p className="text-center text-muted-foreground font-crimson italic">Aucune faction inscrite...</p> }]}
+        coverImage={sectionImage}
       />
     </Layout>
   );

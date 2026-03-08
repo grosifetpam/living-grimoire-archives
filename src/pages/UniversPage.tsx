@@ -49,6 +49,7 @@ const UniversPage = () => {
         title="Les Univers"
         subtitle="Chaque tome renferme un monde entier à découvrir"
         chapters={chapters.length > 0 ? chapters : [{ title: "Vide", icon: <span>📖</span>, content: <p className="text-center text-muted-foreground font-crimson italic">Aucun univers n'a encore été inscrit dans ce grimoire...</p> }]}
+        coverImage={sectionImage}
       />
     </Layout>
   );

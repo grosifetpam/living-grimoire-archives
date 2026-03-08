@@ -66,6 +66,7 @@ const LieuxPage = () => {
         title="Lieux"
         subtitle="Les terres et sanctuaires du multivers"
         chapters={chapters.length > 0 ? chapters : [{ title: "Vide", icon: <span>📖</span>, content: <p className="text-center text-muted-foreground font-crimson italic">Aucun lieu inscrit...</p> }]}
+        coverImage={sectionImage}
       />
     </Layout>
   );
