@@ -370,9 +370,10 @@ const GrimoireBook = ({ title, subtitle, chapters, headerContent, coverImage }: 
                     }}
                   >
                     {/* Page header */}
-                    <div className="text-center mb-6 pb-4 border-b border-primary/20">
-                      <div className="text-primary/30 text-sm font-cinzel tracking-[0.3em]">
-                        ✦ CHAPITRE {romanize(openChapter + 1)} ✦
+                    <div className="text-center mb-6 pb-4 border-b border-primary/15">
+                      <div className="text-primary/10 text-xs tracking-[0.5em] mb-1 animate-rune-pulse">ᚠ ᚢ ᚦ ᚨ ᚱ</div>
+                      <div className="text-accent/25 text-sm font-cinzel tracking-[0.3em]">
+                        ☽ CHAPITRE {romanize(openChapter + 1)} ☾
                       </div>
                       <h2 className="font-cinzel text-2xl font-bold text-primary mt-2 flex items-center justify-center gap-3">
                         <span>{chapters[openChapter]?.icon}</span>
