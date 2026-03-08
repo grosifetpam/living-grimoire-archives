@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { toast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
+import { motion } from "framer-motion";
 
 const AdminLoginPage = () => {
   const [mode, setMode] = useState<"login" | "signup" | "reset">("login");
@@ -48,80 +49,101 @@ const AdminLoginPage = () => {
     setLoading(false);
   };
 
-  const title = mode === "reset" ? "Réinitialiser le mot de passe" : mode === "signup" ? "Inscription Admin" : "Connexion Admin";
-  const subtitle = mode === "reset" ? "Entrez votre email pour recevoir un lien de réinitialisation" : mode === "signup" ? "Créez votre compte administrateur" : "Accédez aux archives secrètes";
+  const title = mode === "reset" ? "Réinitialiser le mot de passe" : mode === "signup" ? "Inscription" : "Connexion";
+  const subtitle = mode === "reset" ? "Entrez votre email pour recevoir un lien de réinitialisation" : mode === "signup" ? "Créez votre compte d'archiviste" : "Accédez aux archives secrètes";
 
   return (
     <Layout>
       <section className="min-h-screen flex items-center justify-center px-4">
-        <div className="grimoire-card p-8 w-full max-w-md">
-          <h1 className="font-cinzel text-3xl font-bold text-primary text-glow-gold text-center mb-2">
-            {title}
-          </h1>
-          <p className="text-center text-muted-foreground font-crimson mb-8">
-            {subtitle}
-          </p>
+        <motion.div
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.6 }}
+          className="max-w-md w-full"
+        >
+          <div className="relative bg-gradient-to-br from-[hsl(var(--parchment))] to-[hsl(var(--parchment-light))] border-2 border-primary/40 rounded-sm p-8 md:p-12 shadow-[inset_0_0_60px_rgba(0,0,0,0.3),0_0_30px_hsl(var(--gold)/0.2)]">
+            {/* Book spine */}
+            <div className="absolute left-0 top-0 bottom-0 w-3 bg-gradient-to-r from-primary/30 to-transparent" />
+            <div className="absolute left-3 top-0 bottom-0 w-px bg-primary/20" />
 
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <Input
-              type="email"
-              placeholder="Email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="bg-secondary/50 border-primary/30 focus:border-primary"
-              required
-            />
-            {mode !== "reset" && (
-              <Input
-                type="password"
-                placeholder="Mot de passe"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="bg-secondary/50 border-primary/30 focus:border-primary"
-                required
-                minLength={6}
-              />
-            )}
-            <Button type="submit" disabled={loading} className="w-full shimmer-btn font-cinzel">
-              {loading ? "..." : mode === "reset" ? "Envoyer le lien" : mode === "signup" ? "S'inscrire" : "Se connecter"}
-            </Button>
-          </form>
+            {/* Corner ornaments */}
+            <div className="absolute top-3 left-5 text-primary/30 text-2xl font-cinzel">✦</div>
+            <div className="absolute top-3 right-3 text-primary/30 text-2xl font-cinzel">✦</div>
+            <div className="absolute bottom-3 left-5 text-primary/30 text-2xl font-cinzel">✦</div>
+            <div className="absolute bottom-3 right-3 text-primary/30 text-2xl font-cinzel">✦</div>
 
-          <div className="mt-4 space-y-2">
-            {mode === "login" && (
-              <>
-                <button
-                  onClick={() => setMode("reset")}
-                  className="text-sm text-primary/60 hover:text-primary font-crimson w-full text-center block"
-                >
-                  Mot de passe oublié ?
-                </button>
-                <button
-                  onClick={() => setMode("signup")}
-                  className="text-sm text-primary/60 hover:text-primary font-crimson w-full text-center block"
-                >
-                  Pas de compte ? S'inscrire
-                </button>
-              </>
-            )}
-            {mode === "signup" && (
-              <button
-                onClick={() => setMode("login")}
-                className="text-sm text-primary/60 hover:text-primary font-crimson w-full text-center block"
+            {/* Inner border */}
+            <div className="absolute inset-5 left-7 border border-primary/15 rounded-sm pointer-events-none" />
+
+            <div className="relative z-10">
+              <motion.div
+                animate={{ scale: [1, 1.05, 1], opacity: [0.7, 1, 0.7] }}
+                transition={{ duration: 3, repeat: Infinity }}
+                className="text-5xl text-center mb-4"
               >
-                Déjà un compte ? Se connecter
-              </button>
-            )}
-            {mode === "reset" && (
-              <button
-                onClick={() => setMode("login")}
-                className="text-sm text-primary/60 hover:text-primary font-crimson w-full text-center block"
-              >
-                Retour à la connexion
-              </button>
-            )}
+                🔐
+              </motion.div>
+
+              <div className="text-center mb-8">
+                <div className="text-primary/30 text-xs font-cinzel tracking-[0.3em] mb-2">✦ ARCHIVES SECRÈTES ✦</div>
+                <h1 className="font-cinzel text-2xl md:text-3xl font-bold text-primary text-glow-gold">
+                  {title}
+                </h1>
+                <p className="font-crimson text-muted-foreground italic mt-2">
+                  {subtitle}
+                </p>
+              </div>
+
+              <form onSubmit={handleSubmit} className="space-y-4">
+                <Input
+                  type="email"
+                  placeholder="Email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  className="bg-secondary/50 border-primary/30 focus:border-primary font-crimson"
+                  required
+                />
+                {mode !== "reset" && (
+                  <Input
+                    type="password"
+                    placeholder="Mot de passe"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    className="bg-secondary/50 border-primary/30 focus:border-primary font-crimson"
+                    required
+                    minLength={6}
+                  />
+                )}
+                <Button type="submit" disabled={loading} className="w-full font-cinzel bg-primary/20 border border-primary/40 text-primary hover:bg-primary/30 hover:border-primary/60 transition-all">
+                  {loading ? "..." : mode === "reset" ? "Envoyer le lien" : mode === "signup" ? "S'inscrire" : "Se connecter"}
+                </Button>
+              </form>
+
+              <div className="mt-6 pt-4 border-t border-primary/15 space-y-2">
+                {mode === "login" && (
+                  <>
+                    <button onClick={() => setMode("reset")} className="text-sm text-primary/50 hover:text-primary font-crimson w-full text-center block transition-colors">
+                      Mot de passe oublié ?
+                    </button>
+                    <button onClick={() => setMode("signup")} className="text-sm text-primary/50 hover:text-primary font-crimson w-full text-center block transition-colors">
+                      Pas de compte ? S'inscrire
+                    </button>
+                  </>
+                )}
+                {mode === "signup" && (
+                  <button onClick={() => setMode("login")} className="text-sm text-primary/50 hover:text-primary font-crimson w-full text-center block transition-colors">
+                    Déjà un compte ? Se connecter
+                  </button>
+                )}
+                {mode === "reset" && (
+                  <button onClick={() => setMode("login")} className="text-sm text-primary/50 hover:text-primary font-crimson w-full text-center block transition-colors">
+                    Retour à la connexion
+                  </button>
+                )}
+              </div>
+            </div>
           </div>
-        </div>
+        </motion.div>
       </section>
     </Layout>
   );
