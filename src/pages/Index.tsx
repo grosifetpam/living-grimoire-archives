@@ -167,13 +167,13 @@ const Index = () => {
 
                 <div className="border-t border-b border-primary/25 py-8 my-4">
                   <h1 className="font-cinzel text-3xl md:text-5xl font-bold text-primary text-glow-gold leading-tight">
-                    L'Archive Vivante
+                    {siteTitle}
                   </h1>
-                  <p className="font-cinzel text-xl md:text-2xl text-foreground/70 mt-2">du Multivers</p>
+                  <p className="font-cinzel text-xl md:text-2xl text-foreground/70 mt-2">{siteSubtitle}</p>
                 </div>
 
                 <p className="font-crimson text-muted-foreground italic mt-6 text-lg max-w-sm mx-auto">
-                  Chaque page est un portail vers un monde oublié, chaque mot une clé vers des mystères anciens.
+                  {siteQuote}
                 </p>
 
                 <motion.div
