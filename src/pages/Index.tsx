@@ -20,15 +20,24 @@ const Index = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [musicOn, setMusicOn] = useState(false);
   const [coverImage, setCoverImage] = useState<string | null>(null);
+  const [siteTitle, setSiteTitle] = useState("L'Archive Vivante");
+  const [siteSubtitle, setSiteSubtitle] = useState("du Multivers");
+  const [siteQuote, setSiteQuote] = useState("Chaque page est un portail vers un monde oublié, chaque mot une clé vers des mystères anciens.");
   const [uploadingCover, setUploadingCover] = useState(false);
   const coverFileRef = useRef<HTMLInputElement>(null);
 
-  // Load cover image from site_settings
+  // Load settings from site_settings
   useEffect(() => {
-    supabase.from("site_settings").select("value").eq("key", "cover_image").single()
-      .then(({ data }) => {
-        if (data?.value) setCoverImage(data.value);
-      });
+    supabase.from("site_settings").select("key, value").then(({ data: rows }) => {
+      if (rows) {
+        for (const r of rows) {
+          if (r.key === "cover_image" && r.value) setCoverImage(r.value);
+          if (r.key === "site_title" && r.value) setSiteTitle(r.value);
+          if (r.key === "site_subtitle" && r.value) setSiteSubtitle(r.value);
+          if (r.key === "site_quote" && r.value) setSiteQuote(r.value);
+        }
+      }
+    });
   }, []);
 
   const handleCoverUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -158,13 +167,13 @@ const Index = () => {
 
                 <div className="border-t border-b border-primary/25 py-8 my-4">
                   <h1 className="font-cinzel text-3xl md:text-5xl font-bold text-primary text-glow-gold leading-tight">
-                    L'Archive Vivante
+                    {siteTitle}
                   </h1>
-                  <p className="font-cinzel text-xl md:text-2xl text-foreground/70 mt-2">du Multivers</p>
+                  <p className="font-cinzel text-xl md:text-2xl text-foreground/70 mt-2">{siteSubtitle}</p>
                 </div>
 
                 <p className="font-crimson text-muted-foreground italic mt-6 text-lg max-w-sm mx-auto">
-                  Chaque page est un portail vers un monde oublié, chaque mot une clé vers des mystères anciens.
+                  {siteQuote}
                 </p>
 
                 <motion.div
@@ -211,7 +220,7 @@ const Index = () => {
                   <div className="text-center">
                     <div className="text-primary/20 text-sm font-cinzel tracking-[0.4em] mb-4">✦ SOMMAIRE ✦</div>
                     <h1 className="font-cinzel text-4xl md:text-6xl font-bold text-primary text-glow-gold mb-4">
-                      L'Archive Vivante
+                      {siteTitle}
                     </h1>
                     <p className="font-crimson text-muted-foreground italic text-lg mb-8">
                       Explorez les secrets d'un multivers infini
