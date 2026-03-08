@@ -11,6 +11,7 @@ const CartesPage = () => {
   const { data: factions = [] } = useFactions();
   const { data: charRaces = [] } = useCharacterRaces();
   const { data: charFactions = [] } = useCharacterFactions();
+  const sectionImage = useSectionImage("cartes");
 
   const getUniverseName = (id: string) => universes.find(u => u.id === id)?.name || "Inconnu";
   const getCharRaceNames = (charId: string) => {
