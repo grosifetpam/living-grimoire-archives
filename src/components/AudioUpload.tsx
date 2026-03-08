@@ -53,7 +53,7 @@ const AudioUpload = ({ currentAudio, onAudioChange, folder, label = "Musique / T
   return (
     <div className="space-y-2">
       <label className="text-sm text-muted-foreground font-crimson flex items-center gap-1">
-        <Music size={14} /> Musique / Thème
+        <Music size={14} /> {label}
       </label>
       {currentAudio && (
         <div className="flex items-center gap-2 p-2 rounded-md border border-primary/20 bg-secondary/30">

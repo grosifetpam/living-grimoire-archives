@@ -52,7 +52,7 @@ const ImageUpload = ({ currentImage, onImageChange, folder, label = "Image" }: I
 
   return (
     <div className="space-y-2">
-      <label className="text-sm text-muted-foreground font-crimson">Image</label>
+      <label className="text-sm text-muted-foreground font-crimson">{label}</label>
       {currentImage && (
         <div className="relative w-32 h-32 rounded-md overflow-hidden border border-primary/30">
           <img src={currentImage} alt="preview" className="w-full h-full object-cover" />
