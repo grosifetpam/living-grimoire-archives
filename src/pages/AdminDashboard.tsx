@@ -257,6 +257,8 @@ function CharactersAdmin() {
     </div>
   );
 }
+
+function RacesAdmin() {
   const { data = [], isLoading } = useRaces();
   const { data: universes = [] } = useUniverses();
   const upsert = useUpsert("races");
