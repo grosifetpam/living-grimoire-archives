@@ -2,6 +2,7 @@ import { Link } from "react-router-dom";
 import Layout from "@/components/Layout";
 import GrimoireBook from "@/components/GrimoireBook";
 import { useFactions, useUniverses, useCharacters, useCharacterFactions } from "@/hooks/useSupabaseData";
+import { useSectionImage } from "@/hooks/useSectionImage";
 
 const FactionsPage = () => {
   const { data: factions = [] } = useFactions();
