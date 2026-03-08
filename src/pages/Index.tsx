@@ -1,11 +1,14 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
 import Layout from "@/components/Layout";
 import StatCounter from "@/components/StatCounter";
 import { useUniverses, useCharacters, useRaces, useFactions, useTimelineEvents } from "@/hooks/useSupabaseData";
 import { motion, AnimatePresence } from "framer-motion";
-import { BookOpen, Volume2, VolumeX } from "lucide-react";
+import { BookOpen, Volume2, VolumeX, ImagePlus } from "lucide-react";
 import { playBookOpen, startAmbientMusic, stopAmbientMusic, isAmbientPlaying } from "@/lib/sounds";
+import { useAuth } from "@/hooks/useAuth";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "@/hooks/use-toast";
 
 const Index = () => {
   const { data: universes = [] } = useUniverses();
@@ -13,8 +16,48 @@ const Index = () => {
   const { data: races = [] } = useRaces();
   const { data: factions = [] } = useFactions();
   const { data: timelineEvents = [] } = useTimelineEvents();
+  const { isAdmin } = useAuth();
   const [isOpen, setIsOpen] = useState(false);
   const [musicOn, setMusicOn] = useState(false);
+  const [coverImage, setCoverImage] = useState<string | null>(null);
+  const [uploadingCover, setUploadingCover] = useState(false);
+  const coverFileRef = useRef<HTMLInputElement>(null);
+
+  // Load cover image from site_settings
+  useEffect(() => {
+    supabase.from("site_settings").select("value").eq("key", "cover_image").single()
+      .then(({ data }) => {
+        if (data?.value) setCoverImage(data.value);
+      });
+  }, []);
+
+  const handleCoverUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (!file.type.startsWith("image/")) {
+      toast({ title: "Erreur", description: "Fichier image requis", variant: "destructive" });
+      return;
+    }
+    if (file.size > 5 * 1024 * 1024) {
+      toast({ title: "Erreur", description: "Taille max: 5MB", variant: "destructive" });
+      return;
+    }
+    setUploadingCover(true);
+    const ext = file.name.split(".").pop();
+    const path = `covers/${Date.now()}.${ext}`;
+    const { error: upErr } = await supabase.storage.from("images").upload(path, file);
+    if (upErr) {
+      toast({ title: "Erreur", description: upErr.message, variant: "destructive" });
+      setUploadingCover(false);
+      return;
+    }
+    const { data: urlData } = supabase.storage.from("images").getPublicUrl(path);
+    const url = urlData.publicUrl;
+    await supabase.from("site_settings" as any).update({ value: url }).eq("key", "cover_image");
+    setCoverImage(url);
+    setUploadingCover(false);
+    toast({ title: "Image de couverture mise à jour ✓" });
+  };
 
   const handleOpen = () => {
     playBookOpen();
@@ -63,17 +106,41 @@ const Index = () => {
               onClick={handleOpen}
               style={{ perspective: "1200px" }}
             >
-              <div className="relative bg-gradient-to-br from-[hsl(var(--parchment))] to-[hsl(var(--parchment-light))] border-2 border-primary/40 rounded-sm p-12 md:p-20 text-center shadow-[inset_0_0_80px_rgba(0,0,0,0.3),0_0_40px_hsl(var(--gold)/0.2)]">
-                <div className="absolute left-0 top-0 bottom-0 w-4 bg-gradient-to-r from-primary/30 to-transparent" />
-                <div className="absolute left-4 top-0 bottom-0 w-px bg-primary/20" />
-                <div className="absolute left-5 top-0 bottom-0 w-px bg-primary/10" />
+              <div className="relative bg-gradient-to-br from-[hsl(var(--parchment))] to-[hsl(var(--parchment-light))] border-2 border-primary/40 rounded-sm p-12 md:p-20 text-center shadow-[inset_0_0_80px_rgba(0,0,0,0.3),0_0_40px_hsl(var(--gold)/0.2)] overflow-hidden">
+                {/* Cover Image */}
+                {coverImage && (
+                  <div className="absolute inset-0 z-0">
+                    <img src={coverImage} alt="Couverture du grimoire" className="w-full h-full object-cover opacity-30" />
+                    <div className="absolute inset-0 bg-gradient-to-br from-[hsl(var(--parchment))/0.6] to-[hsl(var(--parchment-light))/0.6]" />
+                  </div>
+                )}
 
-                <div className="absolute top-4 left-7 text-primary/25 text-3xl font-cinzel">✦</div>
-                <div className="absolute top-4 right-4 text-primary/25 text-3xl font-cinzel">✦</div>
-                <div className="absolute bottom-4 left-7 text-primary/25 text-3xl font-cinzel">✦</div>
-                <div className="absolute bottom-4 right-4 text-primary/25 text-3xl font-cinzel">✦</div>
+                {/* Admin upload button */}
+                {isAdmin && (
+                  <>
+                    <button
+                      onClick={(e) => { e.stopPropagation(); coverFileRef.current?.click(); }}
+                      className="absolute top-2 right-2 z-30 p-2 rounded-full bg-background/60 hover:bg-primary/20 text-primary/60 hover:text-primary transition-colors"
+                      title="Changer l'image de couverture"
+                      disabled={uploadingCover}
+                    >
+                      <ImagePlus size={18} />
+                    </button>
+                    <input ref={coverFileRef} type="file" accept="image/*" className="hidden" onChange={handleCoverUpload} />
+                  </>
+                )}
+                <div className="absolute left-0 top-0 bottom-0 w-4 bg-gradient-to-r from-primary/30 to-transparent z-10" />
+                <div className="absolute left-4 top-0 bottom-0 w-px bg-primary/20 z-10" />
+                <div className="absolute left-5 top-0 bottom-0 w-px bg-primary/10 z-10" />
 
-                <div className="absolute inset-6 left-9 border border-primary/15 rounded-sm pointer-events-none" />
+                <div className="absolute top-4 left-7 text-primary/25 text-3xl font-cinzel z-10">✦</div>
+                <div className="absolute top-4 right-4 text-primary/25 text-3xl font-cinzel z-10">✦</div>
+                <div className="absolute bottom-4 left-7 text-primary/25 text-3xl font-cinzel z-10">✦</div>
+                <div className="absolute bottom-4 right-4 text-primary/25 text-3xl font-cinzel z-10">✦</div>
+
+                <div className="absolute inset-6 left-9 border border-primary/15 rounded-sm pointer-events-none z-10" />
+
+                <div className="relative z-20">
 
                 <motion.div
                   animate={{ scale: [1, 1.08, 1], opacity: [0.6, 1, 0.6] }}
@@ -102,6 +169,7 @@ const Index = () => {
                   <BookOpen size={18} />
                   <span>Cliquez pour ouvrir le grimoire</span>
                 </motion.div>
+                </div>
               </div>
             </motion.div>
           </motion.section>
