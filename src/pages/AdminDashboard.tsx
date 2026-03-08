@@ -100,7 +100,7 @@ function UniversesAdmin() {
 
   return (
     <div>
-      <Button onClick={() => setEditing({ name: "", description: "", era: "", image: null })} className="mb-4 font-cinzel gap-2 shimmer-btn"><Plus size={16} /> Ajouter un Univers</Button>
+      <Button onClick={() => setEditing({ name: "", description: "", era: "", image: null, map_image: null })} className="mb-4 font-cinzel gap-2 shimmer-btn"><Plus size={16} /> Ajouter un Univers</Button>
 
       {editing && (
         <div className="grimoire-card p-6 mb-6 space-y-3">
