@@ -81,48 +81,34 @@ const AdminDashboard = () => {
 // ============ HOME SETTINGS ============
 
 function HomeSettingsAdmin() {
-  const [coverImage, setCoverImage] = useState<string | null>(null);
-  const [siteTitle, setSiteTitle] = useState("L'Archive Vivante");
-  const [siteSubtitle, setSiteSubtitle] = useState("du Multivers");
-  const [siteQuote, setSiteQuote] = useState("Chaque page est un portail vers un monde oublié, chaque mot une clé vers des mystères anciens.");
-  const [loading, setLoading] = useState(true);
+  const { data: settings = {}, isLoading: loading } = useSiteSettings();
+  const saveMutation = useSaveSiteSetting();
+  const [siteTitle, setSiteTitle] = useState("");
+  const [siteSubtitle, setSiteSubtitle] = useState("");
+  const [siteQuote, setSiteQuote] = useState("");
+  const [initialized, setInitialized] = useState(false);
 
   useEffect(() => {
-    const loadSettings = async () => {
-      const { data: rows } = await supabase.from("site_settings").select("key, value");
-      if (rows) {
-        for (const r of rows) {
-          if (r.key === "cover_image" && r.value) setCoverImage(r.value);
-          if (r.key === "site_title" && r.value) setSiteTitle(r.value);
-          if (r.key === "site_subtitle" && r.value) setSiteSubtitle(r.value);
-          if (r.key === "site_quote" && r.value) setSiteQuote(r.value);
-        }
-      }
-      setLoading(false);
-    };
-    loadSettings();
-  }, []);
-
-  const saveSetting = async (key: string, value: string) => {
-    const { data: existing } = await supabase.from("site_settings").select("id").eq("key", key).single();
-    if (existing) {
-      await supabase.from("site_settings").update({ value }).eq("key", key);
-    } else {
-      await supabase.from("site_settings").insert({ key, value } as any);
+    if (!loading && !initialized) {
+      setSiteTitle(settings["site_title"] || "L'Archive Vivante");
+      setSiteSubtitle(settings["site_subtitle"] || "du Multivers");
+      setSiteQuote(settings["site_quote"] || "Chaque page est un portail vers un monde oublié, chaque mot une clé vers des mystères anciens.");
+      setInitialized(true);
     }
-  };
+  }, [loading, settings, initialized]);
+
+  const coverImage = settings["cover_image"] || null;
 
   const handleCoverChange = async (url: string | null) => {
-    await saveSetting("cover_image", url || "");
-    setCoverImage(url);
+    await saveMutation.mutateAsync({ key: "cover_image", value: url || "" });
     toast({ title: "Image de couverture mise à jour ✓" });
   };
 
   const handleSaveText = async () => {
     await Promise.all([
-      saveSetting("site_title", siteTitle),
-      saveSetting("site_subtitle", siteSubtitle),
-      saveSetting("site_quote", siteQuote),
+      saveMutation.mutateAsync({ key: "site_title", value: siteTitle }),
+      saveMutation.mutateAsync({ key: "site_subtitle", value: siteSubtitle }),
+      saveMutation.mutateAsync({ key: "site_quote", value: siteQuote }),
     ]);
     toast({ title: "Textes de la page d'accueil sauvegardés ✓" });
   };
