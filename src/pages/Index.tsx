@@ -106,7 +106,29 @@ const Index = () => {
               onClick={handleOpen}
               style={{ perspective: "1200px" }}
             >
-              <div className="relative bg-gradient-to-br from-[hsl(var(--parchment))] to-[hsl(var(--parchment-light))] border-2 border-primary/40 rounded-sm p-12 md:p-20 text-center shadow-[inset_0_0_80px_rgba(0,0,0,0.3),0_0_40px_hsl(var(--gold)/0.2)]">
+              <div className="relative bg-gradient-to-br from-[hsl(var(--parchment))] to-[hsl(var(--parchment-light))] border-2 border-primary/40 rounded-sm p-12 md:p-20 text-center shadow-[inset_0_0_80px_rgba(0,0,0,0.3),0_0_40px_hsl(var(--gold)/0.2)] overflow-hidden">
+                {/* Cover Image */}
+                {coverImage && (
+                  <div className="absolute inset-0 z-0">
+                    <img src={coverImage} alt="Couverture du grimoire" className="w-full h-full object-cover opacity-30" />
+                    <div className="absolute inset-0 bg-gradient-to-br from-[hsl(var(--parchment))/0.6] to-[hsl(var(--parchment-light))/0.6]" />
+                  </div>
+                )}
+
+                {/* Admin upload button */}
+                {isAdmin && (
+                  <>
+                    <button
+                      onClick={(e) => { e.stopPropagation(); coverFileRef.current?.click(); }}
+                      className="absolute top-2 right-2 z-30 p-2 rounded-full bg-background/60 hover:bg-primary/20 text-primary/60 hover:text-primary transition-colors"
+                      title="Changer l'image de couverture"
+                      disabled={uploadingCover}
+                    >
+                      <ImagePlus size={18} />
+                    </button>
+                    <input ref={coverFileRef} type="file" accept="image/*" className="hidden" onChange={handleCoverUpload} />
+                  </>
+                )}
                 <div className="absolute left-0 top-0 bottom-0 w-4 bg-gradient-to-r from-primary/30 to-transparent" />
                 <div className="absolute left-4 top-0 bottom-0 w-px bg-primary/20" />
                 <div className="absolute left-5 top-0 bottom-0 w-px bg-primary/10" />
