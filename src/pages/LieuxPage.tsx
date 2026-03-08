@@ -8,6 +8,7 @@ const LieuxPage = () => {
   const { data: locations = [] } = useLocations();
   const { data: universes = [] } = useUniverses();
   const { data: characters = [] } = useCharacters();
+  const sectionImage = useSectionImage("lieux");
 
   // Group by universe
   const grouped = universes
