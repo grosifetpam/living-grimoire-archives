@@ -16,8 +16,48 @@ const Index = () => {
   const { data: races = [] } = useRaces();
   const { data: factions = [] } = useFactions();
   const { data: timelineEvents = [] } = useTimelineEvents();
+  const { isAdmin } = useAuth();
   const [isOpen, setIsOpen] = useState(false);
   const [musicOn, setMusicOn] = useState(false);
+  const [coverImage, setCoverImage] = useState<string | null>(null);
+  const [uploadingCover, setUploadingCover] = useState(false);
+  const coverFileRef = useRef<HTMLInputElement>(null);
+
+  // Load cover image from site_settings
+  useEffect(() => {
+    supabase.from("site_settings").select("value").eq("key", "cover_image").single()
+      .then(({ data }) => {
+        if (data?.value) setCoverImage(data.value);
+      });
+  }, []);
+
+  const handleCoverUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (!file.type.startsWith("image/")) {
+      toast({ title: "Erreur", description: "Fichier image requis", variant: "destructive" });
+      return;
+    }
+    if (file.size > 5 * 1024 * 1024) {
+      toast({ title: "Erreur", description: "Taille max: 5MB", variant: "destructive" });
+      return;
+    }
+    setUploadingCover(true);
+    const ext = file.name.split(".").pop();
+    const path = `covers/${Date.now()}.${ext}`;
+    const { error: upErr } = await supabase.storage.from("images").upload(path, file);
+    if (upErr) {
+      toast({ title: "Erreur", description: upErr.message, variant: "destructive" });
+      setUploadingCover(false);
+      return;
+    }
+    const { data: urlData } = supabase.storage.from("images").getPublicUrl(path);
+    const url = urlData.publicUrl;
+    await supabase.from("site_settings" as any).update({ value: url }).eq("key", "cover_image");
+    setCoverImage(url);
+    setUploadingCover(false);
+    toast({ title: "Image de couverture mise à jour ✓" });
+  };
 
   const handleOpen = () => {
     playBookOpen();
