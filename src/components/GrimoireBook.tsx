@@ -25,6 +25,20 @@ const GrimoireBook = ({ title, subtitle, chapters, headerContent }: GrimoireBook
   const [direction, setDirection] = useState<1 | -1>(1);
   const [isDragging, setIsDragging] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
+  const dragX = useMotionValue(0);
+  const dragRotateY = useTransform(dragX, [-200, 0, 200], [18, 0, -18]);
+  const dragSkewY = useTransform(dragX, [-200, 0, 200], [-2, 0, 2]);
+  const dragScale = useTransform(dragX, [-200, -100, 0, 100, 200], [0.97, 0.99, 1, 0.99, 0.97]);
+  const dragShadow = useTransform(
+    dragX,
+    [-200, 0, 200],
+    [
+      "inset 30px 0 40px rgba(0,0,0,0.25), -10px 5px 20px rgba(0,0,0,0.15)",
+      "inset 0 0 40px rgba(0,0,0,0.15)",
+      "inset -30px 0 40px rgba(0,0,0,0.25), 10px 5px 20px rgba(0,0,0,0.15)",
+    ]
+  );
+  const dragBrightness = useTransform(dragX, [-200, 0, 200], [0.92, 1, 0.92]);
 
   const handleOpen = () => {
     playBookOpen();
