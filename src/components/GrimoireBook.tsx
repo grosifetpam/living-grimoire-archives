@@ -106,7 +106,7 @@ const GrimoireBook = ({ title, subtitle, chapters, headerContent }: GrimoireBook
               {chapters.map((ch, i) => (
                 <button
                   key={i}
-                  onClick={() => setOpenChapter(i)}
+                  onClick={() => { if (i !== openChapter) playPageTurn(); setOpenChapter(i); }}
                   className={`grimoire-tab px-4 py-2.5 font-cinzel text-xs md:text-sm flex items-center gap-2 transition-all rounded-t-lg border border-b-0 ${
                     openChapter === i
                       ? "bg-[hsl(var(--parchment-light))] border-primary/40 text-primary -mb-px z-10 relative"
