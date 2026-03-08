@@ -79,34 +79,78 @@ const AdminDashboard = () => {
 
 function HomeSettingsAdmin() {
   const [coverImage, setCoverImage] = useState<string | null>(null);
+  const [siteTitle, setSiteTitle] = useState("L'Archive Vivante");
+  const [siteSubtitle, setSiteSubtitle] = useState("du Multivers");
+  const [siteQuote, setSiteQuote] = useState("Chaque page est un portail vers un monde oublié, chaque mot une clé vers des mystères anciens.");
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    supabase.from("site_settings").select("value").eq("key", "cover_image").single()
-      .then(({ data }) => {
-        if (data?.value) setCoverImage(data.value);
-        setLoading(false);
-      });
+    const loadSettings = async () => {
+      const { data: rows } = await supabase.from("site_settings").select("key, value");
+      if (rows) {
+        for (const r of rows) {
+          if (r.key === "cover_image" && r.value) setCoverImage(r.value);
+          if (r.key === "site_title" && r.value) setSiteTitle(r.value);
+          if (r.key === "site_subtitle" && r.value) setSiteSubtitle(r.value);
+          if (r.key === "site_quote" && r.value) setSiteQuote(r.value);
+        }
+      }
+      setLoading(false);
+    };
+    loadSettings();
   }, []);
 
-  const handleCoverChange = async (url: string | null) => {
-    const value = url || "";
-    const { data: existing } = await supabase.from("site_settings").select("id").eq("key", "cover_image").single();
+  const saveSetting = async (key: string, value: string) => {
+    const { data: existing } = await supabase.from("site_settings").select("id").eq("key", key).single();
     if (existing) {
-      await supabase.from("site_settings").update({ value }).eq("key", "cover_image");
+      await supabase.from("site_settings").update({ value }).eq("key", key);
     } else {
-      await supabase.from("site_settings").insert({ key: "cover_image", value } as any);
+      await supabase.from("site_settings").insert({ key, value } as any);
     }
+  };
+
+  const handleCoverChange = async (url: string | null) => {
+    await saveSetting("cover_image", url || "");
     setCoverImage(url);
     toast({ title: "Image de couverture mise à jour ✓" });
+  };
+
+  const handleSaveText = async () => {
+    await Promise.all([
+      saveSetting("site_title", siteTitle),
+      saveSetting("site_subtitle", siteSubtitle),
+      saveSetting("site_quote", siteQuote),
+    ]);
+    toast({ title: "Textes de la page d'accueil sauvegardés ✓" });
   };
 
   if (loading) return <p className="text-muted-foreground">Chargement...</p>;
 
   return (
-    <div>
+    <div className="space-y-6">
       <h2 className="font-cinzel text-xl font-bold text-primary mb-4">🏠 Paramètres de la page d'accueil</h2>
+
+      {/* Titre & sous-titre */}
       <div className="grimoire-card p-6 space-y-4">
+        <h3 className="font-cinzel text-lg text-primary/80">📝 Titre & Textes</h3>
+        <div>
+          <label className="text-sm text-muted-foreground font-crimson">Titre principal</label>
+          <Input value={siteTitle} onChange={e => setSiteTitle(e.target.value)} className="bg-secondary/50 border-primary/30 mt-1" placeholder="L'Archive Vivante" />
+        </div>
+        <div>
+          <label className="text-sm text-muted-foreground font-crimson">Sous-titre</label>
+          <Input value={siteSubtitle} onChange={e => setSiteSubtitle(e.target.value)} className="bg-secondary/50 border-primary/30 mt-1" placeholder="du Multivers" />
+        </div>
+        <div>
+          <label className="text-sm text-muted-foreground font-crimson">Citation / description</label>
+          <textarea value={siteQuote} onChange={e => setSiteQuote(e.target.value)} className="w-full bg-secondary/50 border border-primary/30 rounded-md px-3 py-2 text-foreground min-h-[60px] mt-1" placeholder="Chaque page est un portail..." />
+        </div>
+        <Button onClick={handleSaveText} className="font-cinzel shimmer-btn">Sauvegarder les textes</Button>
+      </div>
+
+      {/* Image de couverture */}
+      <div className="grimoire-card p-6 space-y-4">
+        <h3 className="font-cinzel text-lg text-primary/80">🖼️ Image de couverture</h3>
         <ImageUpload
           currentImage={coverImage}
           onImageChange={handleCoverChange}
@@ -115,7 +159,7 @@ function HomeSettingsAdmin() {
         />
         {coverImage && (
           <div className="mt-2">
-            <p className="text-xs text-muted-foreground font-crimson">Aperçu de la couverture :</p>
+            <p className="text-xs text-muted-foreground font-crimson">Aperçu :</p>
             <div className="mt-2 w-48 h-64 rounded-md overflow-hidden border border-primary/30 shadow-lg">
               <img src={coverImage} alt="Couverture" className="w-full h-full object-cover" />
             </div>
