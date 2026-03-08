@@ -45,6 +45,30 @@ export const useCreatures = () => useQuery({ queryKey: ["creatures"], queryFn: a
   if (error) throw error; return data;
 }});
 
+// Many-to-many: character <-> factions
+export const useCharacterFactions = () => useQuery({ queryKey: ["character_factions"], queryFn: async () => {
+  const { data, error } = await supabase.from("character_factions").select("*");
+  if (error) throw error; return data as { id: string; character_id: string; faction_id: string }[];
+}});
+
+export const useSetCharacterFactions = () => {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async ({ characterId, factionIds }: { characterId: string; factionIds: string[] }) => {
+      // Delete existing
+      const { error: delErr } = await supabase.from("character_factions").delete().eq("character_id", characterId);
+      if (delErr) throw delErr;
+      // Insert new
+      if (factionIds.length > 0) {
+        const rows = factionIds.map(fid => ({ character_id: characterId, faction_id: fid }));
+        const { error: insErr } = await supabase.from("character_factions").insert(rows);
+        if (insErr) throw insErr;
+      }
+    },
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["character_factions"] }),
+  });
+};
+
 export const useUpsert = (table: "universes" | "characters" | "races" | "factions" | "timeline_events" | "locations" | "creatures") => {
   const qc = useQueryClient();
   return useMutation({
