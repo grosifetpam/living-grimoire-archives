@@ -331,7 +331,7 @@ const GrimoireBook = ({ title, subtitle, chapters, headerContent, coverImage }: 
               )}
 
               <motion.div
-                className="bg-gradient-to-br from-[hsl(var(--parchment))] to-[hsl(var(--parchment-light))] rounded-lg min-h-[450px] overflow-hidden"
+                className="dark-parchment rounded-lg min-h-[450px] overflow-hidden"
                 style={{
                   boxShadow: isDragging ? dragShadow : "inset 0 0 40px rgba(0,0,0,0.15)",
                   transformStyle: "preserve-3d",
