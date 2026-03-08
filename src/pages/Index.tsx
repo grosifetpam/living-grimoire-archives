@@ -35,6 +35,16 @@ const Index = () => {
   const siteSubtitle = settings["site_subtitle"] || "du Multivers";
   const siteQuote = settings["site_quote"] || "Chaque page est un portail vers un monde oublié, chaque mot une clé vers des mystères anciens.";
 
+  // Section images
+  const universImage = useSectionImage("univers");
+  const personnagesImage = useSectionImage("personnages");
+  const racesImage = useSectionImage("races");
+  const factionsImage = useSectionImage("factions");
+  const chronologieImage = useSectionImage("chronologie");
+  const lieuxImage = useSectionImage("lieux");
+  const bestiaireImage = useSectionImage("bestiaire");
+  const cartesImage = useSectionImage("cartes");
+
   const handleCoverUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
