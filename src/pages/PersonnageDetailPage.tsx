@@ -51,6 +51,13 @@ const PersonnageDetailPage = () => {
           <span key={f.id} className="px-3 py-1 rounded-full bg-secondary/60 border border-primary/20 text-xs text-primary/70 font-cinzel">🏛️ {f.name}</span>
         ))}
       </div>
+      {/* Music player */}
+      {(character as any).music_url && (
+        <div className="mt-4 max-w-sm mx-auto">
+          <p className="text-xs text-primary/50 font-cinzel mb-1">🎵 Thème musical</p>
+          <audio controls src={(character as any).music_url} className="w-full h-8" />
+        </div>
+      )}
       <Link to="/personnages" className="block text-xs font-cinzel text-primary/40 hover:text-primary transition-colors mt-3">← Retour aux Personnages</Link>
     </div>
   );
@@ -91,6 +98,22 @@ const PersonnageDetailPage = () => {
       <p className="font-crimson text-foreground/90 leading-relaxed text-lg">{character.backstory || "L'histoire de ce personnage reste à écrire..."}</p>
     ),
   });
+
+  // Carte Oracle
+  if ((character as any).card_image) {
+    chapters.push({
+      title: "Carte Oracle",
+      icon: <span>🃏</span>,
+      content: (
+        <div className="text-center">
+          <div className="inline-block rounded-xl border-2 border-primary/30 overflow-hidden shadow-[0_0_30px_hsl(var(--gold)/0.2)] hover:shadow-[0_0_50px_hsl(var(--gold)/0.4)] transition-shadow">
+            <img src={(character as any).card_image} alt={`Carte oracle de ${character.name}`} className="max-w-xs w-full" />
+          </div>
+          <p className="text-sm text-muted-foreground font-crimson italic mt-3">Carte oracle de {character.name}</p>
+        </div>
+      ),
+    });
+  }
 
   // Races
   if (characterRaces.length > 0) {

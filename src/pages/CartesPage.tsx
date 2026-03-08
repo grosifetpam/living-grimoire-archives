@@ -38,13 +38,26 @@ const CartesPage = () => {
           const totalPower = Object.values(stats).reduce((a, b) => a + b, 0);
           return (
             <motion.div key={c.id} initial={{ opacity: 0, rotateY: 90 }} animate={{ opacity: 1, rotateY: 0 }} transition={{ delay: i * 0.1, duration: 0.5 }} className="rounded-lg border border-primary/30 overflow-hidden bg-secondary/20 hover:glow-gold transition-all group">
-              <div className="bg-gradient-to-b from-primary/15 to-transparent p-5 text-center border-b border-primary/20">
-                <div className="w-20 h-20 rounded-full bg-secondary mx-auto mb-2 flex items-center justify-center text-3xl border-2 border-primary/40 group-hover:glow-gold-strong transition-all overflow-hidden">
-                  {c.image ? <img src={c.image} alt={c.name} className="w-full h-full object-cover" /> : "⚔️"}
+              {/* Oracle card image if available */}
+              {(c as any).card_image ? (
+                <div className="relative">
+                  <img src={(c as any).card_image} alt={`Carte oracle de ${c.name}`} className="w-full aspect-[2/3] object-cover" />
+                  <div className="absolute bottom-0 inset-x-0 bg-gradient-to-t from-background/90 to-transparent p-3">
+                    <h3 className="font-cinzel text-sm font-bold text-primary">{c.name}</h3>
+                    <p className="text-xs text-primary/60 font-crimson italic">{c.title}</p>
+                  </div>
                 </div>
-                <h3 className="font-cinzel text-lg font-bold text-primary">{c.name}</h3>
-                <p className="text-xs text-primary/60 font-crimson italic">{c.title}</p>
-              </div>
+              ) : (
+                <>
+                  <div className="bg-gradient-to-b from-primary/15 to-transparent p-5 text-center border-b border-primary/20">
+                    <div className="w-20 h-20 rounded-full bg-secondary mx-auto mb-2 flex items-center justify-center text-3xl border-2 border-primary/40 group-hover:glow-gold-strong transition-all overflow-hidden">
+                      {c.image ? <img src={c.image} alt={c.name} className="w-full h-full object-cover" /> : "⚔️"}
+                    </div>
+                    <h3 className="font-cinzel text-lg font-bold text-primary">{c.name}</h3>
+                    <p className="text-xs text-primary/60 font-crimson italic">{c.title}</p>
+                  </div>
+                </>
+              )}
               <div className="p-4 space-y-2">
                 <div className="flex flex-wrap gap-1 text-xs text-muted-foreground">
                   <span>🌍 {getUniverseName(c.universe_id)}</span>
