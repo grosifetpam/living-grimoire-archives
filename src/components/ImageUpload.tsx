@@ -8,6 +8,7 @@ interface ImageUploadProps {
   currentImage?: string | null;
   onImageChange: (url: string | null) => void;
   folder: string;
+  label?: string;
 }
 
 const ImageUpload = ({ currentImage, onImageChange, folder }: ImageUploadProps) => {
