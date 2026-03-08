@@ -244,7 +244,7 @@ function SectionImagesAdmin() {
   );
 }
 
-
+function MediaMapsSection() {
   const { data: universes = [], isLoading } = useUniverses();
   const upsert = useUpsert("universes");
 
