@@ -25,6 +25,21 @@ const GrimoireBook = ({ title, subtitle, chapters, headerContent }: GrimoireBook
   const [direction, setDirection] = useState<1 | -1>(1);
   const [isDragging, setIsDragging] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
+  const dragX = useMotionValue(0);
+  const dragRotateY = useTransform(dragX, [-200, 0, 200], [18, 0, -18]);
+  const dragSkewY = useTransform(dragX, [-200, 0, 200], [-2, 0, 2]);
+  const dragScale = useTransform(dragX, [-200, -100, 0, 100, 200], [0.97, 0.99, 1, 0.99, 0.97]);
+  const dragShadow = useTransform(
+    dragX,
+    [-200, 0, 200],
+    [
+      "inset 30px 0 40px rgba(0,0,0,0.25), -10px 5px 20px rgba(0,0,0,0.15)",
+      "inset 0 0 40px rgba(0,0,0,0.15)",
+      "inset -30px 0 40px rgba(0,0,0,0.25), 10px 5px 20px rgba(0,0,0,0.15)",
+    ]
+  );
+  const dragBrightness = useTransform(dragX, [-200, 0, 200], [0.92, 1, 0.92]);
+  const dragFilter = useTransform(dragBrightness, (v) => `brightness(${v})`);
 
   const handleOpen = () => {
     playBookOpen();
@@ -73,22 +88,28 @@ const GrimoireBook = ({ title, subtitle, chapters, headerContent }: GrimoireBook
   // Page flip 3D variants
   const pageVariants = {
     enter: (dir: number) => ({
-      rotateY: dir > 0 ? 12 : -12,
-      x: dir > 0 ? 80 : -80,
+      rotateY: dir > 0 ? 25 : -25,
+      skewY: dir > 0 ? -3 : 3,
+      x: dir > 0 ? 120 : -120,
       opacity: 0,
-      scale: 0.96,
+      scale: 0.92,
+      filter: "brightness(0.85)",
     }),
     center: {
       rotateY: 0,
+      skewY: 0,
       x: 0,
       opacity: 1,
       scale: 1,
+      filter: "brightness(1)",
     },
     exit: (dir: number) => ({
-      rotateY: dir > 0 ? -12 : 12,
-      x: dir > 0 ? -80 : 80,
+      rotateY: dir > 0 ? -25 : 25,
+      skewY: dir > 0 ? 3 : -3,
+      x: dir > 0 ? -120 : 120,
       opacity: 0,
-      scale: 0.96,
+      scale: 0.92,
+      filter: "brightness(0.85)",
     }),
   };
 
@@ -212,7 +233,14 @@ const GrimoireBook = ({ title, subtitle, chapters, headerContent }: GrimoireBook
                 </div>
               )}
 
-              <div className="bg-gradient-to-br from-[hsl(var(--parchment))] to-[hsl(var(--parchment-light))] rounded-lg min-h-[450px] shadow-[inset_0_0_40px_rgba(0,0,0,0.15)] overflow-hidden">
+              <motion.div
+                className="bg-gradient-to-br from-[hsl(var(--parchment))] to-[hsl(var(--parchment-light))] rounded-lg min-h-[450px] overflow-hidden"
+                style={{
+                  boxShadow: isDragging ? dragShadow : "inset 0 0 40px rgba(0,0,0,0.15)",
+                  transformStyle: "preserve-3d",
+                  perspective: "800px",
+                }}
+              >
                 <AnimatePresence mode="wait" custom={direction}>
                   <motion.div
                     key={openChapter}
@@ -222,17 +250,26 @@ const GrimoireBook = ({ title, subtitle, chapters, headerContent }: GrimoireBook
                     animate="center"
                     exit="exit"
                     transition={{
-                      type: "tween",
-                      duration: 0.45,
-                      ease: [0.25, 0.46, 0.45, 0.94],
+                      type: "spring",
+                      stiffness: 200,
+                      damping: 28,
+                      mass: 0.8,
                     }}
                     drag="x"
                     dragConstraints={{ left: 0, right: 0 }}
-                    dragElastic={0.15}
+                    dragElastic={0.12}
                     onDragStart={() => setIsDragging(true)}
                     onDragEnd={handleDragEnd}
                     className="p-6 md:p-10 cursor-grab active:cursor-grabbing"
-                    style={{ transformStyle: "preserve-3d" }}
+                    style={{
+                      x: dragX,
+                      rotateY: isDragging ? dragRotateY : 0,
+                      skewY: isDragging ? dragSkewY : 0,
+                      scale: isDragging ? dragScale : 1,
+                      filter: isDragging ? dragFilter : "brightness(1)",
+                      transformStyle: "preserve-3d",
+                      transformOrigin: "center center",
+                    }}
                   >
                     {/* Page header */}
                     <div className="text-center mb-6 pb-4 border-b border-primary/20">
@@ -256,7 +293,7 @@ const GrimoireBook = ({ title, subtitle, chapters, headerContent }: GrimoireBook
                     </div>
                   </motion.div>
                 </AnimatePresence>
-              </div>
+              </motion.div>
 
               {/* Page curl decoration */}
               <div className="absolute bottom-0 right-0 w-12 h-12 pointer-events-none z-10">
