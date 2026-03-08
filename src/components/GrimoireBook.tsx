@@ -1,7 +1,7 @@
 import { useState, useEffect, ReactNode, useRef } from "react";
 import { motion, AnimatePresence, useMotionValue, useTransform, PanInfo } from "framer-motion";
 import { BookOpen, Volume2, VolumeX, ChevronLeft } from "lucide-react";
-import { playPageTurn, playBookOpen, startAmbientMusic, stopAmbientMusic, isAmbientPlaying } from "@/lib/sounds";
+import { playPageTurn, playBookOpen, startAmbientMusic, stopAmbientMusic, isAmbientPlaying, startPaperRustle, updatePaperRustle, stopPaperRustle } from "@/lib/sounds";
 
 interface GrimoireChapter {
   title: string;
