@@ -8,6 +8,7 @@ interface AudioUploadProps {
   currentAudio?: string | null;
   onAudioChange: (url: string | null) => void;
   folder: string;
+  label?: string;
 }
 
 const AudioUpload = ({ currentAudio, onAudioChange, folder }: AudioUploadProps) => {
