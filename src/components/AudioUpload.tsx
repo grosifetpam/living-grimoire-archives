@@ -11,7 +11,7 @@ interface AudioUploadProps {
   label?: string;
 }
 
-const AudioUpload = ({ currentAudio, onAudioChange, folder }: AudioUploadProps) => {
+const AudioUpload = ({ currentAudio, onAudioChange, folder, label = "Musique / Thème" }: AudioUploadProps) => {
   const [uploading, setUploading] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
 
