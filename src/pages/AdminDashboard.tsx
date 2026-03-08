@@ -204,7 +204,7 @@ function SectionImagesAdmin() {
           <div key={section} className="space-y-2 p-4 rounded-lg bg-secondary/20 border border-primary/10">
             <p className="font-cinzel text-sm text-primary">{icon} {label}</p>
             <ImageUpload
-              currentImage={images[section] || null}
+              currentImage={getImage(section)}
               onImageChange={(url) => handleChange(section, url)}
               folder="section-covers"
               label={`Couverture ${label}`}
