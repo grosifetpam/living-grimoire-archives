@@ -257,6 +257,9 @@ function CharactersAdmin() {
 
           <textarea placeholder="Histoire" value={editing.backstory ?? ""} onChange={e => setEditing({ ...editing, backstory: e.target.value })} className="w-full bg-secondary/50 border border-primary/30 rounded-md px-3 py-2 text-foreground min-h-[80px]" />
           <ImageUpload currentImage={editing.image} onImageChange={url => setEditing({ ...editing, image: url })} folder="characters" />
+          <ImageUpload currentImage={(editing as any).card_image} onImageChange={url => setEditing({ ...editing, card_image: url } as any)} folder="oracle-cards" />
+          <p className="text-xs text-muted-foreground font-crimson">↑ Carte oracle du personnage</p>
+          <AudioUpload currentAudio={(editing as any).music_url} onAudioChange={url => setEditing({ ...editing, music_url: url } as any)} folder="music" />
           <div className="flex gap-2">
             <Button onClick={save} className="font-cinzel shimmer-btn">Sauvegarder</Button>
             <Button variant="outline" onClick={() => setEditing(null)} className="font-cinzel">Annuler</Button>
