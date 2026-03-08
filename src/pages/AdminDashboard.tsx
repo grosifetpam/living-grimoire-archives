@@ -168,6 +168,9 @@ function HomeSettingsAdmin() {
         )}
       </div>
 
+      {/* Images de couverture par section */}
+      <SectionImagesAdmin />
+
       {/* Cartes géographiques par univers */}
       <MediaMapsSection />
 
