@@ -19,7 +19,7 @@ interface GrimoireBookProps {
 
 const SWIPE_THRESHOLD = 60;
 
-const GrimoireBook = ({ title, subtitle, chapters, headerContent }: GrimoireBookProps) => {
+const GrimoireBook = ({ title, subtitle, chapters, headerContent, coverImage }: GrimoireBookProps) => {
   const [openChapter, setOpenChapter] = useState<number>(0);
   const [isBookOpen, setIsBookOpen] = useState(false);
   const [musicOn, setMusicOn] = useState(false);
