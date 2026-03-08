@@ -18,28 +18,17 @@ const Index = () => {
   const { data: factions = [] } = useFactions();
   const { data: timelineEvents = [] } = useTimelineEvents();
   const { isAdmin } = useAuth();
+  const { data: settings = {} } = useSiteSettings();
+  const saveSetting = useSaveSiteSetting();
   const [isOpen, setIsOpen] = useState(false);
   const [musicOn, setMusicOn] = useState(false);
-  const [coverImage, setCoverImage] = useState<string | null>(null);
-  const [siteTitle, setSiteTitle] = useState("L'Archive Vivante");
-  const [siteSubtitle, setSiteSubtitle] = useState("du Multivers");
-  const [siteQuote, setSiteQuote] = useState("Chaque page est un portail vers un monde oublié, chaque mot une clé vers des mystères anciens.");
   const [uploadingCover, setUploadingCover] = useState(false);
   const coverFileRef = useRef<HTMLInputElement>(null);
 
-  // Load settings from site_settings
-  useEffect(() => {
-    supabase.from("site_settings").select("key, value").then(({ data: rows }) => {
-      if (rows) {
-        for (const r of rows) {
-          if (r.key === "cover_image" && r.value) setCoverImage(r.value);
-          if (r.key === "site_title" && r.value) setSiteTitle(r.value);
-          if (r.key === "site_subtitle" && r.value) setSiteSubtitle(r.value);
-          if (r.key === "site_quote" && r.value) setSiteQuote(r.value);
-        }
-      }
-    });
-  }, []);
+  const coverImage = settings["cover_image"] || null;
+  const siteTitle = settings["site_title"] || "L'Archive Vivante";
+  const siteSubtitle = settings["site_subtitle"] || "du Multivers";
+  const siteQuote = settings["site_quote"] || "Chaque page est un portail vers un monde oublié, chaque mot une clé vers des mystères anciens.";
 
   const handleCoverUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
