@@ -125,6 +125,20 @@ const UniversDetailPage = () => {
     ),
   });
 
+  // Carte géographique
+  if ((universe as any).map_image) {
+    chapters.push({
+      title: "Carte Géographique",
+      icon: <span>🗺️</span>,
+      content: (
+        <div className="text-center">
+          <img src={(universe as any).map_image} alt={`Carte de ${universe.name}`} className="w-full max-w-3xl mx-auto rounded-lg border-2 border-primary/20 shadow-lg" />
+          <p className="text-sm text-muted-foreground font-crimson italic mt-3">Carte du monde de {universe.name}</p>
+        </div>
+      ),
+    });
+  }
+
   // Personnages
   if (chars.length > 0) {
     chapters.push({
