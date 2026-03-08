@@ -220,7 +220,7 @@ const Index = () => {
                   <div className="text-center">
                     <div className="text-primary/20 text-sm font-cinzel tracking-[0.4em] mb-4">✦ SOMMAIRE ✦</div>
                     <h1 className="font-cinzel text-4xl md:text-6xl font-bold text-primary text-glow-gold mb-4">
-                      L'Archive Vivante
+                      {siteTitle}
                     </h1>
                     <p className="font-crimson text-muted-foreground italic text-lg mb-8">
                       Explorez les secrets d'un multivers infini
