@@ -18,9 +18,10 @@ import type { Universe, Character, Race, Faction, TimelineEvent, Location, Creat
 import { supabase } from "@/integrations/supabase/client";
 import { Pencil, Trash2, Plus, LogOut } from "lucide-react";
 
-type Tab = "universes" | "characters" | "races" | "factions" | "events" | "locations" | "creatures";
+type Tab = "settings" | "universes" | "characters" | "races" | "factions" | "events" | "locations" | "creatures";
 
 const tabs: { key: Tab; label: string; icon: string }[] = [
+  { key: "settings", label: "Accueil", icon: "🏠" },
   { key: "universes", label: "Univers", icon: "🌍" },
   { key: "characters", label: "Personnages", icon: "⚔️" },
   { key: "races", label: "Races", icon: "🧬" },
