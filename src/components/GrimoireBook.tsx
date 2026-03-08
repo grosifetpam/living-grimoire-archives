@@ -84,6 +84,47 @@ const GrimoireBook = ({ title, subtitle, chapters, headerContent }: GrimoireBook
     }
   };
 
+  // Spawn particles during drag
+  const spawnParticles = useCallback((offsetX: number) => {
+    if (!pageRef.current) return;
+    const rect = pageRef.current.getBoundingClientRect();
+    const count = Math.floor(Math.min(Math.abs(offsetX) / 30, 4)) + 1;
+    const newParticles = Array.from({ length: count }, () => {
+      const edge = offsetX < 0 ? rect.width : 0;
+      return {
+        id: particleIdRef.current++,
+        x: edge + (Math.random() - 0.5) * 40,
+        y: Math.random() * rect.height,
+        vx: (Math.random() - 0.5) * 3 + (offsetX < 0 ? -1 : 1) * 2,
+        vy: (Math.random() - 0.5) * 2 - 1,
+        size: Math.random() * 4 + 2,
+        opacity: Math.random() * 0.6 + 0.4,
+        rotation: Math.random() * 360,
+      };
+    });
+    setParticles(prev => [...prev.slice(-40), ...newParticles]);
+  }, []);
+
+  // Animate & decay particles
+  useEffect(() => {
+    if (particles.length === 0) return;
+    const raf = requestAnimationFrame(() => {
+      setParticles(prev =>
+        prev
+          .map(p => ({
+            ...p,
+            x: p.x + p.vx,
+            y: p.y + p.vy,
+            vy: p.vy + 0.08,
+            opacity: p.opacity - 0.015,
+            rotation: p.rotation + p.vx * 3,
+          }))
+          .filter(p => p.opacity > 0)
+      );
+    });
+    return () => cancelAnimationFrame(raf);
+  }, [particles]);
+
   useEffect(() => {
     return () => { stopAmbientMusic(); };
   }, []);
