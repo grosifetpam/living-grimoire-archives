@@ -232,7 +232,14 @@ const GrimoireBook = ({ title, subtitle, chapters, headerContent }: GrimoireBook
                 </div>
               )}
 
-              <div className="bg-gradient-to-br from-[hsl(var(--parchment))] to-[hsl(var(--parchment-light))] rounded-lg min-h-[450px] shadow-[inset_0_0_40px_rgba(0,0,0,0.15)] overflow-hidden">
+              <motion.div
+                className="bg-gradient-to-br from-[hsl(var(--parchment))] to-[hsl(var(--parchment-light))] rounded-lg min-h-[450px] overflow-hidden"
+                style={{
+                  boxShadow: isDragging ? dragShadow : "inset 0 0 40px rgba(0,0,0,0.15)",
+                  transformStyle: "preserve-3d",
+                  perspective: "800px",
+                }}
+              >
                 <AnimatePresence mode="wait" custom={direction}>
                   <motion.div
                     key={openChapter}
@@ -242,17 +249,26 @@ const GrimoireBook = ({ title, subtitle, chapters, headerContent }: GrimoireBook
                     animate="center"
                     exit="exit"
                     transition={{
-                      type: "tween",
-                      duration: 0.45,
-                      ease: [0.25, 0.46, 0.45, 0.94],
+                      type: "spring",
+                      stiffness: 200,
+                      damping: 28,
+                      mass: 0.8,
                     }}
                     drag="x"
                     dragConstraints={{ left: 0, right: 0 }}
-                    dragElastic={0.15}
+                    dragElastic={0.12}
                     onDragStart={() => setIsDragging(true)}
                     onDragEnd={handleDragEnd}
                     className="p-6 md:p-10 cursor-grab active:cursor-grabbing"
-                    style={{ transformStyle: "preserve-3d" }}
+                    style={{
+                      x: dragX,
+                      rotateY: isDragging ? dragRotateY : 0,
+                      skewY: isDragging ? dragSkewY : 0,
+                      scale: isDragging ? dragScale : 1,
+                      filter: isDragging ? useTransform(dragBrightness, (v) => `brightness(${v})`) as any : "brightness(1)",
+                      transformStyle: "preserve-3d",
+                      transformOrigin: "center center",
+                    }}
                   >
                     {/* Page header */}
                     <div className="text-center mb-6 pb-4 border-b border-primary/20">
