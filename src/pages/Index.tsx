@@ -169,6 +169,7 @@ const Index = () => {
                   <BookOpen size={18} />
                   <span>Cliquez pour ouvrir le grimoire</span>
                 </motion.div>
+                </div>
               </div>
             </motion.div>
           </motion.section>
