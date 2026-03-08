@@ -10,6 +10,7 @@ const UniversPage = () => {
   const { data: characters = [] } = useCharacters();
   const { data: races = [] } = useRaces();
   const { data: factions = [] } = useFactions();
+  const sectionImage = useSectionImage("univers");
 
   const chapters = universes.map(u => ({
     title: u.name,
