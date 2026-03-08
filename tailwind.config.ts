@@ -57,6 +57,8 @@ export default {
         parchment: "hsl(var(--parchment))",
         "parchment-light": "hsl(var(--parchment-light))",
         amber: "hsl(var(--amber))",
+        crimson: "hsl(var(--crimson))",
+        "violet-glow": "hsl(var(--violet-glow))",
         sidebar: {
           DEFAULT: "hsl(var(--sidebar-background))",
           foreground: "hsl(var(--sidebar-foreground))",
