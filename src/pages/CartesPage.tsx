@@ -1,5 +1,6 @@
 import Layout from "@/components/Layout";
-import { useCharacters, useUniverses, useRaces, useFactions } from "@/hooks/useSupabaseData";
+import GrimoireBook from "@/components/GrimoireBook";
+import { useCharacters, useUniverses, useRaces, useFactions, useCharacterRaces, useCharacterFactions } from "@/hooks/useSupabaseData";
 import { motion } from "framer-motion";
 
 const CartesPage = () => {
@@ -7,53 +8,76 @@ const CartesPage = () => {
   const { data: universes = [] } = useUniverses();
   const { data: races = [] } = useRaces();
   const { data: factions = [] } = useFactions();
+  const { data: charRaces = [] } = useCharacterRaces();
+  const { data: charFactions = [] } = useCharacterFactions();
 
   const getUniverseName = (id: string) => universes.find(u => u.id === id)?.name || "Inconnu";
-  const getRaceName = (id: string | null) => races.find(r => r.id === id)?.name || "Inconnue";
-  const getFactionName = (id: string | null) => factions.find(f => f.id === id)?.name || "Inconnue";
+  const getCharRaceNames = (charId: string) => {
+    const ids = charRaces.filter(cr => cr.character_id === charId).map(cr => cr.race_id);
+    return races.filter(r => ids.includes(r.id)).map(r => r.name);
+  };
+  const getCharFactionNames = (charId: string) => {
+    const ids = charFactions.filter(cf => cf.character_id === charId).map(cf => cf.faction_id);
+    return factions.filter(f => ids.includes(f.id)).map(f => f.name);
+  };
+
+  // Group by universe
+  const grouped = universes
+    .map(u => ({ universe: u, chars: characters.filter(c => c.universe_id === u.id) }))
+    .filter(g => g.chars.length > 0);
+
+  const chapters = grouped.map(g => ({
+    title: `${g.universe.name} (${g.chars.length})`,
+    icon: <span>🃏</span>,
+    content: (
+      <div className="grid sm:grid-cols-2 gap-6">
+        {g.chars.map((c, i) => {
+          const stats = c.stats as Record<string, number>;
+          const raceNames = getCharRaceNames(c.id);
+          const factionNames = getCharFactionNames(c.id);
+          const totalPower = Object.values(stats).reduce((a, b) => a + b, 0);
+          return (
+            <motion.div key={c.id} initial={{ opacity: 0, rotateY: 90 }} animate={{ opacity: 1, rotateY: 0 }} transition={{ delay: i * 0.1, duration: 0.5 }} className="rounded-lg border border-primary/30 overflow-hidden bg-secondary/20 hover:glow-gold transition-all group">
+              <div className="bg-gradient-to-b from-primary/15 to-transparent p-5 text-center border-b border-primary/20">
+                <div className="w-20 h-20 rounded-full bg-secondary mx-auto mb-2 flex items-center justify-center text-3xl border-2 border-primary/40 group-hover:glow-gold-strong transition-all overflow-hidden">
+                  {c.image ? <img src={c.image} alt={c.name} className="w-full h-full object-cover" /> : "⚔️"}
+                </div>
+                <h3 className="font-cinzel text-lg font-bold text-primary">{c.name}</h3>
+                <p className="text-xs text-primary/60 font-crimson italic">{c.title}</p>
+              </div>
+              <div className="p-4 space-y-2">
+                <div className="flex flex-wrap gap-1 text-xs text-muted-foreground">
+                  <span>🌍 {getUniverseName(c.universe_id)}</span>
+                  {raceNames.map(n => <span key={n}>· 🧬 {n}</span>)}
+                  {factionNames.map(n => <span key={n}>· 🏛️ {n}</span>)}
+                </div>
+                <div className="grid grid-cols-5 gap-1 mt-2">
+                  {Object.entries(stats).map(([key, val]) => (
+                    <div key={key} className="text-center">
+                      <div className="text-xs text-primary font-cinzel font-bold">{val}</div>
+                      <div className="text-[10px] text-muted-foreground capitalize">{key.slice(0, 3)}</div>
+                    </div>
+                  ))}
+                </div>
+                <div className="h-1 w-full bg-secondary rounded-full overflow-hidden mt-2">
+                  <div className="h-full rounded-full" style={{ width: `${(totalPower / 50) * 100}%`, background: "linear-gradient(to right, hsl(var(--primary)), hsl(var(--gold)))" }} />
+                </div>
+                <p className="text-[10px] text-muted-foreground text-center font-cinzel">Puissance : {totalPower}/50</p>
+              </div>
+            </motion.div>
+          );
+        })}
+      </div>
+    ),
+  }));
 
   return (
     <Layout>
-      <section className="min-h-screen py-20 px-4 max-w-6xl mx-auto">
-        <h1 className="font-cinzel text-4xl md:text-5xl font-bold text-primary text-glow-gold text-center mb-4">Cartes</h1>
-        <p className="text-center text-muted-foreground mb-12 font-crimson text-lg">Les cartes de personnages du multivers</p>
-
-        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-8">
-          {characters.map((c, i) => {
-            const stats = c.stats as Record<string, number>;
-            return (
-              <motion.div key={c.id} initial={{ opacity: 0, rotateY: 90 }} animate={{ opacity: 1, rotateY: 0 }} transition={{ delay: i * 0.15, duration: 0.6 }} className="grimoire-card overflow-hidden group">
-                <div className="bg-gradient-to-b from-primary/20 to-transparent p-6 text-center border-b border-primary/20">
-                  <div className="w-24 h-24 rounded-full bg-secondary mx-auto mb-3 flex items-center justify-center text-4xl border-2 border-primary/40 group-hover:glow-gold-strong transition-all">⚔️</div>
-                  <h3 className="font-cinzel text-xl font-bold text-primary">{c.name}</h3>
-                  <p className="text-sm text-primary/60 font-crimson italic">{c.title}</p>
-                </div>
-                <div className="p-5 space-y-3">
-                  <div className="flex justify-between text-xs text-muted-foreground">
-                    <span>🌍 {getUniverseName(c.universe_id)}</span>
-                    <span>🧬 {getRaceName(c.race_id)}</span>
-                  </div>
-                  {c.faction_id && <p className="text-xs text-muted-foreground">🏛️ {getFactionName(c.faction_id)}</p>}
-                  <div className="grid grid-cols-5 gap-1 mt-3">
-                    {Object.entries(stats).map(([key, val]) => (
-                      <div key={key} className="text-center">
-                        <div className="text-xs text-primary font-cinzel font-bold">{val}</div>
-                        <div className="text-[10px] text-muted-foreground capitalize">{key.slice(0, 3)}</div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-                <div className="px-5 pb-4">
-                  <div className="h-1 w-full bg-secondary rounded-full overflow-hidden">
-                    <div className="h-full bg-gradient-to-r from-primary to-gold rounded-full" style={{ width: `${(Object.values(stats).reduce((a, b) => a + b, 0) / 50) * 100}%` }} />
-                  </div>
-                  <p className="text-[10px] text-muted-foreground text-center mt-1 font-cinzel">Puissance totale: {Object.values(stats).reduce((a, b) => a + b, 0)}/50</p>
-                </div>
-              </motion.div>
-            );
-          })}
-        </div>
-      </section>
+      <GrimoireBook
+        title="Cartes"
+        subtitle="Les cartes de personnages du multivers"
+        chapters={chapters.length > 0 ? chapters : [{ title: "Vide", icon: <span>📖</span>, content: <p className="text-center text-muted-foreground font-crimson italic">Aucune carte disponible...</p> }]}
+      />
     </Layout>
   );
 };
