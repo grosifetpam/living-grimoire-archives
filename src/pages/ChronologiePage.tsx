@@ -9,6 +9,7 @@ const ChronologiePage = () => {
   const { data: timelineEvents = [] } = useTimelineEvents();
   const { data: universes = [] } = useUniverses();
   const { data: characters = [] } = useCharacters();
+  const sectionImage = useSectionImage("chronologie");
 
   const getUniverseName = (id: string) => universes.find(u => u.id === id)?.name || "Inconnu";
   const getUniverseChars = (universeId: string) => characters.filter(c => c.universe_id === universeId);
