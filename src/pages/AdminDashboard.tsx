@@ -10,6 +10,7 @@ import {
   useUniverses, useCharacters, useRaces, useFactions,
   useTimelineEvents, useLocations, useCreatures,
   useCharacterFactions, useSetCharacterFactions,
+  useCharacterRaces, useSetCharacterRaces,
   useUpsert, useDelete,
 } from "@/hooks/useSupabaseData";
 import type { Universe, Character, Race, Faction, TimelineEvent, Location, Creature } from "@/hooks/useSupabaseData";
@@ -140,38 +141,48 @@ function CharactersAdmin() {
   const { data: racesList = [] } = useRaces();
   const { data: factionsList = [] } = useFactions();
   const { data: charFactions = [] } = useCharacterFactions();
+  const { data: charRaces = [] } = useCharacterRaces();
   const upsert = useUpsert("characters");
   const del = useDelete("characters");
   const setCharFactions = useSetCharacterFactions();
+  const setCharRaces = useSetCharacterRaces();
   const [editing, setEditing] = useState<Partial<Character> | null>(null);
   const [selectedFactionIds, setSelectedFactionIds] = useState<string[]>([]);
+  const [selectedRaceIds, setSelectedRaceIds] = useState<string[]>([]);
 
   const getCharFactionIds = (charId: string) => charFactions.filter(cf => cf.character_id === charId).map(cf => cf.faction_id);
+  const getCharRaceIds = (charId: string) => charRaces.filter(cr => cr.character_id === charId).map(cr => cr.race_id);
 
   const startEdit = (c?: Character) => {
     if (c) {
       setEditing(c);
       setSelectedFactionIds(getCharFactionIds(c.id));
+      setSelectedRaceIds(getCharRaceIds(c.id));
     } else {
       setEditing({ name: "", title: "", backstory: "", universe_id: universes[0]?.id, image: null, stats: { force: 5, agilite: 5, intelligence: 5, magie: 5, charisme: 5 } });
       setSelectedFactionIds([]);
+      setSelectedRaceIds([]);
     }
   };
 
   const toggleFaction = (fid: string) => {
     setSelectedFactionIds(prev => prev.includes(fid) ? prev.filter(id => id !== fid) : [...prev, fid]);
   };
+  const toggleRace = (rid: string) => {
+    setSelectedRaceIds(prev => prev.includes(rid) ? prev.filter(id => id !== rid) : [...prev, rid]);
+  };
 
   const save = async () => {
     if (!editing?.name || !editing?.universe_id) return;
     try {
       const record = { ...editing };
-      delete (record as any).faction_id; // ignore legacy field
+      delete (record as any).faction_id;
+      delete (record as any).race_id;
       await upsert.mutateAsync(record as Record<string, unknown>);
-      // Save factions via junction table
       const charId = editing.id || (await supabase.from("characters").select("id").eq("name", editing.name).single()).data?.id;
       if (charId) {
         await setCharFactions.mutateAsync({ characterId: charId, factionIds: selectedFactionIds });
+        await setCharRaces.mutateAsync({ characterId: charId, raceIds: selectedRaceIds });
       }
       toast({ title: "Sauvegardé ✓" });
       setEditing(null);
@@ -198,10 +209,27 @@ function CharactersAdmin() {
             <option value="">-- Univers --</option>
             {universes.map(u => <option key={u.id} value={u.id}>{u.name}</option>)}
           </select>
-          <select value={editing.race_id ?? ""} onChange={e => setEditing({ ...editing, race_id: e.target.value || null })} className="w-full bg-secondary/50 border border-primary/30 rounded-md px-3 py-2 text-foreground">
-            <option value="">-- Race (optionnel) --</option>
-            {racesList.map(r => <option key={r.id} value={r.id}>{r.name}</option>)}
-          </select>
+
+          {/* Multi-select races */}
+          <div>
+            <p className="text-sm font-cinzel text-foreground/70 mb-2">Races (sélection multiple) :</p>
+            <div className="flex flex-wrap gap-2">
+              {racesList.map(r => (
+                <button
+                  key={r.id}
+                  type="button"
+                  onClick={() => toggleRace(r.id)}
+                  className={`px-3 py-1.5 rounded-full text-xs font-cinzel transition-all border ${
+                    selectedRaceIds.includes(r.id)
+                      ? "bg-primary text-primary-foreground border-primary"
+                      : "bg-secondary/50 text-foreground/60 border-primary/20 hover:border-primary/50"
+                  }`}
+                >
+                  🧬 {r.name}
+                </button>
+              ))}
+            </div>
+          </div>
 
           {/* Multi-select factions */}
           <div>
@@ -237,13 +265,19 @@ function CharactersAdmin() {
         {data.map(c => {
           const cFactions = getCharFactionIds(c.id);
           const fNames = cFactions.map(fid => factionsList.find(f => f.id === fid)?.name).filter(Boolean);
+          const cRaces = getCharRaceIds(c.id);
+          const rNames = cRaces.map(rid => racesList.find(r => r.id === rid)?.name).filter(Boolean);
           return (
             <div key={c.id} className="grimoire-card p-4 flex items-center justify-between">
               <div className="flex items-center gap-3">
                 {c.image && <img src={c.image} alt={c.name} className="w-10 h-10 rounded object-cover" />}
                 <div>
                   <h3 className="font-cinzel font-bold text-primary">{c.name}</h3>
-                  <p className="text-xs text-muted-foreground">{c.title}{fNames.length > 0 && ` · 🏛️ ${fNames.join(", ")}`}</p>
+                  <p className="text-xs text-muted-foreground">
+                    {c.title}
+                    {rNames.length > 0 && ` · 🧬 ${rNames.join(", ")}`}
+                    {fNames.length > 0 && ` · 🏛️ ${fNames.join(", ")}`}
+                  </p>
                 </div>
               </div>
               <div className="flex gap-2">
