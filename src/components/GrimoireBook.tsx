@@ -1,6 +1,7 @@
 import { useState, ReactNode } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { BookOpen, ChevronLeft, ChevronRight } from "lucide-react";
+import { playPageTurn, playBookOpen } from "@/lib/sounds";
 
 interface GrimoireChapter {
   title: string;
