@@ -146,7 +146,7 @@ const Index = () => {
                 {/* Cover Image */}
                 {coverImage && (
                   <div className="absolute inset-0 z-0">
-                    <img src={coverImage} alt="Couverture du grimoire" className="w-full h-full object-cover opacity-20" />
+                    <ImageWithFallback src={coverImage} alt="Couverture du grimoire" className="w-full h-full object-cover opacity-20" />
                     <div className="absolute inset-0 bg-gradient-to-br from-background/80 to-background/60" />
                   </div>
                 )}
