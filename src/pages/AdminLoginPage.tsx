@@ -9,11 +9,11 @@ import { supabase } from "@/integrations/supabase/client";
 import { motion } from "framer-motion";
 
 const AdminLoginPage = () => {
-  const [mode, setMode] = useState<"login" | "signup" | "reset">("login");
+  const [mode, setMode] = useState<"login" | "reset">("login");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
-  const { signIn, signUp } = useAuth();
+  const { signIn } = useAuth();
   const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -37,20 +37,18 @@ const AdminLoginPage = () => {
 
     if (!password.trim()) { setLoading(false); return; }
 
-    const { error } = mode === "signup" ? await signUp(email, password) : await signIn(email, password);
+    const { error } = await signIn(email, password);
 
     if (error) {
       toast({ title: "Erreur", description: error.message, variant: "destructive" });
-    } else if (mode === "signup") {
-      toast({ title: "Inscription réussie", description: "Vérifiez votre email pour confirmer votre compte." });
     } else {
       navigate("/admin");
     }
     setLoading(false);
   };
 
-  const title = mode === "reset" ? "Réinitialiser le mot de passe" : mode === "signup" ? "Inscription" : "Connexion";
-  const subtitle = mode === "reset" ? "Entrez votre email pour recevoir un lien de réinitialisation" : mode === "signup" ? "Créez votre compte d'archiviste" : "Accédez aux archives secrètes";
+  const title = mode === "reset" ? "Réinitialiser le mot de passe" : "Connexion";
+  const subtitle = mode === "reset" ? "Entrez votre email pour recevoir un lien de réinitialisation" : "Accédez aux archives secrètes";
 
   return (
     <Layout>
@@ -115,24 +113,14 @@ const AdminLoginPage = () => {
                   />
                 )}
                 <Button type="submit" disabled={loading} className="w-full font-cinzel bg-primary/20 border border-primary/40 text-primary hover:bg-primary/30 hover:border-primary/60 transition-all">
-                  {loading ? "..." : mode === "reset" ? "Envoyer le lien" : mode === "signup" ? "S'inscrire" : "Se connecter"}
+                  {loading ? "..." : mode === "reset" ? "Envoyer le lien" : "Se connecter"}
                 </Button>
               </form>
 
               <div className="mt-6 pt-4 border-t border-primary/15 space-y-2">
                 {mode === "login" && (
-                  <>
-                    <button onClick={() => setMode("reset")} className="text-sm text-primary/50 hover:text-primary font-crimson w-full text-center block transition-colors">
-                      Mot de passe oublié ?
-                    </button>
-                    <button onClick={() => setMode("signup")} className="text-sm text-primary/50 hover:text-primary font-crimson w-full text-center block transition-colors">
-                      Pas de compte ? S'inscrire
-                    </button>
-                  </>
-                )}
-                {mode === "signup" && (
-                  <button onClick={() => setMode("login")} className="text-sm text-primary/50 hover:text-primary font-crimson w-full text-center block transition-colors">
-                    Déjà un compte ? Se connecter
+                  <button onClick={() => setMode("reset")} className="text-sm text-primary/50 hover:text-primary font-crimson w-full text-center block transition-colors">
+                    Mot de passe oublié ?
                   </button>
                 )}
                 {mode === "reset" && (
