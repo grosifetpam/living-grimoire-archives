@@ -39,7 +39,7 @@ const BestiairePage = () => {
           {g.creatures.map(cr => (
             <div key={cr.id} className="p-4 rounded-lg bg-secondary/20 border border-primary/10 flex gap-4">
               <div className="w-16 h-16 rounded-lg bg-secondary flex-shrink-0 overflow-hidden border border-primary/20">
-                {cr.image ? <img src={cr.image} alt={cr.name} className="w-full h-full object-cover" /> : <div className="w-full h-full flex items-center justify-center text-2xl">🐉</div>}
+                {cr.image ? <ImageWithFallback src={cr.image} alt={cr.name} className="w-full h-full object-cover" fallbackIcon="🐉" /> : <div className="w-full h-full flex items-center justify-center text-2xl">🐉</div>}
               </div>
               <div className="min-w-0 flex-1">
                 <div className="flex items-center gap-3 flex-wrap">

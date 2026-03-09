@@ -291,7 +291,7 @@ const Index = () => {
                           {/* Image de couverture en arrière-plan */}
                           {item.image && (
                             <div className="absolute inset-0 z-0 overflow-hidden">
-                              <img 
+                              <ImageWithFallback 
                                 src={item.image} 
                                 alt={item.label} 
                                 className="w-full h-full object-cover opacity-70 group-hover:opacity-90 saturate-125 contrast-110 transform group-hover:scale-110 group-hover:translate-x-2 transition-all duration-700 ease-out" 

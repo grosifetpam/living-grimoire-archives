@@ -74,7 +74,7 @@ const UniversDetailPage = () => {
       <div className="relative">
         {universe.image && (
           <div className="w-full max-w-2xl mx-auto h-48 rounded-lg overflow-hidden mb-4 border border-primary/20 glow-gold">
-            <img src={universe.image} alt={universe.name} className="w-full h-full object-cover" />
+            <ImageWithFallback src={universe.image} alt={universe.name} className="w-full h-full object-cover" fallbackIcon="🌑" />
           </div>
         )}
         {isAdmin && (
