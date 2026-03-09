@@ -16,7 +16,7 @@ const Layout = ({ children }: LayoutProps) => {
         className="fixed inset-0 z-0 bg-cover bg-center bg-no-repeat"
         style={{ backgroundImage: "url('/bg-multivers.png')" }}
       />
-      <div className="fixed inset-0 z-0 bg-background" />
+      <div className="fixed inset-0 z-0 bg-background/0" />
       
       <GoldenParticles />
       <Navbar searchQuery={searchQuery} onSearchChange={setSearchQuery} />
