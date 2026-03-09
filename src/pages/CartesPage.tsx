@@ -1,5 +1,6 @@
 import Layout from "@/components/Layout";
 import GrimoireBook from "@/components/GrimoireBook";
+import ImageWithFallback from "@/components/ImageWithFallback";
 import { useCharacters, useUniverses, useRaces, useFactions, useCharacterRaces, useCharacterFactions } from "@/hooks/useSupabaseData";
 import { motion } from "framer-motion";
 import { useSectionImage } from "@/hooks/useSectionImage";
