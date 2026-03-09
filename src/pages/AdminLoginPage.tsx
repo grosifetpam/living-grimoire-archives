@@ -37,12 +37,10 @@ const AdminLoginPage = () => {
 
     if (!password.trim()) { setLoading(false); return; }
 
-    const { error } = mode === "signup" ? await signUp(email, password) : await signIn(email, password);
+    const { error } = await signIn(email, password);
 
     if (error) {
       toast({ title: "Erreur", description: error.message, variant: "destructive" });
-    } else if (mode === "signup") {
-      toast({ title: "Inscription réussie", description: "Vérifiez votre email pour confirmer votre compte." });
     } else {
       navigate("/admin");
     }
