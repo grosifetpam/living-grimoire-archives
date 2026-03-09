@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import Layout from "@/components/Layout";
 import GrimoireBook from "@/components/GrimoireBook";
+import ImageWithFallback from "@/components/ImageWithFallback";
 import { useCharacters, useUniverses, useRaces, useCharacterRaces } from "@/hooks/useSupabaseData";
 import { useSectionImage } from "@/hooks/useSectionImage";
 
@@ -41,7 +42,7 @@ const PersonnagesPage = () => {
           return (
             <Link key={c.id} to={`/personnages/${c.id}`} className="group flex items-center gap-4 p-3 rounded-lg bg-secondary/30 hover:bg-secondary/60 border border-transparent hover:border-primary/30 transition-all">
               <div className="w-14 h-14 rounded-full bg-secondary flex-shrink-0 overflow-hidden border-2 border-primary/30 group-hover:border-primary/60 group-hover:glow-gold transition-all">
-                {c.image ? <img src={c.image} alt={c.name} className="w-full h-full object-cover" /> : <div className="w-full h-full flex items-center justify-center text-2xl">⚔️</div>}
+                {c.image ? <ImageWithFallback src={c.image} alt={c.name} className="w-full h-full object-cover" fallbackIcon="⚔️" /> : <div className="w-full h-full flex items-center justify-center text-2xl">⚔️</div>}
               </div>
               <div className="min-w-0">
                 <h3 className="font-cinzel font-semibold text-primary group-hover:text-glow-gold truncate">{c.name}</h3>

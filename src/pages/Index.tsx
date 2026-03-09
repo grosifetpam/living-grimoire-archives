@@ -5,6 +5,7 @@ import StatCounter from "@/components/StatCounter";
 import { useUniverses, useCharacters, useRaces, useFactions, useTimelineEvents } from "@/hooks/useSupabaseData";
 import { motion, AnimatePresence } from "framer-motion";
 import { BookOpen, Volume2, VolumeX, ImagePlus } from "lucide-react";
+import ImageWithFallback from "@/components/ImageWithFallback";
 import { playBookOpen, startAmbientMusic, stopAmbientMusic, isAmbientPlaying } from "@/lib/sounds";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
@@ -145,7 +146,7 @@ const Index = () => {
                 {/* Cover Image */}
                 {coverImage && (
                   <div className="absolute inset-0 z-0">
-                    <img src={coverImage} alt="Couverture du grimoire" className="w-full h-full object-cover opacity-20" />
+                    <ImageWithFallback src={coverImage} alt="Couverture du grimoire" className="w-full h-full object-cover opacity-20" />
                     <div className="absolute inset-0 bg-gradient-to-br from-background/80 to-background/60" />
                   </div>
                 )}
@@ -290,7 +291,7 @@ const Index = () => {
                           {/* Image de couverture en arrière-plan */}
                           {item.image && (
                             <div className="absolute inset-0 z-0 overflow-hidden">
-                              <img 
+                              <ImageWithFallback 
                                 src={item.image} 
                                 alt={item.label} 
                                 className="w-full h-full object-cover opacity-70 group-hover:opacity-90 saturate-125 contrast-110 transform group-hover:scale-110 group-hover:translate-x-2 transition-all duration-700 ease-out" 

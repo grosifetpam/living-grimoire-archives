@@ -1,6 +1,7 @@
 import { useParams, Link } from "react-router-dom";
 import Layout from "@/components/Layout";
 import GrimoireBook from "@/components/GrimoireBook";
+import ImageWithFallback from "@/components/ImageWithFallback";
 import { useCharacters, useUniverses, useRaces, useFactions, useCharacterFactions, useCharacterRaces } from "@/hooks/useSupabaseData";
 import { motion } from "framer-motion";
 
@@ -35,7 +36,7 @@ const PersonnageDetailPage = () => {
   const headerContent = (
     <div className="text-center mb-6">
       <div className="w-28 h-28 rounded-full bg-secondary mx-auto mb-3 overflow-hidden border-2 border-primary/40 glow-gold">
-        {character.image ? <img src={character.image} alt={character.name} className="w-full h-full object-cover" /> : <div className="w-full h-full flex items-center justify-center text-4xl">⚔️</div>}
+        {character.image ? <ImageWithFallback src={character.image} alt={character.name} className="w-full h-full object-cover" fallbackIcon="⚔️" /> : <div className="w-full h-full flex items-center justify-center text-4xl">⚔️</div>}
       </div>
       <p className="text-primary/60 font-crimson italic text-lg">{character.title}</p>
       <div className="flex justify-center gap-2 mt-3 flex-wrap">

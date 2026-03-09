@@ -1,5 +1,6 @@
 import Layout from "@/components/Layout";
 import GrimoireBook from "@/components/GrimoireBook";
+import ImageWithFallback from "@/components/ImageWithFallback";
 import { useCharacters, useUniverses, useRaces, useFactions, useCharacterRaces, useCharacterFactions } from "@/hooks/useSupabaseData";
 import { motion } from "framer-motion";
 import { useSectionImage } from "@/hooks/useSectionImage";
@@ -33,7 +34,7 @@ const CartesPage = () => {
           <motion.div key={u.id} initial={{ opacity: 0, rotateY: 90 }} animate={{ opacity: 1, rotateY: 0 }} transition={{ delay: i * 0.1, duration: 0.5 }} className="rounded-lg border border-primary/30 overflow-hidden bg-secondary/20 hover:glow-gold transition-all group">
             {(u as any).card_image ? (
               <div className="relative">
-                <img src={(u as any).card_image} alt={`Carte oracle de ${u.name}`} className="w-full aspect-[2/3] object-cover" />
+                <ImageWithFallback src={(u as any).card_image} alt={`Carte oracle de ${u.name}`} className="w-full aspect-[2/3] object-cover" fallbackIcon="🌍" />
                 <div className="absolute bottom-0 inset-x-0 bg-gradient-to-t from-background/90 to-transparent p-3">
                   <h3 className="font-cinzel text-sm font-bold text-primary">{u.name}</h3>
                   <p className="text-xs text-primary/60 font-crimson italic">{u.era}</p>
@@ -42,7 +43,7 @@ const CartesPage = () => {
             ) : (
               <div className="bg-gradient-to-b from-primary/15 to-transparent p-5 text-center border-b border-primary/20">
                 <div className="w-20 h-20 rounded-full bg-secondary mx-auto mb-2 flex items-center justify-center text-3xl border-2 border-primary/40 overflow-hidden">
-                  {u.image ? <img src={u.image} alt={u.name} className="w-full h-full object-cover" /> : "🌍"}
+                  {u.image ? <ImageWithFallback src={u.image} alt={u.name} className="w-full h-full object-cover" fallbackIcon="🌍" /> : "🌍"}
                 </div>
                 <h3 className="font-cinzel text-lg font-bold text-primary">{u.name}</h3>
                 <p className="text-xs text-primary/60 font-crimson italic">{u.era}</p>
@@ -76,7 +77,7 @@ const CartesPage = () => {
             <motion.div key={c.id} initial={{ opacity: 0, rotateY: 90 }} animate={{ opacity: 1, rotateY: 0 }} transition={{ delay: i * 0.1, duration: 0.5 }} className="rounded-lg border border-primary/30 overflow-hidden bg-secondary/20 hover:glow-gold transition-all group">
               {(c as any).card_image ? (
                 <div className="relative">
-                  <img src={(c as any).card_image} alt={`Carte oracle de ${c.name}`} className="w-full aspect-[2/3] object-cover" />
+                  <ImageWithFallback src={(c as any).card_image} alt={`Carte oracle de ${c.name}`} className="w-full aspect-[2/3] object-cover" fallbackIcon="⚔️" />
                   <div className="absolute bottom-0 inset-x-0 bg-gradient-to-t from-background/90 to-transparent p-3">
                     <h3 className="font-cinzel text-sm font-bold text-primary">{c.name}</h3>
                     <p className="text-xs text-primary/60 font-crimson italic">{c.title}</p>
@@ -85,7 +86,7 @@ const CartesPage = () => {
               ) : (
                 <div className="bg-gradient-to-b from-primary/15 to-transparent p-5 text-center border-b border-primary/20">
                   <div className="w-20 h-20 rounded-full bg-secondary mx-auto mb-2 flex items-center justify-center text-3xl border-2 border-primary/40 group-hover:glow-gold-strong transition-all overflow-hidden">
-                    {c.image ? <img src={c.image} alt={c.name} className="w-full h-full object-cover" /> : "⚔️"}
+                    {c.image ? <ImageWithFallback src={c.image} alt={c.name} className="w-full h-full object-cover" fallbackIcon="⚔️" /> : "⚔️"}
                   </div>
                   <h3 className="font-cinzel text-lg font-bold text-primary">{c.name}</h3>
                   <p className="text-xs text-primary/60 font-crimson italic">{c.title}</p>

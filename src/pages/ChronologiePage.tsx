@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import Layout from "@/components/Layout";
 import GrimoireBook from "@/components/GrimoireBook";
+import ImageWithFallback from "@/components/ImageWithFallback";
 import { useTimelineEvents, useUniverses, useCharacters } from "@/hooks/useSupabaseData";
 import { motion } from "framer-motion";
 import { useSectionImage } from "@/hooks/useSectionImage";
@@ -47,7 +48,7 @@ const ChronologiePage = () => {
               {relatedChars.map(c => (
                 <Link key={c.id} to={`/personnages/${c.id}`} className="flex items-center gap-3 p-2 rounded-lg bg-secondary/30 hover:bg-secondary/50 transition-colors group">
                   <div className="w-9 h-9 rounded-full overflow-hidden bg-secondary border border-primary/20 flex-shrink-0">
-                    {c.image ? <img src={c.image} alt={c.name} className="w-full h-full object-cover" /> : <div className="w-full h-full flex items-center justify-center text-sm">⚔️</div>}
+                    {c.image ? <ImageWithFallback src={c.image} alt={c.name} className="w-full h-full object-cover" fallbackIcon="⚔️" /> : <div className="w-full h-full flex items-center justify-center text-sm">⚔️</div>}
                   </div>
                   <div className="min-w-0">
                     <p className="font-cinzel text-sm text-primary group-hover:text-primary/80 truncate">{c.name}</p>

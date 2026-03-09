@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import Layout from "@/components/Layout";
 import GrimoireBook from "@/components/GrimoireBook";
+import ImageWithFallback from "@/components/ImageWithFallback";
 import { useUniverses, useCharacters, useRaces, useFactions } from "@/hooks/useSupabaseData";
 import { useSectionImage } from "@/hooks/useSectionImage";
 import { motion } from "framer-motion";
@@ -20,7 +21,7 @@ const UniversPage = () => {
         <div className="space-y-4">
           {u.image && (
             <div className="w-full h-48 rounded-lg overflow-hidden border border-primary/20 group-hover:glow-gold transition-all">
-              <img src={u.image} alt={u.name} className="w-full h-full object-cover" />
+              <ImageWithFallback src={u.image} alt={u.name} className="w-full h-full object-cover" fallbackIcon="🌑" />
             </div>
           )}
           <div className="text-center">
