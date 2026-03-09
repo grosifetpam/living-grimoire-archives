@@ -5,6 +5,7 @@ import GrimoireBook from "@/components/GrimoireBook";
 import { useUniverses, useCharacters, useRaces, useFactions, useTimelineEvents, useLocations, useCreatures, useCharacterFactions, useCharacterRaces, useUpsert } from "@/hooks/useSupabaseData";
 import { motion } from "framer-motion";
 import { Skull, MapPin, Swords, Shield, ScrollText, Clock, Bug, ImagePlus } from "lucide-react";
+import ImageWithFallback from "@/components/ImageWithFallback";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
