@@ -293,9 +293,9 @@ const Index = () => {
                               <img 
                                 src={item.image} 
                                 alt={item.label} 
-                                className="w-full h-full object-cover opacity-40 group-hover:opacity-60 transform group-hover:scale-110 group-hover:translate-x-2 transition-all duration-700 ease-out" 
+                                className="w-full h-full object-cover opacity-70 group-hover:opacity-90 saturate-125 contrast-110 transform group-hover:scale-110 group-hover:translate-x-2 transition-all duration-700 ease-out" 
                               />
-                              <div className="absolute inset-0 bg-gradient-to-r from-background/70 via-background/50 to-background/30" />
+                              <div className="absolute inset-0 bg-gradient-to-r from-background/35 via-background/15 to-transparent" />
                             </div>
                           )}
                           <span className="text-2xl relative z-10">{item.icon}</span>
