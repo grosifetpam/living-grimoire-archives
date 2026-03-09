@@ -113,7 +113,7 @@ const AdminLoginPage = () => {
                   />
                 )}
                 <Button type="submit" disabled={loading} className="w-full font-cinzel bg-primary/20 border border-primary/40 text-primary hover:bg-primary/30 hover:border-primary/60 transition-all">
-                  {loading ? "..." : mode === "reset" ? "Envoyer le lien" : mode === "signup" ? "S'inscrire" : "Se connecter"}
+                  {loading ? "..." : mode === "reset" ? "Envoyer le lien" : "Se connecter"}
                 </Button>
               </form>
 
