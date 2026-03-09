@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import Layout from "@/components/Layout";
 import GrimoireBook from "@/components/GrimoireBook";
+import ImageWithFallback from "@/components/ImageWithFallback";
 import { useUniverses, useCharacters, useRaces, useFactions } from "@/hooks/useSupabaseData";
 import { useSectionImage } from "@/hooks/useSectionImage";
 import { motion } from "framer-motion";
