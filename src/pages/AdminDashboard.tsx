@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { SECTION_IMAGE_KEYS } from "@/hooks/useSectionImage";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
