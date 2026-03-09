@@ -74,6 +74,7 @@ const AdminDashboard = () => {
         {activeTab === "events" && <EventsAdmin />}
         {activeTab === "locations" && <LocationsAdmin />}
         {activeTab === "creatures" && <CreaturesAdmin />}
+        {activeTab === "backup" && <BackupAdmin />}
       </section>
     </Layout>
   );
