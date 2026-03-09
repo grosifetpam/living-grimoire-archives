@@ -43,7 +43,7 @@ const CartesPage = () => {
             ) : (
               <div className="bg-gradient-to-b from-primary/15 to-transparent p-5 text-center border-b border-primary/20">
                 <div className="w-20 h-20 rounded-full bg-secondary mx-auto mb-2 flex items-center justify-center text-3xl border-2 border-primary/40 overflow-hidden">
-                  {u.image ? <img src={u.image} alt={u.name} className="w-full h-full object-cover" /> : "🌍"}
+                  {u.image ? <ImageWithFallback src={u.image} alt={u.name} className="w-full h-full object-cover" fallbackIcon="🌍" /> : "🌍"}
                 </div>
                 <h3 className="font-cinzel text-lg font-bold text-primary">{u.name}</h3>
                 <p className="text-xs text-primary/60 font-crimson italic">{u.era}</p>
