@@ -21,7 +21,7 @@ import { Pencil, Trash2, Plus, LogOut, Download, Upload } from "lucide-react";
 import { useSiteSettings, useSaveSiteSetting } from "@/hooks/useSiteSettings";
 
 
-type Tab = "settings" | "universes" | "characters" | "races" | "factions" | "events" | "locations" | "creatures";
+type Tab = "settings" | "universes" | "characters" | "races" | "factions" | "events" | "locations" | "creatures" | "backup";
 
 const tabs: { key: Tab; label: string; icon: string }[] = [
   { key: "settings", label: "Accueil", icon: "🏠" },
@@ -32,6 +32,7 @@ const tabs: { key: Tab; label: string; icon: string }[] = [
   { key: "events", label: "Chronologie", icon: "📅" },
   { key: "locations", label: "Lieux", icon: "📍" },
   { key: "creatures", label: "Bestiaire", icon: "🐉" },
+  { key: "backup", label: "Sauvegarde", icon: "💾" },
 ];
 
 const AdminDashboard = () => {
