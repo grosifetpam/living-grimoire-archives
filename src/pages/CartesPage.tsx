@@ -34,7 +34,7 @@ const CartesPage = () => {
           <motion.div key={u.id} initial={{ opacity: 0, rotateY: 90 }} animate={{ opacity: 1, rotateY: 0 }} transition={{ delay: i * 0.1, duration: 0.5 }} className="rounded-lg border border-primary/30 overflow-hidden bg-secondary/20 hover:glow-gold transition-all group">
             {(u as any).card_image ? (
               <div className="relative">
-                <img src={(u as any).card_image} alt={`Carte oracle de ${u.name}`} className="w-full aspect-[2/3] object-cover" />
+                <ImageWithFallback src={(u as any).card_image} alt={`Carte oracle de ${u.name}`} className="w-full aspect-[2/3] object-cover" fallbackIcon="🌍" />
                 <div className="absolute bottom-0 inset-x-0 bg-gradient-to-t from-background/90 to-transparent p-3">
                   <h3 className="font-cinzel text-sm font-bold text-primary">{u.name}</h3>
                   <p className="text-xs text-primary/60 font-crimson italic">{u.era}</p>
