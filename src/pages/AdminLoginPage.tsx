@@ -47,8 +47,8 @@ const AdminLoginPage = () => {
     setLoading(false);
   };
 
-  const title = mode === "reset" ? "Réinitialiser le mot de passe" : mode === "signup" ? "Inscription" : "Connexion";
-  const subtitle = mode === "reset" ? "Entrez votre email pour recevoir un lien de réinitialisation" : mode === "signup" ? "Créez votre compte d'archiviste" : "Accédez aux archives secrètes";
+  const title = mode === "reset" ? "Réinitialiser le mot de passe" : "Connexion";
+  const subtitle = mode === "reset" ? "Entrez votre email pour recevoir un lien de réinitialisation" : "Accédez aux archives secrètes";
 
   return (
     <Layout>
