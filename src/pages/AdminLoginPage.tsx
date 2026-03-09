@@ -119,18 +119,8 @@ const AdminLoginPage = () => {
 
               <div className="mt-6 pt-4 border-t border-primary/15 space-y-2">
                 {mode === "login" && (
-                  <>
-                    <button onClick={() => setMode("reset")} className="text-sm text-primary/50 hover:text-primary font-crimson w-full text-center block transition-colors">
-                      Mot de passe oublié ?
-                    </button>
-                    <button onClick={() => setMode("signup")} className="text-sm text-primary/50 hover:text-primary font-crimson w-full text-center block transition-colors">
-                      Pas de compte ? S'inscrire
-                    </button>
-                  </>
-                )}
-                {mode === "signup" && (
-                  <button onClick={() => setMode("login")} className="text-sm text-primary/50 hover:text-primary font-crimson w-full text-center block transition-colors">
-                    Déjà un compte ? Se connecter
+                  <button onClick={() => setMode("reset")} className="text-sm text-primary/50 hover:text-primary font-crimson w-full text-center block transition-colors">
+                    Mot de passe oublié ?
                   </button>
                 )}
                 {mode === "reset" && (
