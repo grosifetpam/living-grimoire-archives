@@ -44,6 +44,42 @@ export type Database = {
         }
         Relationships: []
       }
+      backup_logs: {
+        Row: {
+          action: string
+          created_at: string
+          details: string
+          file_path: string | null
+          file_size: number | null
+          id: string
+          status: string
+          triggered_by: string
+          user_id: string | null
+        }
+        Insert: {
+          action?: string
+          created_at?: string
+          details?: string
+          file_path?: string | null
+          file_size?: number | null
+          id?: string
+          status?: string
+          triggered_by?: string
+          user_id?: string | null
+        }
+        Update: {
+          action?: string
+          created_at?: string
+          details?: string
+          file_path?: string | null
+          file_size?: number | null
+          id?: string
+          status?: string
+          triggered_by?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       character_factions: {
         Row: {
           character_id: string
