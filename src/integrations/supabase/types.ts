@@ -14,6 +14,36 @@ export type Database = {
   }
   public: {
     Tables: {
+      auth_logs: {
+        Row: {
+          created_at: string
+          email: string
+          event_type: string
+          id: string
+          ip_address: string | null
+          success: boolean
+          user_agent: string | null
+        }
+        Insert: {
+          created_at?: string
+          email: string
+          event_type?: string
+          id?: string
+          ip_address?: string | null
+          success?: boolean
+          user_agent?: string | null
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          event_type?: string
+          id?: string
+          ip_address?: string | null
+          success?: boolean
+          user_agent?: string | null
+        }
+        Relationships: []
+      }
       character_factions: {
         Row: {
           character_id: string

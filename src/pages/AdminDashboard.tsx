@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { SECTION_IMAGE_KEYS } from "@/hooks/useSectionImage";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
@@ -17,11 +17,11 @@ import {
 } from "@/hooks/useSupabaseData";
 import type { Universe, Character, Race, Faction, TimelineEvent, Location, Creature } from "@/hooks/useSupabaseData";
 import { supabase } from "@/integrations/supabase/client";
-import { Pencil, Trash2, Plus, LogOut } from "lucide-react";
+import { Pencil, Trash2, Plus, LogOut, Download, Upload } from "lucide-react";
 import { useSiteSettings, useSaveSiteSetting } from "@/hooks/useSiteSettings";
 
 
-type Tab = "settings" | "universes" | "characters" | "races" | "factions" | "events" | "locations" | "creatures";
+type Tab = "settings" | "universes" | "characters" | "races" | "factions" | "events" | "locations" | "creatures" | "backup";
 
 const tabs: { key: Tab; label: string; icon: string }[] = [
   { key: "settings", label: "Accueil", icon: "🏠" },
@@ -32,6 +32,7 @@ const tabs: { key: Tab; label: string; icon: string }[] = [
   { key: "events", label: "Chronologie", icon: "📅" },
   { key: "locations", label: "Lieux", icon: "📍" },
   { key: "creatures", label: "Bestiaire", icon: "🐉" },
+  { key: "backup", label: "Sauvegarde", icon: "💾" },
 ];
 
 const AdminDashboard = () => {
@@ -73,6 +74,7 @@ const AdminDashboard = () => {
         {activeTab === "events" && <EventsAdmin />}
         {activeTab === "locations" && <LocationsAdmin />}
         {activeTab === "creatures" && <CreaturesAdmin />}
+        {activeTab === "backup" && <BackupAdmin />}
       </section>
     </Layout>
   );
@@ -824,4 +826,154 @@ function CreaturesAdmin() {
   );
 }
 
+// ============ BACKUP / CLONE ============
+
+function BackupAdmin() {
+  const [exporting, setExporting] = useState(false);
+  const [importing, setImporting] = useState(false);
+  const [importLog, setImportLog] = useState<string[]>([]);
+  const [clearBefore, setClearBefore] = useState(true);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleExport = async () => {
+    setExporting(true);
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) throw new Error("Non connecté");
+
+      const res = await supabase.functions.invoke("export-data", {
+        headers: { Authorization: `Bearer ${session.access_token}` },
+      });
+
+      if (res.error) throw new Error(res.error.message);
+
+      const blob = new Blob([JSON.stringify(res.data, null, 2)], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `backup-multivers-${new Date().toISOString().slice(0, 10)}.json`;
+      a.click();
+      URL.revokeObjectURL(url);
+
+      toast({ title: "Export réussi ✓", description: "Le fichier JSON a été téléchargé." });
+    } catch (e: any) {
+      toast({ title: "Erreur d'export", description: e.message, variant: "destructive" });
+    } finally {
+      setExporting(false);
+    }
+  };
+
+  const handleImport = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    setImporting(true);
+    setImportLog([]);
+
+    try {
+      const text = await file.text();
+      const parsed = JSON.parse(text);
+
+      if (!parsed.data) throw new Error("Format de fichier invalide");
+
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) throw new Error("Non connecté");
+
+      const res = await supabase.functions.invoke("import-data", {
+        headers: { Authorization: `Bearer ${session.access_token}` },
+        body: {
+          data: parsed.data,
+          storage_files: parsed.storage_files || [],
+          clear_before_import: clearBefore,
+        },
+      });
+
+      if (res.error) throw new Error(res.error.message);
+
+      setImportLog(res.data.log || []);
+      toast({ title: "Import terminé ✓" });
+    } catch (e: any) {
+      toast({ title: "Erreur d'import", description: e.message, variant: "destructive" });
+    } finally {
+      setImporting(false);
+      if (fileInputRef.current) fileInputRef.current.value = "";
+    }
+  };
+
+  return (
+    <div className="space-y-6">
+      <h2 className="font-cinzel text-xl font-bold text-primary mb-4">💾 Sauvegarde & Restauration</h2>
+
+      <div className="grimoire-card p-6 space-y-4">
+        <h3 className="font-cinzel text-lg text-primary/80">📤 Exporter toutes les données</h3>
+        <p className="text-sm text-muted-foreground font-crimson">
+          Télécharge un fichier JSON contenant toutes les données du site (univers, personnages, races, factions, lieux, créatures, chronologie, paramètres) ainsi que les liens vers toutes les images et fichiers audio.
+        </p>
+        <Button onClick={handleExport} disabled={exporting} className="font-cinzel shimmer-btn gap-2">
+          <Download size={16} />
+          {exporting ? "Export en cours..." : "Exporter tout"}
+        </Button>
+      </div>
+
+      <div className="grimoire-card p-6 space-y-4">
+        <h3 className="font-cinzel text-lg text-primary/80">📥 Importer / Restaurer</h3>
+        <p className="text-sm text-muted-foreground font-crimson">
+          Importez un fichier JSON de sauvegarde pour restaurer toutes les données et images. Cela permet de cloner le site complet sur une autre instance.
+        </p>
+
+        <div className="flex items-center gap-2">
+          <input
+            type="checkbox"
+            id="clearBefore"
+            checked={clearBefore}
+            onChange={e => setClearBefore(e.target.checked)}
+            className="rounded border-primary/30"
+          />
+          <label htmlFor="clearBefore" className="text-sm text-foreground font-crimson">
+            Vider les tables avant l'import (recommandé pour un clonage complet)
+          </label>
+        </div>
+
+        <div>
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept=".json"
+            onChange={handleImport}
+            disabled={importing}
+            className="hidden"
+            id="import-file"
+          />
+          <Button
+            onClick={() => fileInputRef.current?.click()}
+            disabled={importing}
+            variant="outline"
+            className="font-cinzel gap-2"
+          >
+            <Upload size={16} />
+            {importing ? "Import en cours..." : "Choisir un fichier JSON"}
+          </Button>
+        </div>
+
+        {importing && (
+          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+            <div className="animate-spin h-4 w-4 border-2 border-primary border-t-transparent rounded-full" />
+            Import en cours, veuillez patienter...
+          </div>
+        )}
+
+        {importLog.length > 0 && (
+          <div className="bg-secondary/50 rounded-lg p-4 space-y-1 max-h-64 overflow-y-auto">
+            <h4 className="font-cinzel text-sm text-primary mb-2">Journal d'import :</h4>
+            {importLog.map((line, i) => (
+              <p key={i} className="text-xs text-foreground/80 font-mono">{line}</p>
+            ))}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
 export default AdminDashboard;
+
