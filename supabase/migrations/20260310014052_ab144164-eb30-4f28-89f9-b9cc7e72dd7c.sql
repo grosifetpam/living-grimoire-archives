@@ -1,0 +1,1 @@
+DROP POLICY IF EXISTS "Service insert backup_logs" ON public.backup_logs;
