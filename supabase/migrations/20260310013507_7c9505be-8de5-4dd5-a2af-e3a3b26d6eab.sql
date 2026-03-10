@@ -1,0 +1,1 @@
+DROP POLICY IF EXISTS "Insert auth_logs" ON public.auth_logs;
