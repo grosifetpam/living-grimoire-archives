@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { toast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
+import { isPasswordLeaked } from "@/lib/hibp";
 import { motion } from "framer-motion";
 
 const AdminLoginPage = () => {
@@ -36,6 +37,18 @@ const AdminLoginPage = () => {
     }
 
     if (!password.trim()) { setLoading(false); return; }
+
+    // Check password against known breaches (HIBP)
+    const leaked = await isPasswordLeaked(password);
+    if (leaked) {
+      toast({
+        title: "Mot de passe compromis",
+        description: "Ce mot de passe apparaît dans des fuites de données connues. Veuillez le changer immédiatement via « Mot de passe oublié ».",
+        variant: "destructive",
+      });
+      setLoading(false);
+      return;
+    }
 
     const { error } = await signIn(email, password);
 
