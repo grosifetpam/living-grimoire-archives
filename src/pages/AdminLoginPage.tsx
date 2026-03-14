@@ -38,6 +38,18 @@ const AdminLoginPage = () => {
 
     if (!password.trim()) { setLoading(false); return; }
 
+    // Check password against known breaches (HIBP)
+    const leaked = await isPasswordLeaked(password);
+    if (leaked) {
+      toast({
+        title: "Mot de passe compromis",
+        description: "Ce mot de passe apparaît dans des fuites de données connues. Veuillez le changer immédiatement via « Mot de passe oublié ».",
+        variant: "destructive",
+      });
+      setLoading(false);
+      return;
+    }
+
     const { error } = await signIn(email, password);
 
     if (error) {
