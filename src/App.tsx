@@ -42,6 +42,7 @@ const App = () => (
             <Route path="/bestiaire" element={<BestiairePage />} />
             <Route path="/cartes" element={<CartesPage />} />
             <Route path="/admin/login" element={<AdminLoginPage />} />
+            <Route path="/reset-password" element={<ResetPasswordPage />} />
             <Route path="/admin" element={<AdminDashboard />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
