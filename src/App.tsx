@@ -17,6 +17,7 @@ import BestiairePage from "./pages/BestiairePage";
 import CartesPage from "./pages/CartesPage";
 import AdminLoginPage from "./pages/AdminLoginPage";
 import AdminDashboard from "./pages/AdminDashboard";
+import ResetPasswordPage from "./pages/ResetPasswordPage";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
