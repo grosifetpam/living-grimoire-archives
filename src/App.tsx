@@ -17,6 +17,7 @@ import BestiairePage from "./pages/BestiairePage";
 import CartesPage from "./pages/CartesPage";
 import AdminLoginPage from "./pages/AdminLoginPage";
 import AdminDashboard from "./pages/AdminDashboard";
+import ResetPasswordPage from "./pages/ResetPasswordPage";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -41,6 +42,7 @@ const App = () => (
             <Route path="/bestiaire" element={<BestiairePage />} />
             <Route path="/cartes" element={<CartesPage />} />
             <Route path="/admin/login" element={<AdminLoginPage />} />
+            <Route path="/reset-password" element={<ResetPasswordPage />} />
             <Route path="/admin" element={<AdminDashboard />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
