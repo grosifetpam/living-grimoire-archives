@@ -86,9 +86,41 @@ Deno.serve(async (req) => {
       let fileCount = 0;
       let fileErrors = 0;
 
+      const supabaseHostname = new URL(supabaseUrl).hostname;
+
       for (const file of storage_files) {
         try {
-          // Download from source URL
+          // Validate URL against allowlist (SSRF protection)
+          let parsedUrl: URL;
+          try {
+            parsedUrl = new URL(file.url);
+          } catch {
+            log.push(`⚠️ URL invalide ignorée`);
+            fileErrors++;
+            continue;
+          }
+
+          if (parsedUrl.protocol !== "https:") {
+            log.push(`⚠️ URL rejetée (protocole non-HTTPS)`);
+            fileErrors++;
+            continue;
+          }
+
+          if (parsedUrl.hostname !== supabaseHostname && !parsedUrl.hostname.endsWith("." + supabaseHostname)) {
+            log.push(`⚠️ URL rejetée (hôte non autorisé)`);
+            fileErrors++;
+            continue;
+          }
+
+          // Sanitize file.path against path traversal
+          const safePath = String(file.path || "").replace(/\.\./g, "");
+          if (!safePath || !/^[a-zA-Z0-9\/_.\-]+$/.test(safePath)) {
+            log.push(`⚠️ Chemin de fichier invalide ignoré`);
+            fileErrors++;
+            continue;
+          }
+
+          // Download from validated source URL
           const response = await fetch(file.url);
           if (!response.ok) {
             fileErrors++;
@@ -99,10 +131,10 @@ Deno.serve(async (req) => {
           const arrayBuffer = await blob.arrayBuffer();
           const uint8 = new Uint8Array(arrayBuffer);
 
-          // Upload to storage
+          // Upload to storage with sanitized path
           const { error: uploadErr } = await adminClient.storage
             .from("images")
-            .upload(file.path, uint8, {
+            .upload(safePath, uint8, {
               contentType: blob.type || "application/octet-stream",
               upsert: true,
             });
