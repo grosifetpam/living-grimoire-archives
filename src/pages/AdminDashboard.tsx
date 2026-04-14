@@ -87,9 +87,6 @@ const AdminDashboard = () => {
 
 function GenerateUniverseAdmin() {
   const [name, setName] = useState("");
-  const [theme, setTheme] = useState("");
-  const [era, setEra] = useState("");
-  const [details, setDetails] = useState("");
   const [generating, setGenerating] = useState(false);
   const [result, setResult] = useState<{ universe_id: string; summary: Record<string, number> } | null>(null);
 
@@ -102,16 +99,13 @@ function GenerateUniverseAdmin() {
     setResult(null);
     try {
       const res = await supabase.functions.invoke("generate-universe", {
-        body: { name: name.trim(), theme: theme.trim(), era: era.trim(), details: details.trim() },
+        body: { name: name.trim() },
       });
       if (res.error) throw new Error(res.error.message);
       if (res.data?.error) throw new Error(res.data.error);
       setResult(res.data);
       toast({ title: "✨ Univers généré avec succès !", description: `${name} a été créé avec tout son contenu.` });
       setName("");
-      setTheme("");
-      setEra("");
-      setDetails("");
     } catch (err: any) {
       toast({ title: "Erreur de génération", description: err.message, variant: "destructive" });
     } finally {
@@ -126,52 +120,55 @@ function GenerateUniverseAdmin() {
         <h2 className="font-cinzel text-2xl text-primary">Générer un Univers par IA</h2>
       </div>
       <p className="text-muted-foreground text-sm">
-        L'IA va créer un univers complet avec ses personnages, races, factions, chronologie, lieux et bestiaire.
+        Entre simplement un titre — l'IA créera un univers complet : histoire, personnages, races, factions, familles, relations, chronologie, lieux et bestiaire.
       </p>
 
       <div className="grid gap-4 max-w-2xl">
         <div>
-          <label className="font-cinzel text-sm text-foreground mb-1 block">Nom de l'univers *</label>
-          <Input value={name} onChange={e => setName(e.target.value)} placeholder="Ex: Valdoria, Terres de Cendre..." disabled={generating} />
-        </div>
-        <div>
-          <label className="font-cinzel text-sm text-foreground mb-1 block">Thème</label>
-          <Input value={theme} onChange={e => setTheme(e.target.value)} placeholder="Ex: Fantasy sombre, Steampunk, Post-apocalyptique..." disabled={generating} />
-        </div>
-        <div>
-          <label className="font-cinzel text-sm text-foreground mb-1 block">Ère</label>
-          <Input value={era} onChange={e => setEra(e.target.value)} placeholder="Ex: Ère des Cendres, Âge d'Or..." disabled={generating} />
-        </div>
-        <div>
-          <label className="font-cinzel text-sm text-foreground mb-1 block">Détails supplémentaires</label>
-          <Textarea value={details} onChange={e => setDetails(e.target.value)} placeholder="Décris des éléments spécifiques : familles royales, conflits, magie particulière..." rows={4} disabled={generating} />
+          <label className="font-cinzel text-sm text-foreground mb-1 block">Titre de l'univers *</label>
+          <Input
+            value={name}
+            onChange={e => setName(e.target.value)}
+            placeholder="Ex: Les Chroniques d'Aethermoor, L'Empire des Cendres..."
+            disabled={generating}
+            onKeyDown={e => e.key === "Enter" && !generating && name.trim() && handleGenerate()}
+          />
         </div>
 
         <Button onClick={handleGenerate} disabled={generating || !name.trim()} className="font-cinzel gap-2 w-fit">
           {generating ? <Loader2 className="animate-spin" size={16} /> : <Sparkles size={16} />}
-          {generating ? "Génération en cours... (30-60s)" : "Générer l'univers"}
+          {generating ? "Création de l'univers en cours... (30-60s)" : "Générer l'univers complet"}
         </Button>
       </div>
+
+      {generating && (
+        <div className="bg-secondary/30 border border-primary/20 rounded-lg p-4 max-w-2xl text-sm text-muted-foreground space-y-1">
+          <p>⏳ L'IA construit votre univers...</p>
+          <p className="text-xs">Personnages • Races • Factions • Familles • Relations • Chronologie • Lieux • Bestiaire</p>
+        </div>
+      )}
 
       {result && (
         <div className="bg-secondary/50 border border-primary/30 rounded-lg p-6 max-w-2xl">
           <h3 className="font-cinzel text-lg text-primary mb-3">✨ Univers créé avec succès !</h3>
-          <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 text-sm">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-sm">
             {[
-              { key: "characters", label: "Personnages" },
-              { key: "races", label: "Races" },
-              { key: "factions", label: "Factions" },
-              { key: "events", label: "Événements" },
-              { key: "locations", label: "Lieux" },
-              { key: "creatures", label: "Créatures" },
-            ].map(({ key, label }) => (
+              { key: "characters", label: "Personnages", icon: "⚔️" },
+              { key: "races", label: "Races", icon: "🧬" },
+              { key: "factions", label: "Factions", icon: "🏛️" },
+              { key: "families", label: "Familles", icon: "👑" },
+              { key: "relations", label: "Relations", icon: "🔗" },
+              { key: "events", label: "Événements", icon: "📅" },
+              { key: "locations", label: "Lieux", icon: "📍" },
+              { key: "creatures", label: "Créatures", icon: "🐉" },
+            ].map(({ key, label, icon }) => (
               <div key={key} className="bg-background/50 rounded p-3 text-center">
-                <span className="text-2xl font-bold text-primary">{result.summary[key]}</span>
-                <p className="text-muted-foreground">{label}</p>
+                <span className="text-2xl font-bold text-primary">{result.summary[key] || 0}</span>
+                <p className="text-muted-foreground text-xs">{icon} {label}</p>
               </div>
             ))}
           </div>
-          <p className="text-xs text-muted-foreground mt-3">Rendez-vous dans les onglets correspondants pour voir et modifier le contenu généré.</p>
+          <p className="text-xs text-muted-foreground mt-3">Rendez-vous dans les onglets pour voir et modifier le contenu généré.</p>
         </div>
       )}
     </div>
