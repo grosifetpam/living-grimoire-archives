@@ -21,10 +21,11 @@ import { Pencil, Trash2, Plus, LogOut, Download, Upload } from "lucide-react";
 import { useSiteSettings, useSaveSiteSetting } from "@/hooks/useSiteSettings";
 
 
-type Tab = "settings" | "universes" | "characters" | "races" | "factions" | "events" | "locations" | "creatures" | "backup";
+type Tab = "settings" | "generate" | "universes" | "characters" | "races" | "factions" | "events" | "locations" | "creatures" | "backup";
 
 const tabs: { key: Tab; label: string; icon: string }[] = [
   { key: "settings", label: "Accueil", icon: "🏠" },
+  { key: "generate", label: "Générer", icon: "✨" },
   { key: "universes", label: "Univers", icon: "🌍" },
   { key: "characters", label: "Personnages", icon: "⚔️" },
   { key: "races", label: "Races", icon: "🧬" },
@@ -67,6 +68,7 @@ const AdminDashboard = () => {
         </div>
 
         {activeTab === "settings" && <HomeSettingsAdmin />}
+        {activeTab === "generate" && <GenerateUniverseAdmin />}
         {activeTab === "universes" && <UniversesAdmin />}
         {activeTab === "characters" && <CharactersAdmin />}
         {activeTab === "races" && <RacesAdmin />}
