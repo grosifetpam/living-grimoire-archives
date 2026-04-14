@@ -17,7 +17,8 @@ import {
 } from "@/hooks/useSupabaseData";
 import type { Universe, Character, Race, Faction, TimelineEvent, Location, Creature } from "@/hooks/useSupabaseData";
 import { supabase } from "@/integrations/supabase/client";
-import { Pencil, Trash2, Plus, LogOut, Download, Upload } from "lucide-react";
+import { Pencil, Trash2, Plus, LogOut, Download, Upload, Sparkles, Loader2 } from "lucide-react";
+import { Textarea } from "@/components/ui/textarea";
 import { useSiteSettings, useSaveSiteSetting } from "@/hooks/useSiteSettings";
 
 
